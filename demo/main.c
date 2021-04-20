@@ -2,8 +2,14 @@
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-
+#include <util/delay.h>
 #include "can.h"
+#include "uart.h"
+#include <string.h>
+#include <stdio.h>
+
+// #define SUPPORT_EXTENDED_CANID
+
 
 // -----------------------------------------------------------------------------
 /** Set filters and masks.
@@ -75,6 +81,22 @@ const uint8_t can_filter[] PROGMEM =
 // You can receive 11 bit identifiers with either group 0 or 1.
 
 
+/* Function to reverse arr[] from start to end*/
+void revereseArray(uint8_t arr[], int start, int end)
+{
+    if (start >= end)
+    return;
+     
+    uint8_t temp = arr[start];
+    arr[start] = arr[end];
+    arr[end] = temp;
+     
+    // Recursive Function calling
+    revereseArray(arr, start + 1, end - 1);
+}  
+
+
+
 // -----------------------------------------------------------------------------
 // Main loop for receiving and sending messages.
 
@@ -82,41 +104,141 @@ int main(void)
 {
 	// Initialize MCP2515
 	can_init(BITRATE_125_KBPS);
-	
+	uart_init(9600);
+
 	// Load filters and masks
 	can_static_filter(can_filter);
 	
 	// Create a test messsage
 	can_t msg;
+
+	msg.length = 8;
+
+	const int cmdNo = 0x06;
+	switch(cmdNo)
+	{
+// vycita vystupne napatie
+		case 0x01:
+
+			msg.id = 0x02813ff0;
+			memset(msg.data, 0, 8);
+			break;
+
+// vycita vystupne napatie
+		case 0x03:
+			msg.id = 0x028300f0;
+			memset(msg.data, 0, 8);
+			break;
+
+// vycita fazove vstupne napatia
+		case 0x06:
+			msg.id = 0x028600f0;
+			memset(msg.data, 0, 8);
+			break;
+
+// nastavi vystupne napatie a prud
+		case 0x1c:
+#define U_MV 300000
+#define I_MA 10000
+			msg.id = 0x029c00f0;
+			*((uint32_t*)msg.data) = U_MV;
+			revereseArray(msg.data, 0, 3);
+			*((uint32_t*)(msg.data + 4)) = I_MA;
+			revereseArray(msg.data, 4, 7);
+			break;
+	}
+
+	char str[100];
+	int idx;
+
+	sprintf(str, "\ncan out id: %lx ", msg.id);
+	uart_puts(str);
+
+	uart_puts("data: ");
+	for(idx = 0; idx < 8; idx++)
+	{
+		sprintf(str, "%x ", msg.data[idx]);
+		uart_puts(str);
+	}
 	
-	msg.id = 0x123456;
+	uart_puts("\n");
+
 	msg.flags.rtr = 0;
 	msg.flags.extended = 1;
 	
-	msg.length = 4;
-	msg.data[0] = 0xde;
-	msg.data[1] = 0xad;
-	msg.data[2] = 0xbe;
-	msg.data[3] = 0xef;
-	
+
 	// Send the message
 	can_send_message(&msg);
+
 	
 	while (1)
 	{
+		char uartBuff[100];
+		if(uart_gets(uartBuff))
+		{
+			
+		}
+
 		// Check if a new messag was received
 		if (can_check_message())
 		{
 			can_t msg;
-			
+			msg.id = 0;
 			// Try to read the message
 			if (can_get_message(&msg))
 			{
-				// If we received a message resend it with a different id
-				msg.id += 10;
-				
-				// Send the new message
-				can_send_message(&msg);
+				switch(msg.id & 0xffff0000)
+				{
+					case 0x02810000:
+					{
+						uart_puts("output: ");
+						revereseArray(msg.data, 0, 3);
+						revereseArray(msg.data + 4, 4, 7);
+						float voltageIn = *(float*)msg.data;
+						float currentIn = *(float*)(msg.data + 4);
+						char strVoltage[50];
+						char strCurrent[50];
+						double vlt = 20.85;
+						dtostrf(voltageIn, 10, 5, strVoltage);
+						dtostrf(currentIn, 10, 5, strCurrent);
+						sprintf(str, "voltage %s, current %s\n", strVoltage, strCurrent);
+						uart_puts(str);
+						break;
+					}
+					case 0x02860000:
+					{
+						uart_puts("input voltatages: ");
+						uint16_t uAB = *((uint16_t*)msg.data);
+						uint16_t uBC = *((uint16_t*)(msg.data + 2));
+						uint16_t uCA = *((uint16_t*)(msg.data + 4));
+						sprintf(str, "AB = %d.%.2d V, BC = %d.%.2d V, CA = %d.%.2d V\n", 
+								uAB / 100, uAB % 100,
+								uBC / 100, uBC % 100,
+								uCA / 100, uCA % 100);
+						uart_puts(str);
+						break;
+					}
+					default:
+					{
+						uart_puts("can in: ");
+						sprintf(str, "id: %lx ", msg.id);
+						uart_puts(str);
+						sprintf(str, "data len: %d ", msg.length);
+						uart_puts(str);
+
+						uart_puts("data: ");
+					
+
+						for(idx = 0; idx < 8; idx++)
+						{
+							sprintf(str, "%x ", msg.data[idx]);
+							uart_puts(str);
+						}
+
+						uart_puts("\n");
+						break;
+					}
+				}
 			}
 		}
 	}
