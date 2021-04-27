@@ -97,24 +97,13 @@ void revereseArray(uint8_t arr[], int start, int end)
 
 
 
-// -----------------------------------------------------------------------------
-// Main loop for receiving and sending messages.
-
-int main(void)
+void cangFncSendMsg(int cmdNo)
 {
-	// Initialize MCP2515
-	can_init(BITRATE_125_KBPS);
-	uart_init(9600);
-
-	// Load filters and masks
-	can_static_filter(can_filter);
-	
 	// Create a test messsage
 	can_t msg;
 
 	msg.length = 8;
 
-	const int cmdNo = 0x06;
 	switch(cmdNo)
 	{
 // vycita vystupne napatie
@@ -130,10 +119,27 @@ int main(void)
 			memset(msg.data, 0, 8);
 			break;
 
+// vycita teplotu
+		case 0x04:
+			msg.id = 0x028400f0;
+			memset(msg.data, 0, 8);
+			break;
+
 // vycita fazove vstupne napatia
 		case 0x06:
 			msg.id = 0x028600f0;
 			memset(msg.data, 0, 8);
+			break;
+
+// nastavi vystupne napatie a prud
+		case 0x1b:
+#define U_MV 300000
+#define I_MA 10000
+			msg.id = 0x029b3ff0;
+			*((uint32_t*)msg.data) = U_MV;
+			revereseArray(msg.data, 0, 3);
+			*((uint32_t*)(msg.data + 4)) = I_MA;
+			revereseArray(msg.data, 4, 7);
 			break;
 
 // nastavi vystupne napatie a prud
@@ -169,15 +175,32 @@ int main(void)
 
 	// Send the message
 	can_send_message(&msg);
+}
 
-	
+// -----------------------------------------------------------------------------
+// Main loop for receiving and sending messages.
+
+int main(void)
+{
+	// Initialize MCP2515
+	can_init(BITRATE_125_KBPS);
+	uart_init(9600);
+
+	// Load filters and masks
+	can_static_filter(can_filter);
+	char str[100];
+	int idx;
+
 	while (1)
 	{
-		char uartBuff[100];
-		if(uart_gets(uartBuff))
+		char comNo = uart_getc1();
+		if (comNo)
 		{
-			
+			sprintf(str, "uart receive %x\n", comNo);
+			uart_puts(str);
+			cangFncSendMsg(comNo);
 		}
+
 
 		// Check if a new messag was received
 		if (can_check_message())
@@ -193,28 +216,37 @@ int main(void)
 					{
 						uart_puts("output: ");
 						revereseArray(msg.data, 0, 3);
-						revereseArray(msg.data + 4, 4, 7);
-						float voltageIn = *(float*)msg.data;
+						revereseArray(msg.data + 4, 0, 3);
+
+						float voltageIn = *((float*)msg.data);
 						float currentIn = *(float*)(msg.data + 4);
 						char strVoltage[50];
 						char strCurrent[50];
-						double vlt = 20.85;
 						dtostrf(voltageIn, 10, 5, strVoltage);
 						dtostrf(currentIn, 10, 5, strCurrent);
 						sprintf(str, "voltage %s, current %s\n", strVoltage, strCurrent);
 						uart_puts(str);
 						break;
 					}
+					case 0x02840000:
+					{
+						sprintf(str, "group #%d temperature %d C\n", msg.data[2], msg.data[4]);
+						uart_puts(str);
+						break;
+					}
 					case 0x02860000:
 					{
 						uart_puts("input voltatages: ");
+						revereseArray(msg.data, 0, 1);
+						revereseArray(msg.data, 2, 3);
+						revereseArray(msg.data, 4, 5);
 						uint16_t uAB = *((uint16_t*)msg.data);
 						uint16_t uBC = *((uint16_t*)(msg.data + 2));
 						uint16_t uCA = *((uint16_t*)(msg.data + 4));
-						sprintf(str, "AB = %d.%.2d V, BC = %d.%.2d V, CA = %d.%.2d V\n", 
-								uAB / 100, uAB % 100,
-								uBC / 100, uBC % 100,
-								uCA / 100, uCA % 100);
+						sprintf(str, "AB = %u.%.1u V, BC = %u.%.1u V, CA = %u.%.1u V\n", 
+								uAB / 10, uAB % 10,
+								uBC / 10, uBC % 10,
+								uCA / 10, uCA % 10);
 						uart_puts(str);
 						break;
 					}
@@ -229,7 +261,7 @@ int main(void)
 						uart_puts("data: ");
 					
 
-						for(idx = 0; idx < 8; idx++)
+						for(idx = 0; idx < msg.length; idx++)
 						{
 							sprintf(str, "%x ", msg.data[idx]);
 							uart_puts(str);
