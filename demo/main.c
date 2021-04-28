@@ -96,8 +96,7 @@ void revereseArray(uint8_t arr[], int start, int end)
 }  
 
 
-
-void cangFncSendMsg(int cmdNo)
+void cangFncSendMsg(int cmdNo, int ar1)
 {
 	// Create a test messsage
 	can_t msg;
@@ -131,6 +130,15 @@ void cangFncSendMsg(int cmdNo)
 			memset(msg.data, 0, 8);
 			break;
 
+// on/off
+		case 0x1a:
+			msg.id = 0x029a3ff0;
+			memset(msg.data, 0, 8);
+			
+			if(ar1)
+				msg.data[0] = 0x01;
+			break;
+
 // nastavi vystupne napatie a prud
 		case 0x1b:
 #define U_MV 300000
@@ -151,6 +159,33 @@ void cangFncSendMsg(int cmdNo)
 			revereseArray(msg.data, 0, 3);
 			*((uint32_t*)(msg.data + 4)) = I_MA;
 			revereseArray(msg.data, 4, 7);
+			break;
+
+// vycita externe napatie a vystupny prud
+		case 0x0c:
+			msg.id = 0x028c00f0;
+			memset(msg.data, 0, 8);
+			break;
+
+// citanie informacii modulu
+		case 0x0A:
+			msg.id = 0x028a00f0;
+			memset(msg.data, 0, 8);
+			break;
+
+// citanie barcodu
+		case 0x0B:
+			msg.id = 0x028b00f0;
+			memset(msg.data, 0, 8);
+			break;
+
+// nastavuje led
+		case 0x14:
+			msg.id = 0x029400f0;
+			memset(msg.data, 0, 8);
+
+			if(ar1)
+				msg.data[0] = 0x01;
 			break;
 	}
 
@@ -198,9 +233,10 @@ int main(void)
 		{
 			sprintf(str, "uart receive %x\n", comNo);
 			uart_puts(str);
-			cangFncSendMsg(comNo);
-		}
+			int arg1 = uart_getc1();
 
+			cangFncSendMsg(comNo, arg1);
+		}
 
 		// Check if a new messag was received
 		if (can_check_message())
@@ -219,7 +255,7 @@ int main(void)
 						revereseArray(msg.data + 4, 0, 3);
 
 						float voltageIn = *((float*)msg.data);
-						float currentIn = *(float*)(msg.data + 4);
+						float currentIn = *((float*)(msg.data + 4));
 						char strVoltage[50];
 						char strCurrent[50];
 						dtostrf(voltageIn, 10, 5, strVoltage);
@@ -228,9 +264,59 @@ int main(void)
 						uart_puts(str);
 						break;
 					}
+					case 0x028a0000:
+					{
+						revereseArray(msg.data, 0, 1);
+						revereseArray(msg.data, 2, 3);
+						revereseArray(msg.data, 4, 5);
+						uint16_t maxVoltage = *((uint16_t*)msg.data);
+						uint16_t minVoltage = *((uint16_t*)(msg.data + 2));
+						uint16_t maxCurrent = *((uint16_t*)(msg.data + 4));
+
+						sprintf(str, "max voltage: %u.%.1u V, "
+							"min voltage: %u.%.1u V, max current: %u.%.1u A\n",
+							maxVoltage / 10, maxVoltage % 10,
+							minVoltage / 10, minVoltage % 10,
+							maxCurrent / 10, maxCurrent % 10);
+						uart_puts(str);
+						break;
+					}
+					case 0x028b0000:
+					{
+						uint64_t cislo = *(uint32_t*)(msg.data + 1);
+						cislo += (*(msg.data + 5)) * 0x100000000;
+						revereseArray((uint8_t*)(&cislo), 0, 4);
+						revereseArray(msg.data, 6, 7);
+
+						sprintf(str, "barcode: %.3u",
+							cislo / 1000000000);
+						uart_puts(str);
+
+						sprintf(str, "%.9lu",
+							cislo % 1000000000, 0x0FFF & *((uint16_t*)(msg.data + 6)));
+						uart_puts(str);
+
+						sprintf(str, "V%.4d\n",
+								0x0FFF & *((uint16_t*)(msg.data + 6)));
+						uart_puts(str);
+						break;
+					}
 					case 0x02840000:
 					{
 						sprintf(str, "group #%d temperature %d C\n", msg.data[2], msg.data[4]);
+						uart_puts(str);
+						break;
+					}
+					case 0x028c0000:
+					{
+						revereseArray(msg.data, 0, 1);
+						revereseArray(msg.data, 2, 3);
+						uint16_t extVoltage = *((uint16_t*)msg.data);
+						uint16_t outCurrent = *((uint16_t*)(msg.data + 2));
+
+						sprintf(str, "external voltage %u.%.1u V vailable output current: %u.%.1u A\n",
+								extVoltage / 10, extVoltage % 10,
+								outCurrent / 10, outCurrent % 10);
 						uart_puts(str);
 						break;
 					}
