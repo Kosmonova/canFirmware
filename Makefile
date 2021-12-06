@@ -581,7 +581,7 @@ $(OBJDIR)/%.o : %.S
 
 
 controll: controll.c
-	gcc -o controll controll.c
+	gcc -o controll controll.c -pthread
 
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c

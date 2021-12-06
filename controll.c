@@ -7,6 +7,7 @@
 #include <stdarg.h> 
 #include <poll.h>
 #include <stdint.h>
+#include <pthread.h>
 
 #define SIZE_BUFFER 100
 #define error_message printf
@@ -111,7 +112,21 @@ int openComPort(int *fd)
 	return 0;
 }
 
+void *readThread(void* arg)
+{
+	int fd = (int)arg;
+	uint8_t buff[SIZE_BUFFER];
+	int idx = 0;
 
+	while(1)
+	{
+		int numRcvBytes = readCom(fd, buff, SIZE_BUFFER);
+		for(idx = 0; idx < numRcvBytes; idx++)
+		{
+			printf("%c", buff[idx]);
+		}
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -127,20 +142,19 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-	uint8_t buff[SIZE_BUFFER];
-	int idx = 0;
+
 
 	
-	write(fd, "ab", 3);
+
+	pthread_t* threadID;
+	pthread_create(&threadID, NULL, readThread, (void *)fd);
 
 	while(1)
 	{
-		int numRcvBytes = readCom(fd, buff, SIZE_BUFFER);
-		for(idx = 0; idx < numRcvBytes; idx++)
-		{
-			printf("%c", buff[idx]);
-		}
+		write(fd, "ab", 3);
+		usleep(500000);
 	}
+
 	return 0;
 }
 
