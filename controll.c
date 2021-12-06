@@ -8,6 +8,8 @@
 #include <poll.h>
 #include <stdint.h>
 #include <pthread.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define SIZE_BUFFER 100
 #define error_message printf
@@ -128,6 +130,15 @@ void *readThread(void* arg)
 	}
 }
 
+void printHelp()
+{
+	printf("usage:\n");
+	printf("\thelp print this message\n");
+	printf("\texit exit from this program\n");
+	printf("\tset <on|off>, turn on or off converter\n");
+	printf("\tset_voltage <voltage> ,where voltage is in Volt unit integer\n");
+}
+
 int main(int argc, char *argv[])
 {
 	printf("hello world!!\n");
@@ -142,20 +153,72 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-
-
-	
-
 	pthread_t* threadID;
 	pthread_create(&threadID, NULL, readThread, (void *)fd);
+	uint8_t buff[SIZE_BUFFER];
+	uint8_t *pCommandStart = 0;
+	int idxBuff = 0;
+	int rdBytes = 0;
 
 	while(1)
 	{
-		write(fd, "ab", 3);
-		usleep(500000);
+		if(rdBytes == 0 || idxBuff > rdBytes)
+		{
+			printf("wait for new command...\n");
+			fgets(buff, SIZE_BUFFER, stdin);
+			rdBytes = strlen(buff);
+		}
+
+		if(buff[0] == '\n')
+		{
+			rdBytes = 0;
+			idxBuff = 0;
+			continue;
+		}
+
+		pCommandStart = buff + idxBuff;
+		uint8_t *findChar = strchr(pCommandStart, ' ');
+		if(!findChar)
+			findChar = strchr(pCommandStart, '\n');
+
+		int lenString = findChar - pCommandStart;
+
+		if(!findChar || lenString > SIZE_BUFFER)
+		{
+			rdBytes = 0;
+			idxBuff = 0;
+			continue;
+		}
+
+printf("lenString: %d\n", lenString);
+		if(strncmp(pCommandStart, "exit", lenString - 1) == 0)
+			break;
+
+		if(strncmp(buff, "help", lenString - 1) == 0)
+			printHelp();
+
+		fflush(stdout);
+		printf("%s, %x\n", buff, buff[0]);
+		idxBuff += lenString + 1;
+// 		write(fd, "ab", 3);
+// 		usleep(500000);
 	}
+
+	close(fd);
 
 	return 0;
 }
 
 
+// // C program to illustrate
+// // fgets()
+// #include <stdio.h>
+// #define MAX 15
+// int main()
+// {
+//     uint8_t buf[SIZE_BUFFER];
+//     fgets(buf, SIZE_BUFFER, stdin);
+//     printf("string is: %s\n", buf);
+//   
+//     return 0;
+// }
