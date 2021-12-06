@@ -398,7 +398,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter end
+all: begin gccversion sizebefore build sizeafter end controll
 
 # Change the build target to build a HEX file or a library.
 build: elf hex eep lss sym
@@ -579,6 +579,9 @@ $(OBJDIR)/%.o : %.S
 	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
+
+controll: controll.c
+	gcc -o controll controll.c
 
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c
