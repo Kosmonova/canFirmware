@@ -58,15 +58,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifndef CAN_CONFIG_LOADED
-#ifdef HAS_CAN_CONFIG_H
-/* try to load can_config.h */
-#include "can_config.h"
-#else
-/* try to load config.h - compatibility */
 #include "config.h"
-#endif
-#endif
 
 // ----------------------------------------------------------------------------
 /** \ingroup	can_interface
@@ -119,7 +111,7 @@ typedef enum {
  * \name		Bits des Filters fuer den MCP2515 umformatieren
  *
  * \code
- *  prog_uint8_t can_filter[] =
+ *  uint8_t can_filter[] PROGMEM =
  *  {
  *  	MCP2515_FILTER_EXTENDED(0),	// Filter 0
  *  	MCP2515_FILTER_EXTENDED(0),	// Filter 1
@@ -370,7 +362,7 @@ can_disable_filter(uint8_t number);
  *
  * \code
  * // Filter und Masken-Tabelle anlegen
- * prog_char can_filter[] = {
+ * uint8_t can_filter[] PROGMEM = {
  * 	MCP2515_FILTER_EXTENDED(0),	// Filter 0
  * 	MCP2515_FILTER_EXTENDED(0),	// Filter 1
  * 	
