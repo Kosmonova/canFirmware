@@ -185,23 +185,24 @@ int main(int argc, char *argv[])
 
 		if(!findChar || lenString > SIZE_BUFFER)
 		{
+			printf("%s\n", pCommandStart);
 			rdBytes = 0;
 			idxBuff = 0;
 			continue;
 		}
 
-printf("lenString: %d\n", lenString);
-		if(strncmp(pCommandStart, "exit", lenString - 1) == 0)
+// printf("lenString: %d\n", lenString);
+		if(lenString == strlen("exit") && strncmp(pCommandStart, "exit", lenString - 1) == 0)
 			break;
 
-		if(strncmp(buff, "help", lenString - 1) == 0)
+		if(lenString == strlen("help") && strncmp(pCommandStart, "help", lenString - 1) == 0)
 			printHelp();
 
-		fflush(stdout);
-		printf("%s, %x\n", buff, buff[0]);
+		if(lenString == strlen("set") && strncmp(pCommandStart, "set", lenString - 1) == 0)
+			write(fd, "\x1a\x01", 2);
+
 		idxBuff += lenString + 1;
-// 		write(fd, "ab", 3);
-// 		usleep(500000);
+// 		printf("1 %s lenString: %d\n", pCommandStart, lenString);
 	}
 
 	close(fd);
@@ -209,16 +210,3 @@ printf("lenString: %d\n", lenString);
 	return 0;
 }
 
-
-// // C program to illustrate
-// // fgets()
-// #include <stdio.h>
-// #define MAX 15
-// int main()
-// {
-//     uint8_t buf[SIZE_BUFFER];
-//     fgets(buf, SIZE_BUFFER, stdin);
-//     printf("string is: %s\n", buf);
-//   
-//     return 0;
-// }
