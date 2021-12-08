@@ -162,27 +162,25 @@ int main(int argc, char *argv[])
 	pthread_t* threadID;
 	pthread_create(&threadID, NULL, readThread, (void *)fd);
 	uint8_t buff[SIZE_BUFFER];
-	uint8_t *pCommandStart = 0;
-	int idxBuff = 0;
+	uint8_t *pCommandStart = buff;
 	int rdBytes = 0;
 
 	while(1)
 	{
-		if(rdBytes == 0 || idxBuff > rdBytes)
+		if(rdBytes == 0 || pCommandStart - buff > rdBytes)
 		{
 			printf("wait for new command...\n");
 			fgets(buff, SIZE_BUFFER, stdin);
 			rdBytes = strlen(buff);
+			pCommandStart = buff;
 		}
 
 		if(buff[0] == '\n')
 		{
 			rdBytes = 0;
-			idxBuff = 0;
 			continue;
 		}
 
-		pCommandStart = buff + idxBuff;
 		uint8_t *findChar = strchr(pCommandStart, ' ');
 		if(!findChar)
 			findChar = strchr(pCommandStart, '\n');
@@ -193,7 +191,6 @@ int main(int argc, char *argv[])
 		{
 			printf("%s\n", pCommandStart);
 			rdBytes = 0;
-			idxBuff = 0;
 			continue;
 		}
 
@@ -208,8 +205,7 @@ int main(int argc, char *argv[])
 		if(matchCommand(pCommandStart, "set", lenString))
 			write(fd, "\x1a\x01", 2);
 
-		idxBuff += lenString + 1;
-// 		printf("1 %s lenString: %d\n", pCommandStart, lenString);
+		pCommandStart += lenString + 1;
 	}
 
 	close(fd);
