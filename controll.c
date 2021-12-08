@@ -54,8 +54,6 @@ set_interface_attribs (int fd, int speed, int parity)
         return 0;
 }
 
-// char *portname = "/dev/ttyUSB0";
-
 char portname[20];
 
 void
@@ -139,6 +137,14 @@ void printHelp()
 	printf("\tset_voltage <voltage> ,where voltage is in Volt unit integer\n");
 }
 
+int matchCommand(char *pCommandStart, char *command, int lenString)
+{
+	if(strlen(command) != lenString)
+		return 0;
+
+	return strncmp(pCommandStart, command, lenString - 1) == 0;
+}
+
 int main(int argc, char *argv[])
 {
 	printf("hello world!!\n");
@@ -192,13 +198,14 @@ int main(int argc, char *argv[])
 		}
 
 // printf("lenString: %d\n", lenString);
-		if(lenString == strlen("exit") && strncmp(pCommandStart, "exit", lenString - 1) == 0)
+
+		if(matchCommand(pCommandStart, "exit", lenString))
 			break;
 
-		if(lenString == strlen("help") && strncmp(pCommandStart, "help", lenString - 1) == 0)
+		if(matchCommand(pCommandStart, "help", lenString))
 			printHelp();
 
-		if(lenString == strlen("set") && strncmp(pCommandStart, "set", lenString - 1) == 0)
+		if(matchCommand(pCommandStart, "set", lenString))
 			write(fd, "\x1a\x01", 2);
 
 		idxBuff += lenString + 1;
