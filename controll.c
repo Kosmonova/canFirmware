@@ -137,8 +137,32 @@ void printHelp()
 	printf("\tset_voltage <voltage> ,where voltage is in Volt unit integer\n");
 }
 
-int matchCommand(char *pCommandStart, char *command, int lenString)
+int nextCommand(char **ppCommandStart)
 {
+	char *pCommandStart = *ppCommandStart;
+	char *findChar = strchr(pCommandStart, ' ');
+
+	if(!findChar)
+	{
+		findChar = strchr(pCommandStart, '\n');
+		return -1;
+	}
+
+	int lenString = findChar - pCommandStart;
+
+	*ppCommandStart += lenString + 1;
+	return 0;
+}
+
+int matchCommand(char *pCommandStart, char *command)
+{
+	char *findChar = strchr(pCommandStart, ' ');
+
+	if(!findChar)
+		findChar = strchr(pCommandStart, '\n');
+
+	int lenString = findChar - pCommandStart;
+
 	if(strlen(command) != lenString)
 		return 0;
 
@@ -196,16 +220,17 @@ int main(int argc, char *argv[])
 
 // printf("lenString: %d\n", lenString);
 
-		if(matchCommand(pCommandStart, "exit", lenString))
+		if(matchCommand(pCommandStart, "exit"))
 			break;
 
-		if(matchCommand(pCommandStart, "help", lenString))
+		if(matchCommand(pCommandStart, "help"))
 			printHelp();
 
-		if(matchCommand(pCommandStart, "set", lenString))
+		if(matchCommand(pCommandStart, "set"))
 			write(fd, "\x1a\x01", 2);
 
-		pCommandStart += lenString + 1;
+		if(nextCommand(&pCommandStart) < 0)
+			rdBytes = 0;
 	}
 
 	close(fd);
