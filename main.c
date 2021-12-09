@@ -226,144 +226,46 @@ int main(void)
 	can_static_filter(can_filter);
 	char str[100];
 	int idx;
-						
-	while (1)
+
+	can_t msg;
+	msg.id = 0x12345678;
+
+	for(idx = 0; idx < 8; idx++)
+		msg.data[idx] = 0x80;
+	
+	while(1)
 	{
-		char comNo = uart_getc1();
-		if (comNo)
-		{
-			sprintf(str, "uart receive %x\n", comNo);
-			uart_puts(str);
-			int arg1 = uart_getc1();
-			int arg2 = uart_getc1();
-
-			cangFncSendMsg(comNo, arg1, arg2);
-		}
-
-		// Check if a new messag was received
-		if (can_check_message())
-		{
-			can_t msg;
-			msg.id = 0;
-			// Try to read the message
-			if (can_get_message(&msg))
-			{
-				switch(msg.id & 0xffff0000)
-				{
-					case 0x7570000:
-						break;
-					case 0x02810000:
-					{
-						uart_puts("output: ");
-						revereseArray(msg.data, 0, 3);
-						revereseArray(msg.data + 4, 0, 3);
-
-						float voltageIn = *((float*)msg.data);
-						float currentIn = *((float*)(msg.data + 4));
-						char strVoltage[50];
-						char strCurrent[50];
-						dtostrf(voltageIn, 10, 5, strVoltage);
-						dtostrf(currentIn, 10, 5, strCurrent);
-						sprintf(str, "voltage %s, current %s\n", strVoltage, strCurrent);
-						uart_puts(str);
-						break;
-					}
-					case 0x028a0000:
-					{
-						revereseArray(msg.data, 0, 1);
-						revereseArray(msg.data, 2, 3);
-						revereseArray(msg.data, 4, 5);
-						uint16_t maxVoltage = *((uint16_t*)msg.data);
-						uint16_t minVoltage = *((uint16_t*)(msg.data + 2));
-						uint16_t maxCurrent = *((uint16_t*)(msg.data + 4));
-
-						sprintf(str, "max voltage: %u V, "
-							"min voltage: %u V, max current: %u.%.1u A\n",
-							maxVoltage,
-							minVoltage,
-							maxCurrent / 10, maxCurrent % 10);
-						uart_puts(str);
-						break;
-					}
-					case 0x028b0000:
-					{
-						uint64_t cislo = *(uint32_t*)(msg.data + 1);
-						cislo += (*(msg.data + 5)) * 0x100000000;
-						revereseArray((uint8_t*)(&cislo), 0, 4);
-						revereseArray(msg.data, 6, 7);
-
-						sprintf(str, "barcode: %.3u",
-							cislo / 1000000000);
-						uart_puts(str);
-
-						sprintf(str, "%.9lu",
-							cislo % 1000000000, 0x0FFF & *((uint16_t*)(msg.data + 6)));
-						uart_puts(str);
-
-						sprintf(str, "V%.4d\n",
-								0x0FFF & *((uint16_t*)(msg.data + 6)));
-						uart_puts(str);
-						break;
-					}
-					case 0x02840000:
-					{
-						sprintf(str, "group #%d temperature %d C\n", msg.data[2], msg.data[4]);
-						uart_puts(str);
-						break;
-					}
-					case 0x028c0000:
-					{
-						revereseArray(msg.data, 0, 1);
-						revereseArray(msg.data, 2, 3);
-						uint16_t extVoltage = *((uint16_t*)msg.data);
-						uint16_t outCurrent = *((uint16_t*)(msg.data + 2));
-
-						sprintf(str, "external voltage %u.%.1u V vailable output current: %u.%.1u A\n",
-								extVoltage / 10, extVoltage % 10,
-								outCurrent / 10, outCurrent % 10);
-						uart_puts(str);
-						break;
-					}
-					case 0x02860000:
-					{
-						uart_puts("input voltatages: ");
-						revereseArray(msg.data, 0, 1);
-						revereseArray(msg.data, 2, 3);
-						revereseArray(msg.data, 4, 5);
-						uint16_t uAB = *((uint16_t*)msg.data);
-						uint16_t uBC = *((uint16_t*)(msg.data + 2));
-						uint16_t uCA = *((uint16_t*)(msg.data + 4));
-						sprintf(str, "AB = %u.%.1u V, BC = %u.%.1u V, CA = %u.%.1u V\n", 
-								uAB / 10, uAB % 10,
-								uBC / 10, uBC % 10,
-								uCA / 10, uCA % 10);
-						uart_puts(str);
-						break;
-					}
-					default:
-					{
-						uart_puts("can in: ");
-						sprintf(str, "id: %lx ", msg.id);
-						uart_puts(str);
-						sprintf(str, "data len: %d ", msg.length);
-						uart_puts(str);
-
-						uart_puts("data: ");
-					
-
-						for(idx = 0; idx < msg.length; idx++)
-						{
-							sprintf(str, "%x ", msg.data[idx]);
-							uart_puts(str);
-						}
-
-						uart_puts("\n");
-						break;
-					}
-				}
-			}
-		}
+		uart_write(&msg.id, 4);
+		uart_write(&msg.data, 8);
+		_delay_ms(500);
 	}
+
+// 	while (1)
+// 	{
+// 		char comNo = uart_getc1();
+// 		if (comNo)
+// 		{
+// 			sprintf(str, "uart receive %x\n", comNo);
+// 			uart_puts(str);
+// 			int arg1 = uart_getc1();
+// 			int arg2 = uart_getc1();
+// 
+// 			cangFncSendMsg(comNo, arg1, arg2);
+// 		}
+// 
+// 		// Check if a new messag was received
+// 		if (can_check_message())
+// 		{
+// 			can_t msg;
+// 			msg.id = 0;
+// 			// Try to read the message
+// 			if (can_get_message(&msg))
+// 			{
+// 				uart_write(&msg.id, 4);
+// 				uart_write(&msg.data, 8);
+// 			}
+// 		}
+// 	}
 	
 	return 0;
 }

@@ -60,6 +60,12 @@ void uart_puts(char *s)
       uart_putc(*s++);
 }
 
+void uart_write(char *buff, int size)
+{
+    while (size-- > 0)
+      uart_putc(*buff++);
+}
+
 /******************************************************
     prijem bajt-u (znak)
 ******************************************************/

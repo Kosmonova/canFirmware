@@ -23,6 +23,7 @@ extern void uart_putc(unsigned char data);
 ******************************************************/
 
 extern void uart_puts(char *s);
+extern void uart_write(char *buff, int size);
 
 /******************************************************
     prijem bajt-u (znak)

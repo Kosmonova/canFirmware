@@ -128,8 +128,10 @@ void *readThread(void* arg)
 		int numRcvBytes = readCom(fd, buff, SIZE_BUFFER);
 		for(idx = 0; idx < numRcvBytes; idx++)
 		{
-			printf("%c", buff[idx]);
+			printf("%x, ", buff[idx]);
 		}
+		if(numRcvBytes)
+			printf("\n");
 	}
 }
 
