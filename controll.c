@@ -154,8 +154,9 @@ int nextCommand(char **ppCommandStart)
 	return 0;
 }
 
-int matchCommand(char *pCommandStart, char *command)
+int matchCommand(char **ppCommandStart, char *command)
 {
+	char *pCommandStart = *ppCommandStart;
 	char *findChar = strchr(pCommandStart, ' ');
 
 	if(!findChar)
@@ -166,7 +167,11 @@ int matchCommand(char *pCommandStart, char *command)
 	if(strlen(command) != lenString)
 		return 0;
 
-	return strncmp(pCommandStart, command, lenString - 1) == 0;
+	if(strncmp(pCommandStart, command, lenString - 1) != 0)
+		return 0;
+
+	*ppCommandStart += lenString + 1;
+	return 1;
 }
 
 int main(int argc, char *argv[])
@@ -199,38 +204,25 @@ int main(int argc, char *argv[])
 			pCommandStart = buff;
 		}
 
-		if(matchCommand(pCommandStart, "exit"))
+		if(matchCommand(&pCommandStart, "exit"))
 			break;
-		else if(matchCommand(pCommandStart, "help"))
+		else if(matchCommand(&pCommandStart, "help"))
 			printHelp();
-		else if(matchCommand(pCommandStart, "set"))
+		else if(matchCommand(&pCommandStart, "set"))
 		{
-			if(nextCommand(&pCommandStart) < 0)
-			{
-				rdBytes = 0;
-				continue;
-			}
-
-			if(matchCommand(pCommandStart, "on"))
+			if(matchCommand(&pCommandStart, "on"))
 				write(fd, "\x1a\x01", 2);
-			else if(matchCommand(pCommandStart, "off"))
+			else if(matchCommand(&pCommandStart, "off"))
 				write(fd, "\x1a\x01", 2);
 			
 		}
-		else if(matchCommand(pCommandStart, "set_voltage"))
+		else if(matchCommand(&pCommandStart, "set_voltage"))
 		{
-			if(nextCommand(&pCommandStart) < 0)
-			{
-				rdBytes = 0;
-				continue;
-			}
-
 			int value;
 			sscanf(pCommandStart, "%d", &value);
 			printf("value: %d\n", value);
 		}
-		
-		if(nextCommand(&pCommandStart) < 0)
+		else if(nextCommand(&pCommandStart) < 0)
 			rdBytes = 0;
 	}
 
