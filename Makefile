@@ -610,6 +610,7 @@ clean_list :
 	$(REMOVE) $(SRC:.c=.i)
 	$(REMOVEDIR) .dep
 	$(REMOVEDIR) $(OBJDIR)
+	$(REMOVE) controll
 
 
 # Create object files directory
