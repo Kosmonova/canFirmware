@@ -217,7 +217,19 @@ int main(int argc, char *argv[])
 				write(fd, "\x1a\x01", 2);
 			
 		}
+		else if(matchCommand(pCommandStart, "set_voltage"))
+		{
+			if(nextCommand(&pCommandStart) < 0)
+			{
+				rdBytes = 0;
+				continue;
+			}
 
+			int value;
+			sscanf(pCommandStart, "%d", &value);
+			printf("value: %d\n", value);
+		}
+		
 		if(nextCommand(&pCommandStart) < 0)
 			rdBytes = 0;
 	}
