@@ -13,6 +13,7 @@
 
 #include "BEG75050.h"
 #include "CEG1K0100G.h"
+#include "UXR100030.h"
 
 #define SIZE_BUFFER 100
 #define error_message printf
@@ -139,7 +140,8 @@ void printHelp()
 	printf("\texit exit from this program\n");
 	printf("\tset <on|off>, turn on or off converter\n");
 	printf("\tset_voltage <voltage> ,where voltage is in Volt unit integer\n");
-	printf("\tchange_type <converter>, where converter is BEG75050 or CEG1K0100G\n");
+	printf("\tchange_type <converter>,\n");
+	printf("\t\t<where converter is BEG75050 or CEG1K0100G or UXR100030\n");
 }
 
 int nextCommand(char **ppCommandStart)
@@ -239,6 +241,11 @@ int main(int argc, char *argv[])
 			{
 				delete pConverter;
 				pConverter = new CEG1K0100G(fd);
+			}
+			else if(matchCommand(&pCommandStart, "UXR100030"))
+			{
+				delete pConverter;
+				pConverter = new UXR100030(fd);
 			}
 		}
 		else if(nextCommand(&pCommandStart) < 0)

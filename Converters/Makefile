@@ -9,8 +9,14 @@ BEG75050.o: BEG75050.cpp BEG75050.h ConverterAbstract.o
 CEG1K0100G.o: CEG1K0100G.cpp CEG1K0100G.h ConverterAbstract.o
 	c++ -c CEG1K0100G.cpp
 
-libConverters.a: ConverterAbstract.o BEG75050.o CEG1K0100G.o
-	ar rcs libConverters.a ConverterAbstract.o BEG75050.o CEG1K0100G.o
+CEG1K0100G.o: CEG1K0100G.cpp CEG1K0100G.h ConverterAbstract.o
+	c++ -c CEG1K0100G.cpp
+
+UXR100030.o: UXR100030.cpp UXR100030.h ConverterAbstract.o
+	c++ -c UXR100030.cpp
+
+libConverters.a: ConverterAbstract.o BEG75050.o CEG1K0100G.o UXR100030.o
+	ar rcs libConverters.a ConverterAbstract.o BEG75050.o CEG1K0100G.o UXR100030.o
 
 clean:
 	rm *.o *.a
