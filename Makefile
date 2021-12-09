@@ -584,8 +584,8 @@ $(OBJDIR)/%.o : %.S
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
 
-controll: controll.c
-	gcc -o controll controll.c -pthread
+controll: controll.cpp
+	g++ -o controll controll.cpp -pthread
 
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c
