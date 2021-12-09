@@ -199,35 +199,24 @@ int main(int argc, char *argv[])
 			pCommandStart = buff;
 		}
 
-		if(buff[0] == '\n')
-		{
-			rdBytes = 0;
-			continue;
-		}
-
-		uint8_t *findChar = strchr(pCommandStart, ' ');
-		if(!findChar)
-			findChar = strchr(pCommandStart, '\n');
-
-		int lenString = findChar - pCommandStart;
-
-		if(!findChar || lenString > SIZE_BUFFER)
-		{
-			printf("%s\n", pCommandStart);
-			rdBytes = 0;
-			continue;
-		}
-
-// printf("lenString: %d\n", lenString);
-
 		if(matchCommand(pCommandStart, "exit"))
 			break;
-
-		if(matchCommand(pCommandStart, "help"))
+		else if(matchCommand(pCommandStart, "help"))
 			printHelp();
+		else if(matchCommand(pCommandStart, "set"))
+		{
+			if(nextCommand(&pCommandStart) < 0)
+			{
+				rdBytes = 0;
+				continue;
+			}
 
-		if(matchCommand(pCommandStart, "set"))
-			write(fd, "\x1a\x01", 2);
+			if(matchCommand(pCommandStart, "on"))
+				write(fd, "\x1a\x01", 2);
+			else if(matchCommand(pCommandStart, "off"))
+				write(fd, "\x1a\x01", 2);
+			
+		}
 
 		if(nextCommand(&pCommandStart) < 0)
 			rdBytes = 0;
