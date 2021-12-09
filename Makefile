@@ -399,7 +399,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter end
+all: begin gccversion sizebefore build sizeafter libConv libCan end
 
 # Change the build target to build a HEX file or a library.
 build: elf hex eep lss sym controll
@@ -414,7 +414,10 @@ sym: $(TARGET).sym
 LIBNAME=$(LIB_DIR)/can.a
 lib: $(LIBNAME)
 
-libComp:
+libConv: Converters/libConvertors.a
+	make -C Converters
+
+libCan: avr-can-lib/libcan.a
 	make -C $(LIB_DIR)
 
 
@@ -583,9 +586,9 @@ $(OBJDIR)/%.o : %.S
 	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
-
 controll: controll.cpp
-	g++ -o controll controll.cpp -pthread
+	make -C Converters
+	g++ -I Converters -L Converters -o controll controll.cpp -lConvertors -pthread
 
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c
@@ -596,6 +599,7 @@ flash: $(TARGET).hex
 
 distclean:
 	make -C $(LIB_DIR) clean
+	make -C Converters clean
 	make clean
 
 # Target: clean project.
