@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-	BEG75050 beg;
+	BEG75050 beg(fd);
 	beg.setVoltage(20);
 	
 	pthread_t threadID;
@@ -217,10 +217,9 @@ int main(int argc, char *argv[])
 		else if(matchCommand(&pCommandStart, "set"))
 		{
 			if(matchCommand(&pCommandStart, "on"))
-				write(fd, "\x1a\x01", 2);
+				beg.on();
 			else if(matchCommand(&pCommandStart, "off"))
-				write(fd, "\x1a\x01", 2);
-			
+				beg.off();
 		}
 		else if(matchCommand(&pCommandStart, "set_voltage"))
 		{

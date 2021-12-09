@@ -414,7 +414,7 @@ sym: $(TARGET).sym
 LIBNAME=$(LIB_DIR)/can.a
 lib: $(LIBNAME)
 
-libConv: Converters/libConvertors.a
+libConv: Converters/libConverters.a
 	make -C Converters
 
 libCan: avr-can-lib/libcan.a
@@ -588,7 +588,7 @@ $(OBJDIR)/%.o : %.S
 
 controll: controll.cpp
 	make -C Converters
-	g++ -I Converters -L Converters -o controll controll.cpp -lConvertors -pthread
+	g++ controll.cpp -o controll -I Converters -L Converters -lConverters -pthread
 
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c

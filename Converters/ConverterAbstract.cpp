@@ -1,4 +1,6 @@
 #include "ConverterAbstract.h"
 
-ConverterAbstract::ConverterAbstract()
-{}
+ConverterAbstract::ConverterAbstract(int fdSerial)
+{
+	_fdSerial = fdSerial;
+}
