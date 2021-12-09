@@ -263,7 +263,7 @@ LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(patsubst %,-L%,$(EXTRALIBDIRS))
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
-LDFLAGS += -L. -lcan
+LDFLAGS += -L $(LIB_DIR) -lcan
 #LDFLAGS += -T linker_script.x
 
 
@@ -348,6 +348,7 @@ AR = avr-ar rcs
 NM = avr-nm
 AVRDUDE = avrdude
 REMOVE = rm -f
+LIB_DIR = avr-can-lib
 REMOVEDIR = rm -rf
 COPY = cp
 WINSHELL = cmd
@@ -398,11 +399,11 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter end controll
+all: begin gccversion sizebefore build sizeafter end
 
 # Change the build target to build a HEX file or a library.
-build: elf hex eep lss sym
-#build: lib
+build: elf hex eep lss sym controll
+build: lib
 
 
 elf: $(TARGET).elf
@@ -410,9 +411,11 @@ hex: $(TARGET).hex
 eep: $(TARGET).eep
 lss: $(TARGET).lss
 sym: $(TARGET).sym
-LIBNAME=lib$(TARGET).a
+LIBNAME=$(LIB_DIR)/can.a
 lib: $(LIBNAME)
 
+libComp:
+	make -C $(LIB_DIR)
 
 
 # Eye candy.
@@ -543,7 +546,8 @@ extcoff: $(TARGET).elf
 # Link: create ELF output file from object files.
 .SECONDARY : $(TARGET).elf
 .PRECIOUS : $(OBJ)
-%.elf: $(OBJ)
+%.elf: $(OBJ) $(LIBNAME)
+	make -C $(LIB_DIR)
 	@echo
 	@echo $(MSG_LINKING) $@
 	$(CC) $(ALL_CFLAGS) $^ --output $@ $(LDFLAGS)
@@ -589,6 +593,10 @@ controll: controll.c
 
 flash: $(TARGET).hex
 	avrdude -p atmega8 -c usbasp -v -U flash:w:$(TARGET).hex
+
+distclean:
+	make -C $(LIB_DIR) clean
+	make clean
 
 # Target: clean project.
 clean: begin clean_list end
