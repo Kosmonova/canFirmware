@@ -4,3 +4,4 @@ ConverterAbstract::ConverterAbstract(int fdSerial)
 {
 	_fdSerial = fdSerial;
 }
+

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "BEG75050.h"
+#include "CEG1K0100G.h"
 
 #define SIZE_BUFFER 100
 #define error_message printf
@@ -138,6 +139,7 @@ void printHelp()
 	printf("\texit exit from this program\n");
 	printf("\tset <on|off>, turn on or off converter\n");
 	printf("\tset_voltage <voltage> ,where voltage is in Volt unit integer\n");
+	printf("\tchange_type <converter>, where converter is BEG75050 or CEG1K0100G\n");
 }
 
 int nextCommand(char **ppCommandStart)
@@ -191,8 +193,7 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-	BEG75050 beg(fd);
-	beg.setVoltage(20);
+	ConverterAbstract *pConverter = new BEG75050(fd);
 	
 	pthread_t threadID;
 	pthread_create(&threadID, NULL, readThread, (void *)&fd);
@@ -217,15 +218,28 @@ int main(int argc, char *argv[])
 		else if(matchCommand(&pCommandStart, "set"))
 		{
 			if(matchCommand(&pCommandStart, "on"))
-				beg.on();
+				pConverter->on();
 			else if(matchCommand(&pCommandStart, "off"))
-				beg.off();
+				pConverter->off();
 		}
 		else if(matchCommand(&pCommandStart, "set_voltage"))
 		{
 			int value;
 			sscanf(pCommandStart, "%d", &value);
-			printf("value: %d\n", value);
+			pConverter->setVoltage(value);
+		}
+		else if(matchCommand(&pCommandStart, "change_type"))
+		{
+			if(matchCommand(&pCommandStart, "BEG75050"))
+			{
+				delete pConverter;
+				pConverter = new BEG75050(fd);
+			}
+			else if(matchCommand(&pCommandStart, "CEG1K0100G"))
+			{
+				delete pConverter;
+				pConverter = new CEG1K0100G(fd);
+			}
 		}
 		else if(nextCommand(&pCommandStart) < 0)
 			rdBytes = 0;

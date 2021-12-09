@@ -1,3 +1,5 @@
+#ifndef CONVERTER_ABSTRACT_H
+#define CONVERTER_ABSTRACT_H
 
 class ConverterAbstract
 {
@@ -10,3 +12,5 @@ class ConverterAbstract
 		virtual void on() = 0;
 		virtual void off() = 0;
 };
+
+#endif

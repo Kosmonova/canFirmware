@@ -1,12 +1,12 @@
-#ifndef BEG75050_H
-#define BEG75050_H
+#ifndef CEG1K0100G_H
+#define CEG1K0100G_H
 
 #include "ConverterAbstract.h"
 
-class BEG75050 : public ConverterAbstract
+class CEG1K0100G : public ConverterAbstract
 {
 	public:
-		BEG75050(int fdSerial);
+		CEG1K0100G(int fdSerial);
 		void setVoltage(int voltage);
 		void on();
 		void off();
