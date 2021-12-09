@@ -18,6 +18,11 @@
 #define SIZE_BUFFER 100
 #define error_message printf
 
+struct ThreadData
+{
+	int fdSerial;
+	ConverterAbstract *pConverter;
+};
 
 int
 set_interface_attribs (int fd, int speed, int parity)
@@ -119,7 +124,9 @@ int openComPort(int *fd)
 
 void *readThread(void* arg)
 {
-	int fd = *(int*)arg;
+	int fd = ((struct ThreadData*)arg)->fdSerial;
+	ConverterAbstract *pConverter = ((struct ThreadData*)arg)->pConverter;
+
 	uint8_t buff[SIZE_BUFFER];
 	int idx = 0;
 
@@ -131,7 +138,12 @@ void *readThread(void* arg)
 			printf("%x, ", buff[idx]);
 		}
 		if(numRcvBytes)
-			printf("\n");
+		{
+			if(numRcvBytes == 12)
+				pConverter->parse(*((int*)buff), buff + 4);
+			else
+				printf("wrong data received\n");
+		}
 	}
 }
 
@@ -200,7 +212,9 @@ int main(int argc, char *argv[])
 	ConverterAbstract *pConverter = new BEG75050(fd);
 	
 	pthread_t threadID;
-	pthread_create(&threadID, NULL, readThread, (void *)&fd);
+	struct ThreadData threadData = {.fdSerial = fd, .pConverter = pConverter};
+	
+	pthread_create(&threadID, NULL, readThread, (void *)&threadData);
 	char buff[SIZE_BUFFER];
 	char *pCommandStart = buff;
 	int rdBytes = 0;

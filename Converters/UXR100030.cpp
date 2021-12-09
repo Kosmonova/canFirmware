@@ -8,6 +8,10 @@ UXR100030::UXR100030(int fdSerial) :
 {
 }
 
+void UXR100030::parse(int canId, uint8_t data[])
+{
+}
+
 void UXR100030::setVoltage(int voltage)
 {
 	printf("set voltage %d\n", voltage);

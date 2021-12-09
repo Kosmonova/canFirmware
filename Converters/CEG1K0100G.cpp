@@ -8,6 +8,10 @@ CEG1K0100G::CEG1K0100G(int fdSerial) :
 {
 }
 
+void CEG1K0100G::parse(int canId, uint8_t data[])
+{
+}
+
 void CEG1K0100G::setVoltage(int voltage)
 {
 	printf("set voltage %d\n", voltage);
