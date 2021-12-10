@@ -17,9 +17,13 @@ void UXR100030::parse(int canId, uint8_t data[])
 {
 }
 
-void UXR100030::setVoltage(int voltage)
+void UXR100030::setVoltage(uint32_t voltage)
 {
 	printf("set voltage %d\n", voltage);
+}
+
+void UXR100030::setCurrent(uint32_t current)
+{
 }
 
 void UXR100030::on()

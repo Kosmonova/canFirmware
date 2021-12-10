@@ -17,9 +17,13 @@ void CEG1K0100G::parse(int canId, uint8_t data[])
 {
 }
 
-void CEG1K0100G::setVoltage(int voltage)
+void CEG1K0100G::setVoltage(uint32_t voltage)
 {
 	printf("set voltage %d\n", voltage);
+}
+
+void CEG1K0100G::setCurrent(uint32_t current)
+{
 }
 
 void CEG1K0100G::on()

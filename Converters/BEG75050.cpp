@@ -18,9 +18,14 @@ void BEG75050::parse(int canId, uint8_t data[])
 	_revereseArray((uint8_t*)&canId, 0, 3);
 }
 
-void BEG75050::setVoltage(int voltage)
+void BEG75050::setVoltage(uint32_t voltage)
 {
 	printf("set voltage %d\n", voltage);
+}
+
+void BEG75050::setCurrent(uint32_t current)
+{
+	
 }
 
 void BEG75050::on()

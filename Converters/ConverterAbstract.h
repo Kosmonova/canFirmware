@@ -14,7 +14,8 @@ class ConverterAbstract
 		ConverterAbstract(int fdSerial);
 		virtual void showType() = 0;
 		virtual void parse(int canId, uint8_t data[]) = 0;
-		virtual void setVoltage(int voltage) = 0;
+		virtual void setVoltage(uint32_t voltage) = 0;
+		virtual void setCurrent(uint32_t current) = 0;
 		virtual void on() = 0;
 		virtual void off() = 0;
 };

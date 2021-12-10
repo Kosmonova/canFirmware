@@ -9,7 +9,8 @@ class CEG1K0100G : public ConverterAbstract
 		CEG1K0100G(int fdSerial);
 		void showType();
 		void parse(int canId, uint8_t data[]);
-		void setVoltage(int voltage);
+		void setVoltage(uint32_t voltage);
+		void setCurrent(uint32_t current);
 		void on();
 		void off();
 };

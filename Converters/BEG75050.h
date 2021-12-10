@@ -9,7 +9,8 @@ class BEG75050 : public ConverterAbstract
 		BEG75050(int fdSerial);
 		void showType();
 		void parse(int canId, uint8_t data[]);
-		void setVoltage(int voltage);
+		void setVoltage(uint32_t voltage);
+		void setCurrent(uint32_t current);
 		void on();
 		void off();
 };

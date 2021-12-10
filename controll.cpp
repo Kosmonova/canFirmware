@@ -158,7 +158,8 @@ void printHelp()
 	printf("\thelp print this message\n");
 	printf("\texit exit from this program\n");
 	printf("\tset <on|off>, turn on or off converter\n");
-	printf("\tset_voltage <voltage> ,where voltage is in Volt unit integer\n");
+	printf("\tset_voltage <voltage> ,where voltage is in mili Volt unit unsigned integer\n");
+	printf("\tset_current <current> ,where current is in mili Amper unit unsigned integer\n");
 	printf("\tchange_type <converter>,\n");
 	printf("\t\t<where converter is BEG75050 or CEG1K0100G or UXR100030 or REG1K0100G\n");
 	printf("\tcurrent_type show current type of converter\n");
@@ -249,8 +250,14 @@ int main(int argc, char *argv[])
 		else if(matchCommand(&pCommandStart, "set_voltage"))
 		{
 			int value;
-			sscanf(pCommandStart, "%d", &value);
+			sscanf(pCommandStart, "%u", &value);
 			pConverter->setVoltage(value);
+		}
+		else if(matchCommand(&pCommandStart, "set_current"))
+		{
+			int value;
+			sscanf(pCommandStart, "%u", &value);
+			pConverter->setCurrent(value);
 		}
 		else if(matchCommand(&pCommandStart, "change_type"))
 		{

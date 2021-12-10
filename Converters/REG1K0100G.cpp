@@ -127,9 +127,15 @@ void REG1K0100G::parse(int canId, uint8_t data[])
 	}
 }
 
-void REG1K0100G::setVoltage(int voltage)
+void REG1K0100G::setVoltage(uint32_t voltage)
 {
 	_systemVoltage_mV = voltage;
+	_setSystemOutputValues();
+}
+
+void REG1K0100G::setCurrent(uint32_t current)
+{
+	_systemCurrent_mA = current;
 	_setSystemOutputValues();
 }
 
