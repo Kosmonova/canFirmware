@@ -10,9 +10,10 @@ class ConverterAbstract
 		void _sendCommand(uint32_t id, uint8_t *data);
 		void _cmdNotImplemented(char *nameFunction);
 		int _fdSerial;
+		int _address;
 
 	public:
-		ConverterAbstract(int fdSerial);
+		ConverterAbstract(int fdSerial, int address);
 		virtual void showType() = 0;
 		virtual void parse(int canId, uint8_t data[]) = 0;
 		virtual void setVoltage(uint32_t voltage) = 0;

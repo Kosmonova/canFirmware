@@ -6,7 +6,7 @@
 class UXR100030 : public ConverterAbstract
 {
 	public:
-		UXR100030(int fdSerial);
+		UXR100030(int fdSerial, int address);
 		void showType();
 		void parse(int canId, uint8_t data[]);
 		void setVoltage(uint32_t voltage);

@@ -163,8 +163,9 @@ void printHelp()
 	printf("\tread_temp send request for read temperature\n");
 	printf("\tread_input_voltages send request for read input phase voltages\n");
 	printf("\tread_out_values send request fo read output values\n");
-	printf("\tchange_type <converter>,\n");
-	printf("\t\t<where converter is BEG75050 or CEG1K0100G or UXR100030 or REG1K0100G\n");
+	printf("\tchange_type <converter, address>,\n");
+	printf("\t\twhere converter is BEG75050 or CEG1K0100G or UXR100030 or REG1K0100G\n");
+	printf("\t\taddress is number from <0-63>\n");
 	printf("\tcurrent_type show current type of converter\n");
 }
 
@@ -219,7 +220,7 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-	ConverterAbstract *pConverter = new REG1K0100G(fd);
+	ConverterAbstract *pConverter = new REG1K0100G(fd, 0);
 	
 	pthread_t threadID;
 	struct ThreadData threadData = {.fdSerial = fd, .pConverter = pConverter};
@@ -276,25 +277,31 @@ int main(int argc, char *argv[])
 		}
 		else if(matchCommand(&pCommandStart, "change_type"))
 		{
+			int address;
+
 			if(matchCommand(&pCommandStart, "REG1K0100G"))
 			{
+				sscanf(pCommandStart, "%u", &address);
 				delete pConverter;
-				pConverter = new REG1K0100G(fd);
+				pConverter = new REG1K0100G(fd, address);
 			}
 			else if(matchCommand(&pCommandStart, "BEG75050"))
 			{
+				sscanf(pCommandStart, "%u", &address);
 				delete pConverter;
-				pConverter = new BEG75050(fd);
+				pConverter = new BEG75050(fd, address);
 			}
 			else if(matchCommand(&pCommandStart, "CEG1K0100G"))
 			{
+				sscanf(pCommandStart, "%u", &address);
 				delete pConverter;
-				pConverter = new CEG1K0100G(fd);
+				pConverter = new CEG1K0100G(fd, address);
 			}
 			else if(matchCommand(&pCommandStart, "UXR100030"))
 			{
+				sscanf(pCommandStart, "%u", &address);
 				delete pConverter;
-				pConverter = new UXR100030(fd);
+				pConverter = new UXR100030(fd, address);
 			}
 		}
 		else if(matchCommand(&pCommandStart, "current_type"))

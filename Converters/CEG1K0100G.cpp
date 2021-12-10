@@ -3,8 +3,8 @@
 #include "CEG1K0100G.h"
 
 
-CEG1K0100G::CEG1K0100G(int fdSerial) :
-	ConverterAbstract(fdSerial)
+CEG1K0100G::CEG1K0100G(int fdSerial, int address) :
+	ConverterAbstract(fdSerial, address)
 {
 }
 

@@ -3,8 +3,8 @@
 #include "REG1K0100G.h"
 
 
-REG1K0100G::REG1K0100G(int fdSerial) :
-	ConverterAbstract(fdSerial),
+REG1K0100G::REG1K0100G(int fdSerial, int address) :
+	ConverterAbstract(fdSerial, address),
 	_systemVoltage_mV(0),
 	_systemCurrent_mA(0)
 {
@@ -28,7 +28,12 @@ void REG1K0100G::showType()
 
 void REG1K0100G::parse(int canId, uint8_t data[])
 {
-	_revereseArray((uint8_t*)&canId, 0, 3);
+	 uint8_t *idData = (uint8_t*)&canId;
+
+// 	if(idData[2] != _address)
+// 		return;
+
+	_revereseArray(idData, 0, 3);
 
 	switch(canId & 0xffff0000)
 	{
