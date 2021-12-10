@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <unistd.h>
+#include <string.h>
 #include "REG1K0100G.h"
 
 
@@ -122,11 +122,18 @@ void REG1K0100G::setVoltage(int voltage)
 void REG1K0100G::on()
 {
 	printf("set on REG1K0100G\n");
-	write(_fdSerial, "\x1a\x01", 2);
+	uint32_t id = 0x029a3ff0;
+	uint8_t data[8];
+	memset(data, 0, 8);
+	sendCommand(id, data);
 }
 
 void REG1K0100G::off()
 {
 	printf("set off REG1K0100G\n");
-	write(_fdSerial, "\x1a\x01", 2);
+	uint32_t id = 0x029a3ff0;
+	uint8_t data[8];
+	memset(data, 0, 8);
+	data[0] = 0x01;
+	sendCommand(id, data);
 }

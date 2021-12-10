@@ -7,6 +7,7 @@ class ConverterAbstract
 {
 	protected:
 		void revereseArray(uint8_t arr[], int start, int end);
+		void sendCommand(uint32_t id, uint8_t *data);
 		int _fdSerial;
 
 	public:
