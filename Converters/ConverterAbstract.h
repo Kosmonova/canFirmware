@@ -17,6 +17,7 @@ class ConverterAbstract
 		virtual void setVoltage(uint32_t voltage) = 0;
 		virtual void setCurrent(uint32_t current) = 0;
 		virtual void sendRqRdTemperature() = 0;
+		virtual void sendRqRdInputVoltage() = 0;
 		virtual void on() = 0;
 		virtual void off() = 0;
 };
