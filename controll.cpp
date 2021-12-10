@@ -160,6 +160,7 @@ void printHelp()
 	printf("\tset <on|off>, turn on or off converter\n");
 	printf("\tset_voltage <voltage> ,where voltage is in mili Volt unit unsigned integer\n");
 	printf("\tset_current <current> ,where current is in mili Amper unit unsigned integer\n");
+	printf("\tread_temp send request for read temperature\n");
 	printf("\tchange_type <converter>,\n");
 	printf("\t\t<where converter is BEG75050 or CEG1K0100G or UXR100030 or REG1K0100G\n");
 	printf("\tcurrent_type show current type of converter\n");
@@ -258,6 +259,10 @@ int main(int argc, char *argv[])
 			int value;
 			sscanf(pCommandStart, "%u", &value);
 			pConverter->setCurrent(value);
+		}
+		else if(matchCommand(&pCommandStart, "read_temp"))
+		{
+			pConverter->sendRqRdTemperature();
 		}
 		else if(matchCommand(&pCommandStart, "change_type"))
 		{

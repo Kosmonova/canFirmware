@@ -16,6 +16,7 @@ class REG1K0100G : public ConverterAbstract
 		void parse(int canId, uint8_t data[]);
 		void setVoltage(uint32_t voltage);
 		void setCurrent(uint32_t current);
+		void sendRqRdTemperature();
 		void on();
 		void off();
 };
