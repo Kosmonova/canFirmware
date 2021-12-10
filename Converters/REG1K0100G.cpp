@@ -4,8 +4,21 @@
 
 
 REG1K0100G::REG1K0100G(int fdSerial) :
-	ConverterAbstract(fdSerial)
+	ConverterAbstract(fdSerial),
+	_systemVoltage_mV(0),
+	_systemCurrent_mA(0)
 {
+}
+
+void REG1K0100G::_setSystemOutputValues()
+{
+	uint32_t id = 0x029b3ff0;
+	uint8_t data[8];
+	*((uint32_t*)data) = _systemVoltage_mV;
+	_revereseArray(data, 0, 3);
+	*((uint32_t*)(data + 4)) = _systemCurrent_mA;
+	_revereseArray(data, 4, 7);
+	_sendCommand(id, data);
 }
 
 void REG1K0100G::showType()
@@ -15,7 +28,7 @@ void REG1K0100G::showType()
 
 void REG1K0100G::parse(int canId, uint8_t data[])
 {
-	revereseArray((uint8_t*)&canId, 0, 3);
+	_revereseArray((uint8_t*)&canId, 0, 3);
 
 	switch(canId & 0xffff0000)
 	{
@@ -23,8 +36,8 @@ void REG1K0100G::parse(int canId, uint8_t data[])
 			break;
 		case 0x02810000:
 		{
-			revereseArray(data, 0, 3);
-			revereseArray(data + 4, 0, 3);
+			_revereseArray(data, 0, 3);
+			_revereseArray(data + 4, 0, 3);
 			float voltageIn = *((float*)data);
 			float currentIn = *((float*)(data + 4));
 			printf("voltage %f, current %f\n", voltageIn, currentIn);
@@ -32,9 +45,9 @@ void REG1K0100G::parse(int canId, uint8_t data[])
 		}
 		case 0x028a0000:
 		{
-			revereseArray(data, 0, 1);
-			revereseArray(data, 2, 3);
-			revereseArray(data, 4, 5);
+			_revereseArray(data, 0, 1);
+			_revereseArray(data, 2, 3);
+			_revereseArray(data, 4, 5);
 			uint16_t maxVoltage = *((uint16_t*)data);
 			uint16_t minVoltage = *((uint16_t*)(data + 2));
 			uint16_t maxCurrent = *((uint16_t*)(data + 4));
@@ -50,8 +63,8 @@ void REG1K0100G::parse(int canId, uint8_t data[])
 		{
 			uint64_t cislo = *(uint32_t*)(data + 1);
 			cislo += (*(data + 5)) * 0x100000000;
-			revereseArray((uint8_t*)(&cislo), 0, 4);
-			revereseArray(data, 6, 7);
+			_revereseArray((uint8_t*)(&cislo), 0, 4);
+			_revereseArray(data, 6, 7);
 
 			printf("barcode: %.3u",
 				cislo / 1000000000);
@@ -70,8 +83,8 @@ void REG1K0100G::parse(int canId, uint8_t data[])
 		}
 		case 0x028c0000:
 		{
-			revereseArray(data, 0, 1);
-			revereseArray(data, 2, 3);
+			_revereseArray(data, 0, 1);
+			_revereseArray(data, 2, 3);
 			uint16_t extVoltage = *((uint16_t*)data);
 			uint16_t outCurrent = *((uint16_t*)(data + 2));
 
@@ -83,9 +96,9 @@ void REG1K0100G::parse(int canId, uint8_t data[])
 		case 0x02860000:
 		{
 			printf("input voltatages: ");
-			revereseArray(data, 0, 1);
-			revereseArray(data, 2, 3);
-			revereseArray(data, 4, 5);
+			_revereseArray(data, 0, 1);
+			_revereseArray(data, 2, 3);
+			_revereseArray(data, 4, 5);
 			uint16_t uAB = *((uint16_t*)data);
 			uint16_t uBC = *((uint16_t*)(data + 2));
 			uint16_t uCA = *((uint16_t*)(data + 4));
@@ -116,7 +129,8 @@ void REG1K0100G::parse(int canId, uint8_t data[])
 
 void REG1K0100G::setVoltage(int voltage)
 {
-	printf("set voltage %d\n", voltage);
+	_systemVoltage_mV = voltage;
+	_setSystemOutputValues();
 }
 
 void REG1K0100G::on()
@@ -125,7 +139,7 @@ void REG1K0100G::on()
 	uint32_t id = 0x029a3ff0;
 	uint8_t data[8];
 	memset(data, 0, 8);
-	sendCommand(id, data);
+	_sendCommand(id, data);
 }
 
 void REG1K0100G::off()
@@ -135,5 +149,5 @@ void REG1K0100G::off()
 	uint8_t data[8];
 	memset(data, 0, 8);
 	data[0] = 0x01;
-	sendCommand(id, data);
+	_sendCommand(id, data);
 }

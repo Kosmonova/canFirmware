@@ -5,6 +5,11 @@
 
 class REG1K0100G : public ConverterAbstract
 {
+	private:
+		uint32_t _systemVoltage_mV;
+		uint32_t _systemCurrent_mA;
+		void _setSystemOutputValues();
+
 	public:
 		REG1K0100G(int fdSerial);
 		void showType();
