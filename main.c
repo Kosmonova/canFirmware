@@ -250,7 +250,7 @@ char testData[4][12] ={
 // 		uart_write(&msg.id, 4);
 // 		uart_write(msg.data, 8);
 		uart_write(testData[idx++], 12);
-		_delay_ms(500);
+		_delay_ms(3000);
 	}
 
 // 	while (1)

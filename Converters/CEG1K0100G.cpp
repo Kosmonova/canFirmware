@@ -8,6 +8,11 @@ CEG1K0100G::CEG1K0100G(int fdSerial) :
 {
 }
 
+void CEG1K0100G::showType()
+{
+	printf("CEG1K0100G");
+}
+
 void CEG1K0100G::parse(int canId, uint8_t data[])
 {
 }

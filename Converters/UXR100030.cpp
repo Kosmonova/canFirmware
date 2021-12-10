@@ -8,6 +8,11 @@ UXR100030::UXR100030(int fdSerial) :
 {
 }
 
+void UXR100030::showType()
+{
+	printf("UXR100030");
+}
+
 void UXR100030::parse(int canId, uint8_t data[])
 {
 }

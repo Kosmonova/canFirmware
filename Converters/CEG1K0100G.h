@@ -7,6 +7,7 @@ class CEG1K0100G : public ConverterAbstract
 {
 	public:
 		CEG1K0100G(int fdSerial);
+		void showType();
 		void parse(int canId, uint8_t data[]);
 		void setVoltage(int voltage);
 		void on();

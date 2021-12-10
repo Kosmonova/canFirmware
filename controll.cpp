@@ -137,8 +137,11 @@ void *readThread(void* arg)
 		{
 			printf("%x, ", buff[idx]);
 		}
+
 		if(numRcvBytes)
 		{
+			printf("\n");
+
 			if(numRcvBytes == 12)
 				pConverter->parse(*((int*)buff), buff + 4);
 			else
@@ -156,6 +159,7 @@ void printHelp()
 	printf("\tset_voltage <voltage> ,where voltage is in Volt unit integer\n");
 	printf("\tchange_type <converter>,\n");
 	printf("\t\t<where converter is BEG75050 or CEG1K0100G or UXR100030\n");
+	printf("\tcurrent_type show current type of converter\n");
 }
 
 int nextCommand(char **ppCommandStart)
@@ -175,7 +179,7 @@ int nextCommand(char **ppCommandStart)
 	return 0;
 }
 
-int matchCommand(char **ppCommandStart, char *command)
+int matchCommand(char **ppCommandStart, const char *command)
 {
 	char *pCommandStart = *ppCommandStart;
 	char *findChar = strchr(pCommandStart, ' ');
@@ -263,6 +267,12 @@ int main(int argc, char *argv[])
 				delete pConverter;
 				pConverter = new UXR100030(fd);
 			}
+		}
+		else if(matchCommand(&pCommandStart, "current_type"))
+		{
+			printf("current type: ");
+			pConverter->showType();
+			printf("\n");
 		}
 		else if(nextCommand(&pCommandStart) < 0)
 			rdBytes = 0;

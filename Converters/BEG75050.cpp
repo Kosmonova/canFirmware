@@ -8,11 +8,14 @@ BEG75050::BEG75050(int fdSerial) :
 {
 }
 
+void BEG75050::showType()
+{
+	printf("BEG75050");
+}
+
 void BEG75050::parse(int canId, uint8_t data[])
 {
 	revereseArray((uint8_t*)&canId, 0, 3);
-// 	canId = 0xf55f0000;
-	int idx;
 
 	switch(canId & 0xffff0000)
 	{
@@ -100,7 +103,7 @@ void BEG75050::parse(int canId, uint8_t data[])
 			printf("data: ");
 		
 
-			for(idx = 0; idx < 8; idx++)
+			for(int idx = 0; idx < 8; idx++)
 			{
 				printf("%x ", data[idx]);
 			}

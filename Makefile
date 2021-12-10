@@ -588,7 +588,7 @@ $(OBJDIR)/%.o : %.S
 
 controll: controll.cpp
 	make -C Converters
-	g++ controll.cpp -o controll -I Converters -L Converters -lConverters -pthread
+	c++ controll.cpp -I Converters -L Converters -lConverters -pthread -o controll
 
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c
