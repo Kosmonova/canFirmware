@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <unistd.h>
+#include <string.h>
 #include "UXR100030.h"
 
 
@@ -29,11 +29,22 @@ void UXR100030::setCurrent(uint32_t current)
 void UXR100030::on()
 {
 	printf("set on UXR100030\n");
-	write(_fdSerial, "\x1a\x01", 2);
+	uint32_t id = 0x029a3ff0;
+	uint8_t data[8];
+	memset(data, 0, 8);
+	data[0] = 0x03;
+	data[3] = 0x30;
+	_sendCommand(id, data);
 }
 
 void UXR100030::off()
 {
 	printf("set off UXR100030\n");
-	write(_fdSerial, "\x1a\x01", 2);
+	uint32_t id = 0x029a3ff0;
+	uint8_t data[8];
+	memset(data, 0, 8);
+	data[0] = 0x03;
+	data[3] = 0x30;
+	data[5] = 0x01;
+	_sendCommand(id, data);
 }
