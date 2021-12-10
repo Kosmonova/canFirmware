@@ -1,8 +1,22 @@
 #include <unistd.h>
+#include <stdio.h>
+
 #include "ConverterAbstract.h"
 
 ConverterAbstract::ConverterAbstract(int fdSerial) : _fdSerial(fdSerial)
 {
+}
+
+void ConverterAbstract::_cmdNotImplemented(char *nameFunction)
+{
+	printf("command %s not implemented for convertor type ", nameFunction);
+	showType();
+	printf("\n");
+}
+
+void ConverterAbstract::sendRqRdOutputSystemValues()
+{
+	_cmdNotImplemented("read_out_values");
 }
 
 void ConverterAbstract::_sendCommand(uint32_t id, uint8_t *data)

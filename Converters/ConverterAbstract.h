@@ -8,6 +8,7 @@ class ConverterAbstract
 	protected:
 		void _revereseArray(uint8_t arr[], int start, int end);
 		void _sendCommand(uint32_t id, uint8_t *data);
+		void _cmdNotImplemented(char *nameFunction);
 		int _fdSerial;
 
 	public:
@@ -18,6 +19,7 @@ class ConverterAbstract
 		virtual void setCurrent(uint32_t current) = 0;
 		virtual void sendRqRdTemperature() = 0;
 		virtual void sendRqRdInputVoltage() = 0;
+		virtual void sendRqRdOutputSystemValues();
 		virtual void on() = 0;
 		virtual void off() = 0;
 };

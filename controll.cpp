@@ -162,6 +162,7 @@ void printHelp()
 	printf("\tset_current <current> ,where current is in mili Amper unit unsigned integer\n");
 	printf("\tread_temp send request for read temperature\n");
 	printf("\tread_input_voltages send request for read input phase voltages\n");
+	printf("\tread_out_values send request fo read output values\n");
 	printf("\tchange_type <converter>,\n");
 	printf("\t\t<where converter is BEG75050 or CEG1K0100G or UXR100030 or REG1K0100G\n");
 	printf("\tcurrent_type show current type of converter\n");
@@ -218,7 +219,7 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-	ConverterAbstract *pConverter = new BEG75050(fd);
+	ConverterAbstract *pConverter = new REG1K0100G(fd);
 	
 	pthread_t threadID;
 	struct ThreadData threadData = {.fdSerial = fd, .pConverter = pConverter};
@@ -268,6 +269,10 @@ int main(int argc, char *argv[])
 		else if(matchCommand(&pCommandStart, "read_input_voltages"))
 		{
 			pConverter->sendRqRdInputVoltage();
+		}
+		else if(matchCommand(&pCommandStart, "read_out_values"))
+		{
+			pConverter->sendRqRdOutputSystemValues();
 		}
 		else if(matchCommand(&pCommandStart, "change_type"))
 		{

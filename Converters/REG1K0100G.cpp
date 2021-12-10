@@ -153,6 +153,13 @@ void REG1K0100G::sendRqRdInputVoltage()
 	_sendCommand(0x028600f0, data);
 }
 
+void REG1K0100G::sendRqRdOutputSystemValues()
+{
+	uint8_t data[8];
+	memset(data, 0, 8);
+	_sendCommand(0x02813ff0, data);
+}
+
 void REG1K0100G::on()
 {
 	printf("set on REG1K0100G\n");

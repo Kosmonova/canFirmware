@@ -18,6 +18,7 @@ class REG1K0100G : public ConverterAbstract
 		void setCurrent(uint32_t current);
 		void sendRqRdTemperature();
 		void sendRqRdInputVoltage();
+		void sendRqRdOutputSystemValues();
 		void on();
 		void off();
 };
