@@ -258,6 +258,10 @@ int main(int argc, char *argv[])
 			sscanf(pCommandStart, "%u", &valueInt);
 			pConverter->setVoltage(valueInt);
 		}
+		else if(matchCommand(&pCommandStart, "get_voltage"))
+		{
+			pConverter->getVoltage();
+		}
 		else if(matchCommand(&pCommandStart, "set_current"))
 		{
 			sscanf(pCommandStart, "%u", &valueInt);

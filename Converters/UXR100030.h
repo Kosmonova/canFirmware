@@ -36,6 +36,7 @@ class UXR100030 : public ConverterBase
 		void showType();
 		void parse(int canId, uint8_t data[]);
 		void setVoltage(uint32_t voltage);
+		void getVoltage();
 		void setCurrent(uint32_t current);
 		void setCurrentLimitPoint(float point);
 		void sendRqRdTemperature(){}

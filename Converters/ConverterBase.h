@@ -18,6 +18,7 @@ class ConverterBase
 		virtual void showType() = 0;
 		virtual void parse(int canId, uint8_t data[]) = 0;
 		virtual void setVoltage(uint32_t voltage);
+		virtual void getVoltage();
 		virtual void setCurrent(uint32_t current);
 		virtual void setCurrentLimitPoint(float point);
 		virtual void sendRqRdTemperature();

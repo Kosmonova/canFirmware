@@ -61,6 +61,7 @@ void UXR100030::showType()
 
 void UXR100030::parse(int canId, uint8_t data[])
 {
+	
 }
 
 void UXR100030::setVoltage(uint32_t voltage)
@@ -69,6 +70,13 @@ void UXR100030::setVoltage(uint32_t voltage)
 	float voltageF = voltage;
 	_generateSetMdlData(data, SET_MODULE_OUTPUT_VOLTAGE, *(uint32_t*)&(voltageF));
 	_sendCommand(_generateId(), data);
+}
+
+void UXR100030::getVoltage()
+{
+	uint8_t data[8];
+	_generateReadMdlData(data, GET_MODULE_VOLTAGE, 0);
+	_sendCommand(_generateId(), data);	
 }
 
 void UXR100030::setCurrent(uint32_t current)

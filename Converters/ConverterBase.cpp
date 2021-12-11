@@ -43,6 +43,11 @@ void ConverterBase::setVoltage(uint32_t voltage)
 	_cmdNotImplemented("set_voltage");
 }
 
+void ConverterBase::getVoltage()
+{
+	_cmdNotImplemented("get_voltage");
+}
+
 void ConverterBase::setCurrent(uint32_t current)
 {
 	_cmdNotImplemented("set_current");
