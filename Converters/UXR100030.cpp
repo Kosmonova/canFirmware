@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <byteswap.h>
+
 #include "UXR100030.h"
 
 
@@ -20,26 +22,36 @@ uint32_t UXR100030::_generateId()
 	return id;
 }
 
-void UXR100030::_generateSetMdlData(uint8_t *data, uint8_t reg, uint32_t value)
+void UXR100030::_generateSetMdlData(uint8_t *data, uint16_t reg, uint32_t value)
 {
 	memset(data, 0, 8);
 	data[0] = 0x03;
-	data[2] = reg;
-	*((uint32_t*)(data + 4)) = value;
-}
-
-void UXR100030::_generateReadMdlData(uint8_t *data, uint8_t reg, uint32_t value)
-{
-	memset(data, 0, 8);
-	data[0] = 0x10;
-	data[2] = reg;
-	*((uint32_t*)(data + 4)) = value;
+	*((uint16_t*)(data + 2)) = __bswap_16(reg);
+	*((uint32_t*)(data + 4)) = __bswap_32(value);
+	
 	printf("data:\n");
 	for(int idx = 0; idx < 8 ; idx ++)
 	{
 		printf("%0x, ", data[idx]);
 	}
 	printf("\n");
+	
+}
+
+void UXR100030::_generateReadMdlData(uint8_t *data, uint16_t reg, uint32_t value)
+{
+	memset(data, 0, 8);
+	data[0] = 0x10;
+	*((uint16_t*)(data + 2)) = __bswap_16(reg);
+	*((uint32_t*)(data + 4)) = __bswap_32(value);
+	
+	printf("data:\n");
+	for(int idx = 0; idx < 8 ; idx ++)
+	{
+		printf("%0x, ", data[idx]);
+	}
+	printf("\n");
+
 }
 
 void UXR100030::showType()
@@ -54,6 +66,10 @@ void UXR100030::parse(int canId, uint8_t data[])
 void UXR100030::setVoltage(uint32_t voltage)
 {
 	printf("set voltage %d\n", voltage);
+	uint8_t data[8];
+	float voltageF = voltage;
+	_generateReadMdlData(data, SET_MODULE_OUTPUT_VOLTAGE, (uint32_t)voltageF);
+	_sendCommand(_generateId(), data);
 }
 
 void UXR100030::setCurrent(uint32_t current)

@@ -16,6 +16,7 @@
 #define GET_MODULE_PFC_BOARD_TEMPERATURE 0x0010
 #define GET_MODLE_RATED_OUTPUT_POWER 0x0011
 #define GET_MODULE_RATED_OUTPUT_CURRENT 0x0012
+#define SET_MODULE_OUTPUT_VOLTAGE 0x0021
 #define POWER_ON_OFF 0x0030
 
 
@@ -25,8 +26,8 @@ class UXR100030 : public ConverterBase
 {
 	private:
 		uint32_t _generateId();
-		void _generateSetMdlData(uint8_t *data, uint8_t reg, uint32_t value);
-		void _generateReadMdlData(uint8_t *data, uint8_t reg, uint32_t value);
+		void _generateSetMdlData(uint8_t *data, uint16_t reg, uint32_t value);
+		void _generateReadMdlData(uint8_t *data, uint16_t reg, uint32_t value);
 
 	public:
 		UXR100030(int fdSerial, int address);
