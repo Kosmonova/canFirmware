@@ -48,6 +48,11 @@ void ConverterBase::setCurrent(uint32_t current)
 	_cmdNotImplemented("set_current");
 }
 
+void ConverterBase::setCurrentLimitPoint(float point)
+{
+	_cmdNotImplemented("set_current_limit_point");
+}
+
 void ConverterBase::sendRqRdTemperature()
 {
 	_cmdNotImplemented("read_temp");	

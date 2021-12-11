@@ -78,6 +78,13 @@ void UXR100030::setCurrent(uint32_t current)
 	_sendCommand(_generateId(), data);
 }
 
+void UXR100030::setCurrentLimitPoint(float point)
+{
+	uint8_t data[8];
+	_generateSetMdlData(data, SET_MODULE_CURRENT_LIMIT_POINT, *(uint32_t*)&point);
+	_sendCommand(_generateId(), data);
+}
+
 void UXR100030::on()
 {
 	printf("set on UXR100030\n");

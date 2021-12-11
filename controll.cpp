@@ -160,6 +160,7 @@ void printHelp()
 	printf("\tset <on|off>, turn on or off converter\n");
 	printf("\tset_voltage <voltage> ,where voltage is in mili Volt unit unsigned integer\n");
 	printf("\tset_current <current> ,where current is in mili Amper unit unsigned integer\n");
+	printf("\tset_current_limit_point <point> ,where point is pertentagle float\n");
 	printf("\tread_temp send request for read temperature\n");
 	printf("\tread_input_voltages send request for read input phase voltages\n");
 	printf("\tread_out_values send request fo read output values\n");
@@ -228,6 +229,8 @@ int main(int argc, char *argv[])
 	char buff[SIZE_BUFFER];
 	char *pCommandStart = buff;
 	int rdBytes = 0;
+	unsigned int valueInt;
+	float valueFloat;
 
 	while(1)
 	{
@@ -252,15 +255,18 @@ int main(int argc, char *argv[])
 		}
 		else if(matchCommand(&pCommandStart, "set_voltage"))
 		{
-			int value;
-			sscanf(pCommandStart, "%u", &value);
-			pConverter->setVoltage(value);
+			sscanf(pCommandStart, "%u", &valueInt);
+			pConverter->setVoltage(valueInt);
 		}
 		else if(matchCommand(&pCommandStart, "set_current"))
 		{
-			int value;
-			sscanf(pCommandStart, "%u", &value);
-			pConverter->setCurrent(value);
+			sscanf(pCommandStart, "%u", &valueInt);
+			pConverter->setCurrent(valueInt);
+		}
+		else if(matchCommand(&pCommandStart, "set_current_limit_point"))
+		{
+			sscanf(pCommandStart, "%f", &valueFloat);
+			pConverter->setCurrentLimitPoint(valueFloat);
 		}
 		else if(matchCommand(&pCommandStart, "read_temp"))
 		{
