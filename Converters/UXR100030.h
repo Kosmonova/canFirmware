@@ -5,6 +5,9 @@
 
 class UXR100030 : public ConverterBase
 {
+	private:
+		uint32_t _generateId();
+
 	public:
 		UXR100030(int fdSerial, int address);
 		void showType();
