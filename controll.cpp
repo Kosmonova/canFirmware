@@ -23,7 +23,7 @@
 struct ThreadData
 {
 	int fdSerial;
-	ConverterBase *pConverter;
+	ConverterBase **ppConverter;
 };
 
 int
@@ -127,7 +127,7 @@ int openComPort(int *fd)
 void *readThread(void* arg)
 {
 	int fd = ((struct ThreadData*)arg)->fdSerial;
-	ConverterBase *pConverter = ((struct ThreadData*)arg)->pConverter;
+	ConverterBase **ppConverter = ((struct ThreadData*)arg)->ppConverter;
 
 	uint8_t buff[SIZE_BUFFER];
 	int idx = 0;
@@ -145,7 +145,7 @@ void *readThread(void* arg)
 			printf("\n");
 
 			if(numRcvBytes == 12)
-				pConverter->parse(*((int*)buff), buff + 4);
+				(*ppConverter)->parse(*((int*)buff), buff + 4);
 			else
 				printf("wrong data received\n");
 		}
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
 	ConverterBase *pConverter = new REG1K0100G(fd, 0);
 	
 	pthread_t threadID;
-	struct ThreadData threadData = {.fdSerial = fd, .pConverter = pConverter};
+	struct ThreadData threadData = {.fdSerial = fd, .ppConverter = &pConverter};
 	
 	pthread_create(&threadID, NULL, readThread, (void *)&threadData);
 	char buff[SIZE_BUFFER];

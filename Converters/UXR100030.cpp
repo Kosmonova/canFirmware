@@ -20,6 +20,28 @@ uint32_t UXR100030::_generateId()
 	return id;
 }
 
+void UXR100030::_generateSetMdlData(uint8_t *data, uint8_t reg, uint32_t value)
+{
+	memset(data, 0, 8);
+	data[0] = 0x03;
+	data[2] = reg;
+	*((uint32_t*)(data + 4)) = value;
+}
+
+void UXR100030::_generateReadMdlData(uint8_t *data, uint8_t reg, uint32_t value)
+{
+	memset(data, 0, 8);
+	data[0] = 0x10;
+	data[2] = reg;
+	*((uint32_t*)(data + 4)) = value;
+	printf("data:\n");
+	for(int idx = 0; idx < 8 ; idx ++)
+	{
+		printf("%0x, ", data[idx]);
+	}
+	printf("\n");
+}
+
 void UXR100030::showType()
 {
 	printf("UXR100030");
@@ -42,9 +64,7 @@ void UXR100030::on()
 {
 	printf("set on UXR100030\n");
 	uint8_t data[8];
-	memset(data, 0, 8);
-	data[0] = 0x03;
-	data[3] = 0x30;
+	_generateReadMdlData(data, POWER_ON_OFF, 0);
 	_sendCommand(_generateId(), data);
 }
 
@@ -52,9 +72,6 @@ void UXR100030::off()
 {
 	printf("set off UXR100030\n");
 	uint8_t data[8];
-	memset(data, 0, 8);
-	data[0] = 0x03;
-	data[3] = 0x30;
-	data[5] = 0x01;
+	_generateReadMdlData(data, POWER_ON_OFF, 0x00010000);
 	_sendCommand(_generateId(), data);
 }
