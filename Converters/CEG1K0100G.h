@@ -1,9 +1,9 @@
 #ifndef CEG1K0100G_H
 #define CEG1K0100G_H
 
-#include "ConverterAbstract.h"
+#include "ConverterBase.h"
 
-class CEG1K0100G : public ConverterAbstract
+class CEG1K0100G : public ConverterBase
 {
 	public:
 		CEG1K0100G(int fdSerial, int address);

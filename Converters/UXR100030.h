@@ -1,9 +1,9 @@
 #ifndef UXR100030_H
 #define UXR100030_H
 
-#include "ConverterAbstract.h"
+#include "ConverterBase.h"
 
-class UXR100030 : public ConverterAbstract
+class UXR100030 : public ConverterBase
 {
 	public:
 		UXR100030(int fdSerial, int address);

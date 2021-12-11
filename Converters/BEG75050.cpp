@@ -4,7 +4,7 @@
 
 
 BEG75050::BEG75050(int fdSerial, int address) :
-	ConverterAbstract(fdSerial, address)
+	ConverterBase(fdSerial, address)
 {
 }
 

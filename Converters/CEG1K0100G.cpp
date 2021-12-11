@@ -4,7 +4,7 @@
 
 
 CEG1K0100G::CEG1K0100G(int fdSerial, int address) :
-	ConverterAbstract(fdSerial, address)
+	ConverterBase(fdSerial, address)
 {
 }
 

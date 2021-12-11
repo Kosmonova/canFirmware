@@ -1,9 +1,9 @@
 #ifndef BEG75050_H
 #define BEG75050_H
 
-#include "ConverterAbstract.h"
+#include "ConverterBase.h"
 
-class BEG75050 : public ConverterAbstract
+class BEG75050 : public ConverterBase
 {
 	public:
 		BEG75050(int fdSerial, int address);

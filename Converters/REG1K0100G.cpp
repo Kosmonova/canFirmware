@@ -4,7 +4,7 @@
 
 
 REG1K0100G::REG1K0100G(int fdSerial, int address) :
-	ConverterAbstract(fdSerial, address),
+	ConverterBase(fdSerial, address),
 	_systemVoltage_mV(0),
 	_systemCurrent_mA(0)
 {

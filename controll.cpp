@@ -23,7 +23,7 @@
 struct ThreadData
 {
 	int fdSerial;
-	ConverterAbstract *pConverter;
+	ConverterBase *pConverter;
 };
 
 int
@@ -127,7 +127,7 @@ int openComPort(int *fd)
 void *readThread(void* arg)
 {
 	int fd = ((struct ThreadData*)arg)->fdSerial;
-	ConverterAbstract *pConverter = ((struct ThreadData*)arg)->pConverter;
+	ConverterBase *pConverter = ((struct ThreadData*)arg)->pConverter;
 
 	uint8_t buff[SIZE_BUFFER];
 	int idx = 0;
@@ -208,7 +208,6 @@ int matchCommand(char **ppCommandStart, const char *command)
 
 int main(int argc, char *argv[])
 {
-	printf("hello world!!\n");
 	if(argc == 2)
 		strcpy(portname, argv[1]);
 	else
@@ -220,7 +219,7 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-	ConverterAbstract *pConverter = new REG1K0100G(fd, 0);
+	ConverterBase *pConverter = new REG1K0100G(fd, 0);
 	
 	pthread_t threadID;
 	struct ThreadData threadData = {.fdSerial = fd, .pConverter = pConverter};

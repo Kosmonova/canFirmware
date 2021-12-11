@@ -4,7 +4,7 @@
 
 
 UXR100030::UXR100030(int fdSerial, int address) :
-	ConverterAbstract(fdSerial, address)
+	ConverterBase(fdSerial, address)
 {
 }
 

@@ -1,9 +1,9 @@
-#ifndef CONVERTER_ABSTRACT_H
-#define CONVERTER_ABSTRACT_H
+#ifndef CONVERTER_BASE_H
+#define CONVERTER_BASE_H
 
 #include <stdint.h>
 
-class ConverterAbstract
+class ConverterBase
 {
 	protected:
 		void _revereseArray(uint8_t arr[], int start, int end);
@@ -13,16 +13,16 @@ class ConverterAbstract
 		int _address;
 
 	public:
-		ConverterAbstract(int fdSerial, int address);
+		ConverterBase(int fdSerial, int address);
 		virtual void showType() = 0;
 		virtual void parse(int canId, uint8_t data[]) = 0;
-		virtual void setVoltage(uint32_t voltage) = 0;
-		virtual void setCurrent(uint32_t current) = 0;
-		virtual void sendRqRdTemperature() = 0;
-		virtual void sendRqRdInputVoltage() = 0;
+		virtual void setVoltage(uint32_t voltage);
+		virtual void setCurrent(uint32_t current);
+		virtual void sendRqRdTemperature();
+		virtual void sendRqRdInputVoltage();
 		virtual void sendRqRdOutputSystemValues();
-		virtual void on() = 0;
-		virtual void off() = 0;
+		virtual void on();
+		virtual void off();
 };
 
 #endif

@@ -1,9 +1,9 @@
 #ifndef REG1K0100G_H
 #define REG1K0100G_H
 
-#include "ConverterAbstract.h"
+#include "ConverterBase.h"
 
-class REG1K0100G : public ConverterAbstract
+class REG1K0100G : public ConverterBase
 {
 	private:
 		uint32_t _systemVoltage_mV;
