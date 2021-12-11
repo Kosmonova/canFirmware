@@ -65,22 +65,24 @@ void UXR100030::parse(int canId, uint8_t data[])
 
 void UXR100030::setVoltage(uint32_t voltage)
 {
-	printf("set voltage %d\n", voltage);
 	uint8_t data[8];
 	float voltageF = voltage;
-	_generateReadMdlData(data, SET_MODULE_OUTPUT_VOLTAGE, (uint32_t)voltageF);
+	_generateSetMdlData(data, SET_MODULE_OUTPUT_VOLTAGE, *(uint32_t*)&(voltageF));
 	_sendCommand(_generateId(), data);
 }
 
 void UXR100030::setCurrent(uint32_t current)
 {
+	uint8_t data[8];
+	_generateSetMdlData(data, SET_MODULE_OUTPUT_CURRENT, current * 1024);
+	_sendCommand(_generateId(), data);
 }
 
 void UXR100030::on()
 {
 	printf("set on UXR100030\n");
 	uint8_t data[8];
-	_generateReadMdlData(data, POWER_ON_OFF, 0);
+	_generateSetMdlData(data, POWER_ON_OFF, 0);
 	_sendCommand(_generateId(), data);
 }
 
@@ -88,6 +90,6 @@ void UXR100030::off()
 {
 	printf("set off UXR100030\n");
 	uint8_t data[8];
-	_generateReadMdlData(data, POWER_ON_OFF, 0x00010000);
+	_generateSetMdlData(data, POWER_ON_OFF, 0x00010000);
 	_sendCommand(_generateId(), data);
 }
