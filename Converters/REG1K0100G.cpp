@@ -21,6 +21,20 @@ void REG1K0100G::_setSystemOutputValues()
 	_sendCommand(id, data);
 }
 
+uint32_t REG1K0100G::_generateId(uint8_t command)
+{
+	uint32_t id;
+
+	if(_broadcast)
+		id = 0x02800000 + 0x3FF0;
+	else
+		id = 0x02C00000 + 0x100 * _address + 0xF0;
+
+	id += 0x00010000 * command;
+	
+	return id;
+}
+
 void REG1K0100G::showType()
 {
 	printf("REG1K0100G");
@@ -148,27 +162,27 @@ void REG1K0100G::sendRqRdTemperature()
 {
 	uint8_t data[8];
 	memset(data, 0, 8);
-	_sendCommand(0x028400f0, data);
+	_sendCommand(_generateId(0x04), data);
 }
 
 void REG1K0100G::sendRqRdInputVoltage()
 {
 	uint8_t data[8];
 	memset(data, 0, 8);
-	_sendCommand(0x028600f0, data);
+	_sendCommand(_generateId(0x06), data);
 }
 
 void REG1K0100G::sendRqRdOutputSystemValues()
 {
 	uint8_t data[8];
 	memset(data, 0, 8);
-	_sendCommand(0x02813ff0, data);
+	_sendCommand(_generateId(0x01), data);
 }
 
 void REG1K0100G::on()
 {
 	printf("set on REG1K0100G\n");
-	uint32_t id = 0x029a3ff0;
+	uint32_t id = _generateId(0x1A);
 	uint8_t data[8];
 	memset(data, 0, 8);
 	_sendCommand(id, data);
@@ -177,7 +191,7 @@ void REG1K0100G::on()
 void REG1K0100G::off()
 {
 	printf("set off REG1K0100G\n");
-	uint32_t id = 0x029a3ff0;
+	uint32_t id = _generateId(0x1A);
 	uint8_t data[8];
 	memset(data, 0, 8);
 	data[0] = 0x01;

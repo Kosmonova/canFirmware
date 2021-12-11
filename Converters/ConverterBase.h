@@ -11,6 +11,7 @@ class ConverterBase
 		void _cmdNotImplemented(char *nameFunction);
 		int _fdSerial;
 		int _address;
+		bool _broadcast;
 
 	public:
 		ConverterBase(int fdSerial, int address);

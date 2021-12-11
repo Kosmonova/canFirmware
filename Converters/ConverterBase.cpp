@@ -5,9 +5,31 @@
 
 ConverterBase::ConverterBase(int fdSerial, int address) :
 	_fdSerial(fdSerial),
-	_address(address)
+	_address(address),
+	_broadcast(false)
 {
 }
+
+/* Function to reverse arr[] from start to end*/
+void ConverterBase::_revereseArray(uint8_t arr[], int start, int end)
+{
+    if (start >= end)
+    return;
+     
+    uint8_t temp = arr[start];
+    arr[start] = arr[end];
+    arr[end] = temp;
+     
+    // Recursive Function calling
+    _revereseArray(arr, start + 1, end - 1);
+}
+
+void ConverterBase::_sendCommand(uint32_t id, uint8_t *data)
+{
+	_revereseArray((uint8_t*)&id, 0, 3);
+	write(_fdSerial, &id, 4);
+	write(_fdSerial, data, 8);
+} 
 
 void ConverterBase::_cmdNotImplemented(char *nameFunction)
 {
@@ -50,24 +72,3 @@ void ConverterBase::off()
 {
 	_cmdNotImplemented("set off");
 }
-
-void ConverterBase::_sendCommand(uint32_t id, uint8_t *data)
-{
-	_revereseArray((uint8_t*)&id, 0, 3);
-	write(_fdSerial, &id, 4);
-	write(_fdSerial, data, 8);
-}
-
-/* Function to reverse arr[] from start to end*/
-void ConverterBase::_revereseArray(uint8_t arr[], int start, int end)
-{
-    if (start >= end)
-    return;
-     
-    uint8_t temp = arr[start];
-    arr[start] = arr[end];
-    arr[end] = temp;
-     
-    // Recursive Function calling
-    _revereseArray(arr, start + 1, end - 1);
-} 
