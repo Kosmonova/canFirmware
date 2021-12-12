@@ -20,15 +20,14 @@ class ConverterBase
 		virtual void showType() = 0;
 		virtual void parse(int canId, uint8_t data[]) = 0;
 		virtual void setVoltage(uint32_t voltage);
-		virtual void getVoltage();
+		virtual void readTemperature();
 		virtual void setCurrent(uint32_t current);
 		virtual void setCurrentLimitPoint(float point);
 		virtual void readPower();
 		virtual void readStatus();
 		virtual void setModuleInputMode(Mode mode);
-		virtual void sendRqRdTemperature();
-		virtual void sendRqRdInputVoltage();
-		virtual void sendRqRdOutputSystemValues();
+		virtual void readInputVoltage();
+		virtual void readOuputVotage();
 		virtual void on();
 		virtual void off();
 };

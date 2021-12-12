@@ -73,13 +73,13 @@ class UXR100030 : public ConverterBase
 		void showType();
 		void parse(int canId, uint8_t data[]);
 		void setVoltage(uint32_t voltage);
-		void getVoltage();
+		void readOuputVotage();
 		void readPower();
 		void readStatus();
 		void setCurrent(uint32_t current);
 		void setCurrentLimitPoint(float point);
 		void setModuleInputMode(Mode mode);
-		void sendRqRdTemperature(){}
+		void readTemperature();
 		void sendRqRdInputVoltage(){}
 		void on();
 		void off();

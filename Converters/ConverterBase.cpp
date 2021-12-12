@@ -43,9 +43,9 @@ void ConverterBase::setVoltage(uint32_t voltage)
 	_cmdNotImplemented("set_voltage");
 }
 
-void ConverterBase::getVoltage()
+void ConverterBase::readOuputVotage()
 {
-	_cmdNotImplemented("get_voltage");
+	_cmdNotImplemented("get_out_voltage");
 }
 
 void ConverterBase::setCurrent(uint32_t current)
@@ -73,19 +73,14 @@ void ConverterBase::setModuleInputMode(Mode mode)
 	_cmdNotImplemented("set_input_mode");
 }
 
-void ConverterBase::sendRqRdTemperature()
+void ConverterBase::readTemperature()
 {
 	_cmdNotImplemented("read_temp");	
 }
 
-void ConverterBase::sendRqRdInputVoltage()
+void ConverterBase::readInputVoltage()
 {
 	_cmdNotImplemented("read_input_voltages");
-}
-
-void ConverterBase::sendRqRdOutputSystemValues()
-{
-	_cmdNotImplemented("read_out_values");
 }
 
 void ConverterBase::on()

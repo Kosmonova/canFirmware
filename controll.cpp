@@ -164,7 +164,6 @@ void printHelp()
 	printf("\tset_input_mode <mode>, where mode is AC or DC\n");
 	printf("\tread_temp send request for read temperature\n");
 	printf("\tread_input_voltages send request for read input phase voltages\n");
-	printf("\tread_out_values send request fo read output values\n");
 	printf("\tread_power read power in W\n");
 	printf("\tread_status read current alarm/status\n");
 	printf("\tchange_type <converter, address>,\n");
@@ -268,9 +267,9 @@ int main(int argc, char *argv[])
 			if(matchCommand(&pCommandStart, "DC"))
 				pConverter->setModuleInputMode(DC_MODE);
 		}
-		else if(matchCommand(&pCommandStart, "get_voltage"))
+		else if(matchCommand(&pCommandStart, "get_out_voltage"))
 		{
-			pConverter->getVoltage();
+			pConverter->readOuputVotage();
 		}
 		else if(matchCommand(&pCommandStart, "set_current"))
 		{
@@ -284,15 +283,11 @@ int main(int argc, char *argv[])
 		}
 		else if(matchCommand(&pCommandStart, "read_temp"))
 		{
-			pConverter->sendRqRdTemperature();
+			pConverter->readTemperature();
 		}
 		else if(matchCommand(&pCommandStart, "read_input_voltages"))
 		{
-			pConverter->sendRqRdInputVoltage();
-		}
-		else if(matchCommand(&pCommandStart, "read_out_values"))
-		{
-			pConverter->sendRqRdOutputSystemValues();
+			pConverter->readInputVoltage();
 		}
 		else if(matchCommand(&pCommandStart, "read_power"))
 		{
