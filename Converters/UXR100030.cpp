@@ -22,7 +22,8 @@ uint32_t UXR100030::_generateId()
 	return id;
 }
 
-void UXR100030::_generateSetMdlData(uint8_t *data, uint16_t reg, uint32_t value)
+void UXR100030::_generateSetMdlData(uint8_t *data, uint16_t reg,
+	uint32_t value)
 {
 	memset(data, 0, 8);
 	data[0] = 0x03;
@@ -38,7 +39,8 @@ void UXR100030::_generateSetMdlData(uint8_t *data, uint16_t reg, uint32_t value)
 	
 }
 
-void UXR100030::_generateReadMdlData(uint8_t *data, uint16_t reg, uint32_t value)
+void UXR100030::_generateReadMdlData(uint8_t *data, uint16_t reg,
+	uint32_t value)
 {
 	memset(data, 0, 8);
 	data[0] = 0x10;
@@ -104,8 +106,84 @@ void UXR100030::parse(int canId, uint8_t data[])
 	switch(reg)
 	{
 		case GET_MODULE_VOLTAGE:
-			printf("voltage is: %s\n", _getFormat(buff, value, isFloat));
-			
+			printf("voltage is: %s V\n", _getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_CURRENT:
+			printf("current is: %s A\n", _getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_CURRENT_LIMIT_POINT:
+			printf("current limit is: %s\n", _getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_DC_BOARD_TEMPERATURE:
+			printf("temperature DC board is %s °C\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_INPUT_PHASE_VOLTAGE:
+			printf("input module phase voltage is %s V\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_FPCO_VOLTAGE_POSITIVE_HALF:
+			printf("module PFCO voltage on positive half bus is %s V\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_PFCO_VOLTAGE_NEGATIVE_HALF:
+			printf("module PFCO voltage on negative half bus is %s V\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_PANEL_TEMPEARTURE:
+			printf("module panel temperature is %s °C\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_AC_PHASE_A_VOLTAGE:
+			printf("module AC phase A voltage is %s V\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_AC_PHASE_B_VOLTAGE:
+			printf("module AC phase B voltage is %s V\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_AC_PHASE_C_VOLTAGE:
+			printf("module AC phase C voltage is %s V\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_PFC_BOARD_TEMPERATURE:
+			printf("module PFC board temperature is %s °C\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODLE_RATED_OUTPUT_POWER:
+			printf("module rated output power is %s W\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_MODULE_RATED_OUTPUT_CURRENT:
+			printf("module rated output current is %s A\n",
+				_getFormat(buff, value, isFloat));
+			break;
+		case GET_CURRENT_MODULE_INPUT_WORKING_MODE:
+			switch(value)
+			{
+				case SINGLE_PHASE_AC_MODE:
+					printf("current input mode of module is single phase ac mode.\n");
+					break;
+				case DC_MODE:
+					printf("current input mode of module is dc mode.\n");
+					break;
+				case THRE_PHASE_AC_MODE:
+					printf("current input mode of module is three phase ac mode.\n");
+					break;
+				case PATTREN_MICHMATCH:
+					printf("current input mode of module is pattern michmatch.\n");
+					break;
+				default:
+					printf("current input mode of module is not defined\n");
+					break;
+			}
+			break;
+
+		case GET_CURRENT_ALARM_STATUS:
+			printf("status is: %x\n", value);
+			break;
+		default:
+			break;
 	}
 }
 
@@ -113,7 +191,8 @@ void UXR100030::setVoltage(uint32_t voltage)
 {
 	uint8_t data[8];
 	float voltageF = voltage;
-	_generateSetMdlData(data, SET_MODULE_OUTPUT_VOLTAGE, *(uint32_t*)&(voltageF));
+	_generateSetMdlData(data, SET_MODULE_OUTPUT_VOLTAGE,
+		*(uint32_t*)&(voltageF));
 	_sendCommand(_generateId(), data);
 }
 
@@ -134,7 +213,8 @@ void UXR100030::setCurrent(uint32_t current)
 void UXR100030::setCurrentLimitPoint(float point)
 {
 	uint8_t data[8];
-	_generateSetMdlData(data, SET_MODULE_CURRENT_LIMIT_POINT, *(uint32_t*)&point);
+	_generateSetMdlData(data, SET_MODULE_CURRENT_LIMIT_POINT,
+		*(uint32_t*)&point);
 	_sendCommand(_generateId(), data);
 }
 
