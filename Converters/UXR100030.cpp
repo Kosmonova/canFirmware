@@ -85,6 +85,26 @@ char *UXR100030::_getFormat(char *inBuff, uint32_t value, bool isFloat)
 	return inBuff;
 }
 
+void UXR100030::_parseStatus(uint32_t value)
+{
+	if(value & (1 << MODULE_FAULT))
+		printf("module fault (red indicator steady on)\n");
+	if(value & (1 << MODULE_PROTECTION))
+		printf("module protection (yellow indicator steady on)\n");
+	if(value & (1 << MODULE_INTERNAL_SCI_COMMUNICAION_FAILURE))
+		printf("module internal sci communication failure\n");
+	if(value & (1 << INPUT_MODE_ERROR))
+		printf("input mode error (or input wiring error)\n");
+	if(value & (1 << INPUT_MODE_SET_BY_MONITOR_DOES_NOT_MATCH))
+		printf("Input mode set by monitor does not match the actual working " \
+			"mode\n");
+	if(value & (1 << DCDC_OVERVOLTAGE))
+		printf("DCDC overvoltage\n");
+	if(value & (1 << PFC_VOLTAGE_ABNORMAL))
+		printf("PFC voltage abnormal(imbalance, overvoltage or" \
+			"undervoltage)\n");
+}
+
 void UXR100030::showType()
 {
 	printf("UXR100030");
@@ -181,6 +201,7 @@ void UXR100030::parse(int canId, uint8_t data[])
 
 		case GET_CURRENT_ALARM_STATUS:
 			printf("status is: %x\n", value);
+			_parseStatus(value);
 			break;
 		default:
 			break;

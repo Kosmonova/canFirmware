@@ -1,6 +1,8 @@
 #ifndef UXR100030_H
 #define UXR100030_H
 
+#include "ConverterBase.h"
+
 
 #define GET_MODULE_VOLTAGE 0x0001
 #define GET_MODULE_CURRENT 0x0002
@@ -28,7 +30,26 @@
 #define THRE_PHASE_AC_MODE 0x00000003
 #define PATTREN_MICHMATCH 0x00000005
 
-#include "ConverterBase.h"
+#define MODULE_FAULT 0
+#define MODULE_PROTECTION 1
+#define MODULE_INTERNAL_SCI_COMMUNICAION_FAILURE 3
+#define INPUT_MODE_ERROR 4
+#define INPUT_MODE_SET_BY_MONITOR_DOES_NOT_MATCH 5
+#define DCDC_OVERVOLTAGE 7
+#define PFC_VOLTAGE_ABNORMAL 8
+#define AC_OVERVOLTAGE 9
+#define AC_UNDERVOLTAGE 14
+#define CAN_COMMUNICATION_FAILURE 16
+#define MODULE_CURRENT_IMBALANCE 17
+#define DCDC_ON_OFF_STATUS 22
+#define MODULE_POWER_LIMITING 23
+#define TEMPERATURE_DERATING 24
+#define AC_POWER_LIMITING 25
+#define FAN_FAULT 27
+#define DCDC_SHORT_CIRCIUT 28
+#define DCDC_OVER_TEMPERATURE 30
+#define DCDC_OUTPUT_OVERVOLTAGE 31
+
 
 class UXR100030 : public ConverterBase
 {
@@ -40,6 +61,7 @@ class UXR100030 : public ConverterBase
 		bool _parseData(uint8_t *data, uint16_t *reg, uint32_t *value,
 			bool *isFloat);
 		char *_getFormat(char *inBuff, uint32_t value, bool isFloat);
+		void _parseStatus(uint32_t value);
 
 	public:
 		UXR100030(int fdSerial, int address);
