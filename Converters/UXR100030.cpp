@@ -60,6 +60,29 @@ uint8_t UXR100030::_getAddressFromId(uint32_t id)
 	return (id & 0x7F8) / 8;
 }
 
+bool UXR100030::_parseData(uint8_t *data, uint16_t *reg, uint32_t *value,
+	bool *isFloat)
+{
+	if(data[0] != 0x41 && data[0] != 0x42 && data[1] != 0xF0)
+		return false;
+
+	*reg = __bswap_16(*(uint16_t*)(data + 2));
+	*value = __bswap_32(*(uint32_t*)(data + 4));
+	*isFloat = data[0] == 0x41;
+
+	return true;
+}
+
+char *UXR100030::_getFormat(char *inBuff, uint32_t value, bool isFloat)
+{
+	if(isFloat)
+		sprintf(inBuff, "%f", *((float*)&value));
+	else
+		sprintf(inBuff, "%u", value);
+
+	return inBuff;
+}
+
 void UXR100030::showType()
 {
 	printf("UXR100030");
@@ -69,6 +92,21 @@ void UXR100030::parse(int canId, uint8_t data[])
 {
 	if(_address != _getAddressFromId(canId))
 		return;
+
+	uint16_t reg;
+	uint32_t value;
+	bool isFloat;
+	char buff[20];
+
+	if(!_parseData(data, &reg, &value, &isFloat))
+		return;
+
+	switch(reg)
+	{
+		case GET_MODULE_VOLTAGE:
+			printf("voltage is: %s\n", _getFormat(buff, value, isFloat));
+			
+	}
 }
 
 void UXR100030::setVoltage(uint32_t voltage)

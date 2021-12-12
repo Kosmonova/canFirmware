@@ -31,6 +31,9 @@ class UXR100030 : public ConverterBase
 		void _generateSetMdlData(uint8_t *data, uint16_t reg, uint32_t value);
 		void _generateReadMdlData(uint8_t *data, uint16_t reg, uint32_t value);
 		uint8_t _getAddressFromId(uint32_t id);
+		bool _parseData(uint8_t *data, uint16_t *reg, uint32_t *value,
+			bool *isFloat);
+		char *_getFormat(char *inBuff, uint32_t value, bool isFloat);
 
 	public:
 		UXR100030(int fdSerial, int address);
