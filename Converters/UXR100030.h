@@ -30,6 +30,7 @@ class UXR100030 : public ConverterBase
 		uint32_t _generateId();
 		void _generateSetMdlData(uint8_t *data, uint16_t reg, uint32_t value);
 		void _generateReadMdlData(uint8_t *data, uint16_t reg, uint32_t value);
+		uint8_t _getAddressFromId(uint32_t id);
 
 	public:
 		UXR100030(int fdSerial, int address);

@@ -54,6 +54,11 @@ void UXR100030::_generateReadMdlData(uint8_t *data, uint16_t reg, uint32_t value
 
 }
 
+uint8_t UXR100030::_getAddressFromId(uint32_t id)
+{
+	return (id & 0x7F8) / 8;
+}
+
 void UXR100030::showType()
 {
 	printf("UXR100030");
@@ -61,7 +66,8 @@ void UXR100030::showType()
 
 void UXR100030::parse(int canId, uint8_t data[])
 {
-	
+	if(_address != _getAddressFromId(canId))
+		return;
 }
 
 void UXR100030::setVoltage(uint32_t voltage)
