@@ -252,10 +252,36 @@ void UXR100030::readOuputVotage()
 	_sendCommand(_generateId(), data);	
 }
 
+void UXR100030::readInputVoltage()
+{
+	uint8_t data[8];
+
+	_generateReadMdlData(data, GET_MODULE_INPUT_PHASE_VOLTAGE, 0);
+	_sendCommand(_generateId(), data);
+
+	_generateReadMdlData(data, GET_MODULE_FPCO_VOLTAGE_POSITIVE_HALF, 0);
+	_sendCommand(_generateId(), data);
+
+	_generateReadMdlData(data, GET_MODULE_PFCO_VOLTAGE_NEGATIVE_HALF, 0);
+	_sendCommand(_generateId(), data);
+
+	_generateReadMdlData(data, GET_MODULE_AC_PHASE_A_VOLTAGE, 0);
+	_sendCommand(_generateId(), data);
+
+	_generateReadMdlData(data, GET_MODULE_AC_PHASE_B_VOLTAGE, 0);
+	_sendCommand(_generateId(), data);
+
+	_generateReadMdlData(data, GET_MODULE_AC_PHASE_C_VOLTAGE, 0);
+	_sendCommand(_generateId(), data);
+}
+
 void UXR100030::readPower()
 {
 	uint8_t data[8];
 	_generateReadMdlData(data, GET_INPUT_POWER, 0);
+	_sendCommand(_generateId(), data);
+
+	_generateReadMdlData(data, GET_MODLE_RATED_OUTPUT_POWER, 0);
 	_sendCommand(_generateId(), data);
 }
 
@@ -263,6 +289,9 @@ void UXR100030::readStatus()
 {
 	uint8_t data[8];
 	_generateReadMdlData(data, GET_CURRENT_ALARM_STATUS, 0);
+	_sendCommand(_generateId(), data);
+
+	_generateReadMdlData(data, GET_CURRENT_MODULE_INPUT_WORKING_MODE, 0);
 	_sendCommand(_generateId(), data);
 }
 
@@ -285,6 +314,9 @@ void UXR100030::readOutputCurrent()
 {
 	uint8_t data[8];
 	_generateReadMdlData(data, GET_MODULE_CURRENT, 0);
+	_sendCommand(_generateId(), data);
+
+	_generateReadMdlData(data, GET_MODULE_RATED_OUTPUT_CURRENT, 0);
 	_sendCommand(_generateId(), data);
 }
 
