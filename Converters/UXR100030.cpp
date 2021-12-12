@@ -259,6 +259,13 @@ void UXR100030::readPower()
 	_sendCommand(_generateId(), data);
 }
 
+void UXR100030::readStatus()
+{
+	uint8_t data[8];
+	_generateReadMdlData(data, GET_CURRENT_ALARM_STATUS, 0);
+	_sendCommand(_generateId(), data);
+}
+
 void UXR100030::setCurrent(uint32_t current)
 {
 	uint8_t data[8];

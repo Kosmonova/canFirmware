@@ -63,6 +63,11 @@ void ConverterBase::readPower()
 	_cmdNotImplemented("read_power");
 }
 
+void ConverterBase::readStatus()
+{
+	_cmdNotImplemented("read_status");
+}
+
 void ConverterBase::setModuleInputMode(Mode mode)
 {
 	_cmdNotImplemented("set_input_mode");

@@ -75,6 +75,7 @@ class UXR100030 : public ConverterBase
 		void setVoltage(uint32_t voltage);
 		void getVoltage();
 		void readPower();
+		void readStatus();
 		void setCurrent(uint32_t current);
 		void setCurrentLimitPoint(float point);
 		void setModuleInputMode(Mode mode);
