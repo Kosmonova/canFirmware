@@ -23,12 +23,16 @@
 #define SET_MODULE_CURRENT_LIMIT_POINT 0x0022
 #define POWER_ON_OFF 0x0030
 #define GET_CURRENT_ALARM_STATUS 0x0040
+#define SET_MODULE_INPUT_MODE 0x0046
 #define GET_CURRENT_MODULE_INPUT_WORKING_MODE 0x004B
 
 #define SINGLE_PHASE_AC_MODE 0x00000001
-#define DC_MODE 0x00000002
+#define DC_MODE_CONVERTER 0x00000002
 #define THRE_PHASE_AC_MODE 0x00000003
 #define PATTREN_MICHMATCH 0x00000005
+
+#define SET_ON_AC_MODE 0x00000001
+#define SET_ON_DC_MODE 0x00000002
 
 #define MODULE_FAULT 0
 #define MODULE_PROTECTION 1
@@ -71,6 +75,7 @@ class UXR100030 : public ConverterBase
 		void getVoltage();
 		void setCurrent(uint32_t current);
 		void setCurrentLimitPoint(float point);
+		void setModuleInputMode(Mode mode);
 		void sendRqRdTemperature(){}
 		void sendRqRdInputVoltage(){}
 		void on();

@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+enum Mode{AC_MODE, DC_MODE};
+
 class ConverterBase
 {
 	protected:
@@ -21,6 +23,7 @@ class ConverterBase
 		virtual void getVoltage();
 		virtual void setCurrent(uint32_t current);
 		virtual void setCurrentLimitPoint(float point);
+		virtual void setModuleInputMode(Mode mode);
 		virtual void sendRqRdTemperature();
 		virtual void sendRqRdInputVoltage();
 		virtual void sendRqRdOutputSystemValues();

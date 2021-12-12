@@ -212,7 +212,7 @@ void UXR100030::parse(int canId, uint8_t data[])
 				case SINGLE_PHASE_AC_MODE:
 					printf("current input mode of module is single phase ac mode.\n");
 					break;
-				case DC_MODE:
+				case DC_MODE_CONVERTER:
 					printf("current input mode of module is dc mode.\n");
 					break;
 				case THRE_PHASE_AC_MODE:
@@ -264,6 +264,20 @@ void UXR100030::setCurrentLimitPoint(float point)
 	uint8_t data[8];
 	_generateSetMdlData(data, SET_MODULE_CURRENT_LIMIT_POINT,
 		*(uint32_t*)&point);
+	_sendCommand(_generateId(), data);
+}
+
+void UXR100030::setModuleInputMode(Mode mode)
+{
+	uint8_t data[8];
+
+	if(mode == AC_MODE)
+		_generateSetMdlData(data, SET_MODULE_INPUT_MODE, SET_ON_AC_MODE);
+	else if(mode == DC_MODE)
+		_generateSetMdlData(data, SET_MODULE_INPUT_MODE, SET_ON_DC_MODE);
+	else
+		return;
+
 	_sendCommand(_generateId(), data);
 }
 

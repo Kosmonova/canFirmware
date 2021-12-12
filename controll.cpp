@@ -161,6 +161,7 @@ void printHelp()
 	printf("\tset_voltage <voltage> ,where voltage is in mili Volt unit unsigned integer\n");
 	printf("\tset_current <current> ,where current is in mili Amper unit unsigned integer\n");
 	printf("\tset_current_limit_point <point> ,where point is pertentagle float\n");
+	printf("\tset_input_mode <mode>, where mode is AC or DC\n");
 	printf("\tread_temp send request for read temperature\n");
 	printf("\tread_input_voltages send request for read input phase voltages\n");
 	printf("\tread_out_values send request fo read output values\n");
@@ -257,6 +258,13 @@ int main(int argc, char *argv[])
 		{
 			sscanf(pCommandStart, "%u", &valueInt);
 			pConverter->setVoltage(valueInt);
+		}
+		else if(matchCommand(&pCommandStart, "set_input_mode"))
+		{
+			if(matchCommand(&pCommandStart, "AC"))
+				pConverter->setModuleInputMode(AC_MODE);
+			if(matchCommand(&pCommandStart, "DC"))
+				pConverter->setModuleInputMode(DC_MODE);
 		}
 		else if(matchCommand(&pCommandStart, "get_voltage"))
 		{

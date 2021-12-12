@@ -58,6 +58,11 @@ void ConverterBase::setCurrentLimitPoint(float point)
 	_cmdNotImplemented("set_current_limit_point");
 }
 
+void ConverterBase::setModuleInputMode(Mode mode)
+{
+	_cmdNotImplemented("set_input_mode");
+}
+
 void ConverterBase::sendRqRdTemperature()
 {
 	_cmdNotImplemented("read_temp");	
