@@ -224,9 +224,9 @@ int main(void)
 					
 	// Load filters and masks
 	can_static_filter(can_filter);
-	char str[100];
-	int idx;
 
+/*
+	int idx;
 	can_t msg;
 	msg.id = 0x12345678;
 
@@ -240,9 +240,6 @@ char testData[4][12] ={
 	{0x02, 0x8B, 0xF0, 0x00, 0x56, 0x13, 0x0C, 0x15, 0xA3, 0xFB, 0x06, 0xA8},
 	{0x02, 0x81, 0xF0, 0x3F, 0x43, 0xFA, 0x00, 0x00, 0x42, 0x48, 0x00, 0x00}
 };
-	
-// 	msg.id = ;
-// 	memcpy(msg.data, (char*), 8);
 
 	while(1)
 	{
@@ -252,33 +249,23 @@ char testData[4][12] ={
 		uart_write(testData[idx++], 12);
 		_delay_ms(3000);
 	}
+*/
 
-// 	while (1)
-// 	{
-// 		char comNo = uart_getc1();
-// 		if (comNo)
-// 		{
-// 			sprintf(str, "uart receive %x\n", comNo);
-// 			uart_puts(str);
-// 			int arg1 = uart_getc1();
-// 			int arg2 = uart_getc1();
-// 
-// 			cangFncSendMsg(comNo, arg1, arg2);
-// 		}
-// 
-// 		// Check if a new messag was received
-// 		if (can_check_message())
-// 		{
-// 			can_t msg;
-// 			msg.id = 0;
-// 			// Try to read the message
-// 			if (can_get_message(&msg))
-// 			{
-// 				uart_write(&msg.id, 4);
-// 				uart_write(&msg.data, 8);
-// 			}
-// 		}
-// 	}
-	
+	while (1)
+	{
+		// Check if a new messag was received
+		if (can_check_message())
+		{
+			can_t msg;
+
+			// Try to read the message
+			if (can_get_message(&msg))
+			{
+				uart_write(&msg.id, 4);
+				uart_write(&msg.data, 8);
+			}
+		}
+	}
+
 	return 0;
 }
