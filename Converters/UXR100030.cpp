@@ -56,6 +56,7 @@ void UXR100030::_generateReadMdlData(uint8_t *data, uint16_t reg, uint32_t value
 
 uint8_t UXR100030::_getAddressFromId(uint32_t id)
 {
+	id = __bswap_32(id);
 	return (id & 0x7F8) / 8;
 }
 
