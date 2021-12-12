@@ -103,6 +103,34 @@ void UXR100030::_parseStatus(uint32_t value)
 	if(value & (1 << PFC_VOLTAGE_ABNORMAL))
 		printf("PFC voltage abnormal(imbalance, overvoltage or" \
 			"undervoltage)\n");
+	if(value & (1 << AC_OVERVOLTAGE))
+		printf("AC overvoltage\n");
+	if(value & (1 << AC_UNDERVOLTAGE))
+		printf("AC undervoltage\n");
+	if(value & (1 << CAN_COMMUNICATION_FAILURE))
+		printf("CAN communication failure\n");
+	if(value & (1 << MODULE_CURRENT_IMBALANCE))
+		printf("Module current imbalance\n");
+
+	if(value & (1 << DCDC_ON_OFF_STATUS))
+		printf(" DCDC status Off\n");
+	else
+		printf(" DCDC status On\n");
+
+	if(value & (1 << MODULE_POWER_LIMITING))
+		printf("Module power limiting\n");
+	if(value & (1 << TEMPERATURE_DERATING))
+		printf("Temperature derating\n");
+	if(value & (1 << AC_POWER_LIMITING))
+		printf("AC power limiting\n");
+	if(value & (1 << FAN_FAULT))
+		printf("Fan fault\n");
+	if(value & (1 << DCDC_SHORT_CIRCIUT))
+		printf("DCDC short circuit\n");
+	if(value & (1 << DCDC_OVER_TEMPERATURE))
+		printf("DCDC over temperature\n");
+	if(value & (1 << DCDC_OUTPUT_OVERVOLTAGE))
+		printf("DCDC output overvoltage\n");
 }
 
 void UXR100030::showType()
