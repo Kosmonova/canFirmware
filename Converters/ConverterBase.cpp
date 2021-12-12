@@ -83,6 +83,11 @@ void ConverterBase::readInputVoltage()
 	_cmdNotImplemented("read_input_voltages");
 }
 
+void ConverterBase::readOutputCurrent()
+{
+	_cmdNotImplemented("read_output_current");
+}
+
 void ConverterBase::on()
 {
 	_cmdNotImplemented("set on");

@@ -281,6 +281,13 @@ void UXR100030::setCurrentLimitPoint(float point)
 	_sendCommand(_generateId(), data);
 }
 
+void UXR100030::readOutputCurrent()
+{
+	uint8_t data[8];
+	_generateReadMdlData(data, GET_MODULE_CURRENT, 0);
+	_sendCommand(_generateId(), data);
+}
+
 void UXR100030::setModuleInputMode(Mode mode)
 {
 	uint8_t data[8];
@@ -298,10 +305,10 @@ void UXR100030::setModuleInputMode(Mode mode)
 void UXR100030::readTemperature()
 {
 	uint8_t data[8];
-	_generateSetMdlData(data, GET_MODULE_DC_BOARD_TEMPERATURE, 0);
+	_generateReadMdlData(data, GET_MODULE_DC_BOARD_TEMPERATURE, 0);
 	_sendCommand(_generateId(), data);
 
-	_generateSetMdlData(data, GET_MODULE_PFC_BOARD_TEMPERATURE, 0);
+	_generateReadMdlData(data, GET_MODULE_PFC_BOARD_TEMPERATURE, 0);
 	_sendCommand(_generateId(), data);
 }
 

@@ -19,15 +19,19 @@ class ConverterBase
 		ConverterBase(int fdSerial, int address);
 		virtual void showType() = 0;
 		virtual void parse(int canId, uint8_t data[]) = 0;
+
 		virtual void setVoltage(uint32_t voltage);
-		virtual void readTemperature();
+		virtual void readInputVoltage();
+		virtual void readOuputVotage();
+
 		virtual void setCurrent(uint32_t current);
 		virtual void setCurrentLimitPoint(float point);
+		virtual void readOutputCurrent();
+
+		virtual void readTemperature();
 		virtual void readPower();
 		virtual void readStatus();
 		virtual void setModuleInputMode(Mode mode);
-		virtual void readInputVoltage();
-		virtual void readOuputVotage();
 		virtual void on();
 		virtual void off();
 };
