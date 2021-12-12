@@ -24,6 +24,7 @@
 #define POWER_ON_OFF 0x0030
 #define GET_CURRENT_ALARM_STATUS 0x0040
 #define SET_MODULE_INPUT_MODE 0x0046
+#define GET_INPUT_POWER 0x0048
 #define GET_CURRENT_MODULE_INPUT_WORKING_MODE 0x004B
 
 #define SINGLE_PHASE_AC_MODE 0x00000001
@@ -73,6 +74,7 @@ class UXR100030 : public ConverterBase
 		void parse(int canId, uint8_t data[]);
 		void setVoltage(uint32_t voltage);
 		void getVoltage();
+		void readPower();
 		void setCurrent(uint32_t current);
 		void setCurrentLimitPoint(float point);
 		void setModuleInputMode(Mode mode);

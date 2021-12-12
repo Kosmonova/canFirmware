@@ -252,6 +252,13 @@ void UXR100030::getVoltage()
 	_sendCommand(_generateId(), data);	
 }
 
+void UXR100030::readPower()
+{
+	uint8_t data[8];
+	_generateReadMdlData(data, GET_INPUT_POWER, 0);
+	_sendCommand(_generateId(), data);
+}
+
 void UXR100030::setCurrent(uint32_t current)
 {
 	uint8_t data[8];

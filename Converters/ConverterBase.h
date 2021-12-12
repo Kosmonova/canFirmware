@@ -23,6 +23,7 @@ class ConverterBase
 		virtual void getVoltage();
 		virtual void setCurrent(uint32_t current);
 		virtual void setCurrentLimitPoint(float point);
+		virtual void readPower();
 		virtual void setModuleInputMode(Mode mode);
 		virtual void sendRqRdTemperature();
 		virtual void sendRqRdInputVoltage();

@@ -165,6 +165,7 @@ void printHelp()
 	printf("\tread_temp send request for read temperature\n");
 	printf("\tread_input_voltages send request for read input phase voltages\n");
 	printf("\tread_out_values send request fo read output values\n");
+	printf("\tread_power read power in W\n");
 	printf("\tchange_type <converter, address>,\n");
 	printf("\t\twhere converter is BEG75050 or CEG1K0100G or UXR100030 or REG1K0100G\n");
 	printf("\t\taddress is number from <0-63>\n");
@@ -291,6 +292,10 @@ int main(int argc, char *argv[])
 		else if(matchCommand(&pCommandStart, "read_out_values"))
 		{
 			pConverter->sendRqRdOutputSystemValues();
+		}
+		else if(matchCommand(&pCommandStart, "read_power"))
+		{
+			pConverter->readPower();
 		}
 		else if(matchCommand(&pCommandStart, "change_type"))
 		{
