@@ -37,6 +37,7 @@ extern unsigned char uart_getc(void);
 
 
 unsigned char uart_gets(char *pole);
+int uart_read(char* rx_pole);
 
 /******************************************************
     vycistenie buffer-a

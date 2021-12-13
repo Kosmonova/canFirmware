@@ -250,13 +250,15 @@ char testData[4][12] ={
 		_delay_ms(3000);
 	}
 */
-
+// uart_puts("hello world!!!\n");
+char uartMsg[100];
+int sizeUart = 0;
 	while (1)
 	{
+			can_t msg;
 		// Check if a new messag was received
 		if (can_check_message())
 		{
-			can_t msg;
 
 			// Try to read the message
 			if (can_get_message(&msg))
@@ -264,6 +266,18 @@ char testData[4][12] ={
 				uart_write(&msg.id, 4);
 				uart_write(&msg.data, 8);
 			}
+		}
+		if(sizeUart = uart_read(uartMsg))
+		{
+// 			uart_write();
+// 			if(sizeUart != 12)
+// 				continue;
+
+			memcpy(&msg.id, uartMsg, 4);
+			memcpy(&msg.data, uartMsg + 4, 8);
+			can_send_message(&msg);
+// 				uart_write(&msg.id, 4);
+// 				uart_write(&msg.data, 8);
 		}
 	}
 

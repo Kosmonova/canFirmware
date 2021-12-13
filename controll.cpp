@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-	ConverterBase *pConverter = new REG1K0100G(fd, 0);
+	ConverterBase *pConverter = new UXR100030(fd, 0);
 	
 	pthread_t threadID;
 	struct ThreadData threadData = {.fdSerial = fd, .ppConverter = &pConverter};

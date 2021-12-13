@@ -113,6 +113,10 @@ unsigned char uart_gets(char* rx_pole){
 
 }
 
+int uart_read(char* rx_pole){
+	memcpy(rx_pole, rx_buff, rx_pos);
+	return rx_pos;
+}
 
 /******************************************************
 prerusenie rx complete
@@ -123,19 +127,16 @@ ISR(USART_RXC_vect)
 	// ak pretieklo rx pole tak ho vynuluj
 	if (rx_pos == BUF_SIZE) rx_pos = 0;
 
-	// ak neprisiel ukoncovaci znak
-	if(rx_stav != RX_UKONCENE){
-		
-		rx_buff[rx_pos] = UDR;	// ulozenie znaku do buffer-a
-	
-		//ak prisiel ukoncovaci znak
-		if ((rx_buff[rx_pos] == '\r') | (rx_buff[rx_pos] == '\n')){	
-			rx_buff[rx_pos+1] = '\0';	// ukoncenie retazca
-			rx_stav = RX_UKONCENE;	
-		}else{			
+	while(UCSRA & (1<<RXC))
+	{
+		// ak neprisiel ukoncovaci znak
+		if(rx_stav != RX_UKONCENE){
+			
+			rx_buff[rx_pos] = UDR;	// ulozenie znaku do buffer-a
 			rx_pos++;	 // inkrementuj pocitadlo
 		}
 	}
+	rx_stav = RX_UKONCENE;
 }
 
 /******************************************************

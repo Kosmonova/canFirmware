@@ -14,11 +14,12 @@ uint32_t UXR100030::_generateId()
 {
 	uint32_t id;
 
-	if(_broadcast)
-		id = 0x60 * 0x100000 + 0x80000 + 0x800 * 0xFF + 8 * 0xF0;
-	else
-		id = 0x60 * 0x10000 + 0x800 * _address + 8 * 0xF0;
+// 	if(_broadcast)
+		id = 0x60 * 0x100000 + 0x800 * 0xFF * 0xF0;
+// 	else
+// 		id = 0x60 * 0x100000 + 0x80000 + 0x800 * _address + 8 * 0xF0;
 
+	id = __bswap_32(id);
 	return id;
 }
 
@@ -140,9 +141,10 @@ void UXR100030::showType()
 
 void UXR100030::parse(int canId, uint8_t data[])
 {
-	if(_address != _getAddressFromId(canId))
-		return;
-
+	canId = __bswap_32(canId);
+// 	if(_address != _getAddressFromId(canId))
+// 		return;
+printf("current addres is %x\n", _getAddressFromId(canId));
 	uint16_t reg;
 	uint32_t value;
 	bool isFloat;
