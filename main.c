@@ -7,6 +7,7 @@
 #include "uart.h"
 #include <string.h>
 #include <stdio.h>
+#include <avr/interrupt.h>
 
 // #define SUPPORT_EXTENDED_CANID
 
@@ -212,6 +213,30 @@ void cangFncSendMsg(int cmdNo, int ar1, int ar2)
 	can_send_message(&msg);
 }
 
+// volatile char buffRx[128];
+// volatile int rxSize = 0;
+// 
+// ISR(USART_RXC_vect)
+// {
+// 	rxSize = 0;
+// 
+// 	while(UCSRA & (1<<RXC))
+// 	{
+// 		buffRx[rxSize++] = UDR;	// ulozenie znaku do buffer-a
+// 	}
+// }
+// 
+// int uart_read1(char *buff)
+// {
+// 	cli();
+// 	if(rxSize != 0)
+// 		memcpy(buff, buffRx, rxSize);
+// 	int ret = rxSize;
+// 	rxSize = 0;
+// 	sei();
+// 	return ret;
+// }
+
 // -----------------------------------------------------------------------------
 // Main loop for receiving and sending messages.
 
@@ -224,6 +249,7 @@ int main(void)
 					
 	// Load filters and masks
 	can_static_filter(can_filter);
+sei();
 
 /*
 	int idx;
@@ -252,32 +278,60 @@ char testData[4][12] ={
 */
 // uart_puts("hello world!!!\n");
 char uartMsg[100];
+memset(uartMsg, 0xAB, 100);
 int sizeUart = 0;
+char testData[4][12] ={
+	{0x02, 0x86, 0xF0, 0x01, 0x0F, 0xB4, 0x0F, 0xA5, 0x0F, 0xA7, 0x00, 0x00},
+	{0x02, 0x8A, 0xF0, 0x00, 0x02, 0xEE, 0x00, 0x64, 0x01, 0x00, 0x05, 0xDC},
+	{0x02, 0x8B, 0xF0, 0x00, 0x56, 0x13, 0x0C, 0x15, 0xA3, 0xFB, 0x06, 0xA8},
+	{0x02, 0x81, 0xF0, 0x3F, 0x43, 0xFA, 0x00, 0x00, 0x42, 0x48, 0x00, 0x00}
+};
+
+int idx;
 	while (1)
 	{
-			can_t msg;
-		// Check if a new messag was received
-		if (can_check_message())
-		{
+// 			can_t msg;
+// 		// Check if a new messag was received
+// 		if (can_check_message())
+// 		{
+// 
+// 			// Try to read the message
+// 			if (can_get_message(&msg))
+// 			{
+// 				uart_write(&msg.id, 4);
+// 				uart_write(&msg.data, 8);
+// 			}
+// 		}
+// 		idx %= 4;
+// 		uart_write(&msg.id, 4);
+// 		uart_write(msg.data, 8);
+// 		uart_write(testData[idx++], 12);
+// 		_delay_ms(3000);
 
-			// Try to read the message
-			if (can_get_message(&msg))
-			{
-				uart_write(&msg.id, 4);
-				uart_write(&msg.data, 8);
-			}
-		}
+
 		if(sizeUart = uart_read(uartMsg))
+			uart_write(uartMsg, sizeUart);
+	continue;
+
+
+
+uart_write(uartMsg, sizeUart);
+sizeUart = 0;
+continue;
+		sizeUart = uart_read(uartMsg);
+		if(sizeUart != 0)
 		{
+			uart_write(uartMsg, sizeUart);
+// 			uart_write(testData[idx++], 12);
 // 			uart_write();
 // 			if(sizeUart != 12)
 // 				continue;
 
-			memcpy(&msg.id, uartMsg, 4);
-			memcpy(&msg.data, uartMsg + 4, 8);
-			can_send_message(&msg);
+// 			memcpy(&msg.id, uartMsg, 4);
+// 			memcpy(msg.data, uartMsg + 4, 8);
+// 			can_send_message(&msg);
 // 				uart_write(&msg.id, 4);
-// 				uart_write(&msg.data, 8);
+// 				uart_write(msg.data, 8);
 		}
 	}
 
