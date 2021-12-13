@@ -114,12 +114,12 @@ unsigned char uart_gets(char* rx_pole){
 }
 
 int uart_read(char* rx_pole){
-	cli();
+	UCSRB &= ~(1<<RXCIE);
 	if(rx_pos != 0)
 		memcpy(rx_pole, rx_buff, rx_pos);
 	int result = rx_pos;
 	rx_pos = 0;
-	sei();
+	UCSRB |= (1<<RXCIE);
 	return result;
 }
 
