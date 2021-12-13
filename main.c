@@ -85,6 +85,28 @@ const uint8_t can_filter[] PROGMEM =
 // -----------------------------------------------------------------------------
 // Main loop for receiving and sending messages.
 
+volatile unsigned long timeMilis;
+
+unsigned long milis()
+{
+	return timeMilis;
+}
+
+ISR (TIMER1_OVF_vect)    // Timer1 ISR
+{
+	timeMilis++;	
+	TCNT1 = 63974;   // for 1 sec at 16 MHz
+}
+
+void setTimer()
+{
+	TCNT1 = 63974;   // for 1 sec at 16 MHz	
+
+	TCCR1A = 0x00;
+	TCCR1B = (1<<CS10) | (1<<CS12);;  // Timer mode with 1024 prescler
+	TIMSK = (1 << TOIE1) ;   // Enable timer1 overflow interrupt(TOIE1)
+}
+
 int main(void)
 {
 	// Initialize MCP2515
@@ -94,13 +116,14 @@ int main(void)
 					
 	// Load filters and masks
 	can_static_filter(can_filter);
+	setTimer();
 	sei();
 
 
 	char uartMsg[100];
 	memset(uartMsg, 0xAB, 100);
 	int sizeUart = 0;
-
+	long lastTime = milis();
 	while (1)
 	{
 		can_t msg;
@@ -115,10 +138,18 @@ int main(void)
 			}
 		}
 
+		if(lastTime + 100 < milis())
+		{
+			sizeUart = 0;
+			lastTime = milis();
+		}
+	
 		sizeUart += uart_read(uartMsg + sizeUart);
 
 		if(sizeUart < 12)
 			continue;
+
+		lastTime = milis();
 
 		sizeUart = 0;
 		memcpy(&msg.id, uartMsg, 4);
