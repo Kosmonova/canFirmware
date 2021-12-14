@@ -10,6 +10,11 @@ ConverterBase::ConverterBase(int fdSerial, int address) :
 {
 }
 
+void ConverterBase::changeAddress(uint8_t address)
+{
+	_address = address;
+}
+
 /* Function to reverse arr[] from start to end*/
 void ConverterBase::_revereseArray(uint8_t arr[], int start, int end)
 {

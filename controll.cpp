@@ -135,14 +135,14 @@ void *readThread(void* arg)
 	while(1)
 	{
 		int numRcvBytes = readCom(fd, buff, SIZE_BUFFER);
-		for(idx = 0; idx < numRcvBytes; idx++)
-		{
-			printf("%x, ", buff[idx]);
-		}
+// 		for(idx = 0; idx < numRcvBytes; idx++)
+// 		{
+// 			printf("%x, ", buff[idx]);
+// 		}
 
 		if(numRcvBytes)
 		{
-			printf("\n");
+// 			printf("\n");
 
 // 		for(idx = 0; idx < numRcvBytes; idx++)
 // 		{
@@ -166,6 +166,7 @@ void printHelp()
 	printf("\tset_current <current> ,where current is in mili Amper unit unsigned integer\n");
 	printf("\tset_current_limit_point <point> ,where point is pertentagle float\n");
 	printf("\tset_input_mode <mode>, where mode is AC or DC\n");
+	printf("\tset_address set address of converter\n");
 	printf("\tread_temp send request for read temperature\n");
 	printf("\tread_input_voltages send request for read input phase voltages\n");
 	printf("\tread_power read power in W\n");
@@ -227,7 +228,7 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-	ConverterBase *pConverter = new REG1K0100G(fd, 0);
+	ConverterBase *pConverter = new UXR100030(fd, 0);
 	
 	pthread_t threadID;
 	struct ThreadData threadData = {.fdSerial = fd, .ppConverter = &pConverter};
@@ -305,6 +306,12 @@ int main(int argc, char *argv[])
 		else if(matchCommand(&pCommandStart, "read_output_current"))
 		{
 			pConverter->readOutputCurrent();
+		}
+		else if(matchCommand(&pCommandStart, "set_address"))
+		{
+			int address;
+			sscanf(pCommandStart, "%u", &address);
+			pConverter->changeAddress(address);
 		}
 		else if(matchCommand(&pCommandStart, "change_type"))
 		{
