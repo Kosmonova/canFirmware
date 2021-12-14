@@ -13,7 +13,7 @@ void BEG75050::showType()
 	printf("BEG75050");
 }
 
-void BEG75050::parse(int canId, uint8_t data[])
+void BEG75050::parse(uint32_t canId, uint8_t data[])
 {
 	_revereseArray((uint8_t*)&canId, 0, 3);
 }

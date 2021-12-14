@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <byteswap.h>
+
 #include "REG1K0100G.h"
 
 
@@ -28,10 +30,10 @@ uint32_t REG1K0100G::_generateId(uint8_t command)
 	if(_broadcast)
 		id = 0x02800000 + 0x3FF0;
 	else
-		id = 0x02C00000 + 0x100 * _address + 0xF0;
+		id = 0x02800000 + 0x100 * _address + 0xF0;
 
-	id += 0x00010000 * command;
-	
+	id += (0x00010000 * command);
+	id = __bswap_32(id);
 	return id;
 }
 
@@ -40,7 +42,7 @@ void REG1K0100G::showType()
 	printf("REG1K0100G");
 }
 
-void REG1K0100G::parse(int canId, uint8_t data[])
+void REG1K0100G::parse(uint32_t canId, uint8_t data[])
 {
 	 uint8_t *idData = (uint8_t*)&canId;
 
@@ -158,14 +160,14 @@ void REG1K0100G::setCurrent(uint32_t current)
 	_setSystemOutputValues();
 }
 
-void REG1K0100G::sendRqRdTemperature()
+void REG1K0100G::readTemperature()
 {
 	uint8_t data[8];
 	memset(data, 0, 8);
 	_sendCommand(_generateId(0x04), data);
 }
 
-void REG1K0100G::sendRqRdInputVoltage()
+void REG1K0100G::readInputVoltage()
 {
 	uint8_t data[8];
 	memset(data, 0, 8);

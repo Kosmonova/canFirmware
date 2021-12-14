@@ -37,7 +37,12 @@ void ConverterBase::_cmdNotImplemented(char *nameFunction)
 	showType();
 	printf("\n");
 }
-		
+
+void ConverterBase::parse(uint32_t canId, uint8_t data[])
+{
+	_cmdNotImplemented("parse");
+}
+
 void ConverterBase::setVoltage(uint32_t voltage)
 {
 	_cmdNotImplemented("set_voltage");

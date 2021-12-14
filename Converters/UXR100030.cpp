@@ -15,7 +15,8 @@ uint32_t UXR100030::_generateId()
 	uint32_t id;
 
 // 	if(_broadcast)
-		id = 0x60 * 0x100000 + 0x800 * 0xFF * 0xF0;
+// 		id = 0x60 * 0x100000 + 0x800 * 0xFF + 8 * 0xF0;
+		id = 0x60 * 0x100000  + 0x80000 + 0x800 * 0xFF + 8 * 0;
 // 	else
 // 		id = 0x60 * 0x100000 + 0x80000 + 0x800 * _address + 8 * 0xF0;
 
@@ -59,7 +60,7 @@ void UXR100030::_generateReadMdlData(uint8_t *data, uint16_t reg,
 
 uint8_t UXR100030::_getAddressFromId(uint32_t id)
 {
-	id = __bswap_32(id);
+// 	id = __bswap_32(id);
 	return (id & 0x7F8) / 8;
 }
 
@@ -139,11 +140,12 @@ void UXR100030::showType()
 	printf("UXR100030");
 }
 
-void UXR100030::parse(int canId, uint8_t data[])
+void UXR100030::parse(uint32_t canId, uint8_t data[])
 {
-	canId = __bswap_32(canId);
+// 	canId = __bswap_32(canId);
 // 	if(_address != _getAddressFromId(canId))
 // 		return;
+	printf("protno: %x\n", canId >> 20);
 printf("current addres is %x\n", _getAddressFromId(canId));
 	uint16_t reg;
 	uint32_t value;

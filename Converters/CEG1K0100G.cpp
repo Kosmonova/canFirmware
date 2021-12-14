@@ -13,7 +13,7 @@ void CEG1K0100G::showType()
 	printf("CEG1K0100G");
 }
 
-void CEG1K0100G::parse(int canId, uint8_t data[])
+void CEG1K0100G::parse(uint32_t canId, uint8_t data[])
 {
 }
 

@@ -18,7 +18,7 @@ class ConverterBase
 	public:
 		ConverterBase(int fdSerial, int address);
 		virtual void showType() = 0;
-		virtual void parse(int canId, uint8_t data[]) = 0;
+		virtual void parse(uint32_t canId, uint8_t data[]);
 
 		virtual void setVoltage(uint32_t voltage);
 		virtual void readInputVoltage();

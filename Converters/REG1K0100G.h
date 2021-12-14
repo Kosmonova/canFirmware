@@ -14,11 +14,11 @@ class REG1K0100G : public ConverterBase
 	public:
 		REG1K0100G(int fdSerial, int address);
 		void showType();
-		void parse(int canId, uint8_t data[]);
+		void parse(uint32_t canId, uint8_t data[]);
 		void setVoltage(uint32_t voltage);
 		void setCurrent(uint32_t current);
-		void sendRqRdTemperature();
-		void sendRqRdInputVoltage();
+		void readTemperature();
+		void readInputVoltage();
 		void sendRqRdOutputSystemValues();
 		void on();
 		void off();

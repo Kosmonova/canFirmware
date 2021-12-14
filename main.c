@@ -124,6 +124,19 @@ int main(void)
 	memset(uartMsg, 0xAB, 100);
 	int sizeUart = 0;
 	long lastTime = milis();
+	
+// 	can_t msg1;
+// 	uint8_t dataSetOn[8] = {0x3, 0, 0, 0x30, 0, 0, 0, 0,};
+// 	msg1.id = 0x60 * 0x100000  + 0x80000 + 0x800 * 0xFF + 8 * 0xF0;
+// 	memcpy( msg1.data, dataSetOn, 8);
+// 	while(1)
+// 	{
+// 		
+// 		can_send_message(&msg1);
+// 		_delay_ms(500);
+// 	}
+	
+	
 	while (1)
 	{
 		can_t msg;
@@ -134,7 +147,7 @@ int main(void)
 			if (can_get_message(&msg))
 			{
 				uart_write(&msg.id, 4);
-				uart_write(&msg.data, 8);
+				uart_write(msg.data, 8);
 			}
 		}
 
@@ -155,8 +168,8 @@ int main(void)
 		memcpy(&msg.id, uartMsg, 4);
 		memcpy(msg.data, uartMsg + 4, 8);
 		can_send_message(&msg);
-		uart_write(&msg.id, 4);
-		uart_write(msg.data, 8);
+// 		uart_write(&msg.id, 4);
+// 		uart_write(msg.data, 8);
 	}
 
 	return 0;

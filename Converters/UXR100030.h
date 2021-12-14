@@ -71,7 +71,7 @@ class UXR100030 : public ConverterBase
 	public:
 		UXR100030(int fdSerial, int address);
 		void showType();
-		void parse(int canId, uint8_t data[]);
+		void parse(uint32_t canId, uint8_t data[]);
 
 		void setVoltage(uint32_t voltage);
 		void readOuputVotage();
