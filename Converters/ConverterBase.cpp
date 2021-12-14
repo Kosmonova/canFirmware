@@ -15,6 +15,11 @@ void ConverterBase::changeAddress(uint8_t address)
 	_address = address;
 }
 
+uint8_t ConverterBase::getAddress()
+{
+	return _address;
+}
+
 /* Function to reverse arr[] from start to end*/
 void ConverterBase::_revereseArray(uint8_t arr[], int start, int end)
 {
@@ -55,7 +60,7 @@ void ConverterBase::setVoltage(uint32_t voltage)
 
 void ConverterBase::readOuputVotage()
 {
-	_cmdNotImplemented("get_out_voltage");
+	_cmdNotImplemented("read_output_voltage");
 }
 
 void ConverterBase::setCurrent(uint32_t current)

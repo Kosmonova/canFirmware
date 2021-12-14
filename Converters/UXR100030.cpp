@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <byteswap.h>
+#include <unistd.h>
 
 #include "UXR100030.h"
 
@@ -31,12 +32,12 @@ void UXR100030::_generateSetMdlData(uint8_t *data, uint16_t reg,
 	*((uint16_t*)(data + 2)) = __bswap_16(reg);
 	*((uint32_t*)(data + 4)) = __bswap_32(value);
 	
-	printf("data:\n");
-	for(int idx = 0; idx < 8 ; idx ++)
-	{
-		printf("%0x, ", data[idx]);
-	}
-	printf("\n");
+// 	printf("data:\n");
+// 	for(int idx = 0; idx < 8 ; idx ++)
+// 	{
+// 		printf("%0x, ", data[idx]);
+// 	}
+// 	printf("\n");
 	
 }
 
@@ -48,18 +49,17 @@ void UXR100030::_generateReadMdlData(uint8_t *data, uint16_t reg,
 	*((uint16_t*)(data + 2)) = __bswap_16(reg);
 	*((uint32_t*)(data + 4)) = __bswap_32(value);
 	
-	printf("data:\n");
-	for(int idx = 0; idx < 8 ; idx ++)
-	{
-		printf("%0x, ", data[idx]);
-	}
-	printf("\n");
+// 	printf("data:\n");
+// 	for(int idx = 0; idx < 8 ; idx ++)
+// 	{
+// 		printf("%0x, ", data[idx]);
+// 	}
+// 	printf("\n");
 
 }
 
 uint8_t UXR100030::_getAddressFromId(uint32_t id)
 {
-	id = __bswap_32(id);
 	return (id & 0x7F8) / 8;
 }
 
@@ -141,11 +141,12 @@ void UXR100030::showType()
 
 void UXR100030::parse(uint32_t canId, uint8_t data[])
 {
-	if(_address != _getAddressFromId(canId))
+	if(_address != _getAddressFromId(canId) && (canId >> 20) != 0x60)
 		return;
 
-	printf("protno: %x\n", canId >> 20);
-printf("current addres is %x\n", _getAddressFromId(canId));
+
+// printf("current addres is %x\n", _getAddressFromId(canId));
+// printf("proto is %x\n", canId >> 20);
 	uint16_t reg;
 	uint32_t value;
 	bool isFloat;
@@ -209,6 +210,10 @@ printf("current addres is %x\n", _getAddressFromId(canId));
 			printf("module rated output current is %s A\n",
 				_getFormat(buff, value, isFloat));
 			break;
+		case GET_INPUT_POWER:
+			printf("module rated output current is %s A\n",
+				_getFormat(buff, value, isFloat));
+			break;
 		case GET_CURRENT_MODULE_INPUT_WORKING_MODE:
 			switch(value)
 			{
@@ -254,25 +259,29 @@ void UXR100030::readOuputVotage()
 	_generateReadMdlData(data, GET_MODULE_VOLTAGE, 0);
 	_sendCommand(_generateId(), data);	
 }
-
+#define TIME_WAIT 2
 void UXR100030::readInputVoltage()
 {
 	uint8_t data[8];
 
 	_generateReadMdlData(data, GET_MODULE_INPUT_PHASE_VOLTAGE, 0);
 	_sendCommand(_generateId(), data);
-
+sleep(TIME_WAIT);
 	_generateReadMdlData(data, GET_MODULE_FPCO_VOLTAGE_POSITIVE_HALF, 0);
 	_sendCommand(_generateId(), data);
+sleep(TIME_WAIT);
 
 	_generateReadMdlData(data, GET_MODULE_PFCO_VOLTAGE_NEGATIVE_HALF, 0);
 	_sendCommand(_generateId(), data);
+sleep(TIME_WAIT);
 
 	_generateReadMdlData(data, GET_MODULE_AC_PHASE_A_VOLTAGE, 0);
 	_sendCommand(_generateId(), data);
+sleep(TIME_WAIT);
 
 	_generateReadMdlData(data, GET_MODULE_AC_PHASE_B_VOLTAGE, 0);
 	_sendCommand(_generateId(), data);
+sleep(TIME_WAIT);
 
 	_generateReadMdlData(data, GET_MODULE_AC_PHASE_C_VOLTAGE, 0);
 	_sendCommand(_generateId(), data);
@@ -284,6 +293,7 @@ void UXR100030::readPower()
 	_generateReadMdlData(data, GET_INPUT_POWER, 0);
 	_sendCommand(_generateId(), data);
 
+sleep(TIME_WAIT);
 	_generateReadMdlData(data, GET_MODLE_RATED_OUTPUT_POWER, 0);
 	_sendCommand(_generateId(), data);
 }
@@ -294,6 +304,7 @@ void UXR100030::readStatus()
 	_generateReadMdlData(data, GET_CURRENT_ALARM_STATUS, 0);
 	_sendCommand(_generateId(), data);
 
+sleep(TIME_WAIT);
 	_generateReadMdlData(data, GET_CURRENT_MODULE_INPUT_WORKING_MODE, 0);
 	_sendCommand(_generateId(), data);
 }
@@ -319,6 +330,7 @@ void UXR100030::readOutputCurrent()
 	_generateReadMdlData(data, GET_MODULE_CURRENT, 0);
 	_sendCommand(_generateId(), data);
 
+sleep(TIME_WAIT);
 	_generateReadMdlData(data, GET_MODULE_RATED_OUTPUT_CURRENT, 0);
 	_sendCommand(_generateId(), data);
 }
@@ -342,6 +354,7 @@ void UXR100030::readTemperature()
 	uint8_t data[8];
 	_generateReadMdlData(data, GET_MODULE_DC_BOARD_TEMPERATURE, 0);
 	_sendCommand(_generateId(), data);
+sleep(TIME_WAIT);
 
 	_generateReadMdlData(data, GET_MODULE_PFC_BOARD_TEMPERATURE, 0);
 	_sendCommand(_generateId(), data);

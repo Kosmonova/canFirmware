@@ -18,6 +18,7 @@ class ConverterBase
 	public:
 		ConverterBase(int fdSerial, int address);
 		void changeAddress(uint8_t address);
+		uint8_t getAddress();
 		virtual void showType() = 0;
 		virtual void parse(uint32_t canId, uint8_t data[]);
 

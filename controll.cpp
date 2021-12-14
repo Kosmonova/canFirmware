@@ -172,6 +172,8 @@ void printHelp()
 	printf("\tread_power read power in W\n");
 	printf("\tread_status read current alarm/status\n");
 	printf("\tread_output_current read current on output in Ampers\n");
+	printf("\tread_output_voltage read voltage on output in Volt\n");
+	printf("\tread_current_address read current address of converter\n");
 	printf("\tchange_type <converter, address>,\n");
 	printf("\t\twhere converter is BEG75050 or CEG1K0100G or UXR100030 or REG1K0100G\n");
 	printf("\t\taddress is number from <0-63>\n");
@@ -273,7 +275,7 @@ int main(int argc, char *argv[])
 			if(matchCommand(&pCommandStart, "DC"))
 				pConverter->setModuleInputMode(DC_MODE);
 		}
-		else if(matchCommand(&pCommandStart, "get_out_voltage"))
+		else if(matchCommand(&pCommandStart, "read_output_voltage"))
 		{
 			pConverter->readOuputVotage();
 		}
@@ -312,6 +314,11 @@ int main(int argc, char *argv[])
 			int address;
 			sscanf(pCommandStart, "%u", &address);
 			pConverter->changeAddress(address);
+		}
+		else if(matchCommand(&pCommandStart, "read_current_address"))
+		{
+			printf("current address is: %x\n",
+				pConverter->getAddress());
 		}
 		else if(matchCommand(&pCommandStart, "change_type"))
 		{
