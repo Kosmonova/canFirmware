@@ -8,16 +8,13 @@ ConverterBase::ConverterBase(int fdSerial, int address) :
 	_address(address),
 	_broadcast(false)
 {
-	if(_address > 0x65)
-		_broadcast = true;
+	_broadcast = (_address > 0x65);
 }
 
 void ConverterBase::changeAddress(uint8_t address)
 {
-	if(_address < 0x65)
-		_broadcast = false;
-
 	_address = address;
+	_broadcast = (_address > 0x65);
 }
 
 uint8_t ConverterBase::getAddress()
