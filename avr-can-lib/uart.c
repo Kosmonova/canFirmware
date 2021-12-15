@@ -9,8 +9,7 @@
 #define RX_UKONCENE 1
 #define RX_NEUKONCENE 2
 
-
-#define	BUF_SIZE 128 					// Velkost rx pola
+					// Velkost rx pola
 char rx_buff[BUF_SIZE];	//inicializacia rx pola
 volatile unsigned char rx_pos,rx_stav = RX_NEUKONCENE;				// ukazovatel pola, stav rx dat
 
@@ -131,7 +130,7 @@ ISR(USART_RXC_vect)
 	rx_pos = 0;
 	rx_stav = 0;
 
-	while(UCSRA & (1<<RXC))
+	while((UCSRA & (1<<RXC)) && rx_pos < BUF_SIZE)
 	{
 		rx_buff[rx_pos] = UDR;	// ulozenie znaku do buffer-a
 		rx_pos++;	 // inkrementuj pocitadlo

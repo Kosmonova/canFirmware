@@ -8,6 +8,16 @@
 #include <string.h>
 #include <stdio.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
+
+// Function Implementation
+void wdt_init(void)
+{
+    MCUSR = 0;
+    wdt_disable();
+
+    return;
+}
 
 // #define SUPPORT_EXTENDED_CANID
 
@@ -109,68 +119,74 @@ void setTimer()
 
 int main(void)
 {
-	// Initialize MCP2515
-	can_init(BITRATE_125_KBPS);
-	uart_init(9600);
-
-					
-	// Load filters and masks
-	can_static_filter(can_filter);
-	setTimer();
-	sei();
-
-
-	char uartMsg[100];
-	memset(uartMsg, 0xAB, 100);
-	int sizeUart = 0;
-	long lastTime = milis();
-	
-// 	can_t msg1;
-// 	uint8_t dataSetOn[8] = {0x3, 0, 0, 0x30, 0, 0, 0, 0,};
-// 	msg1.id = 0x60 * 0x100000  + 0x80000 + 0x800 * 0xFF + 8 * 0xF0;
-// 	memcpy( msg1.data, dataSetOn, 8);
-// 	while(1)
-// 	{
-// 		
-// 		can_send_message(&msg1);
-// 		_delay_ms(500);
-// 	}
-	
-	
-	while (1)
+	while(1)
 	{
-		can_t msg;
-		// Check if a new messag was received
-		if (can_check_message())
+			// Initialize MCP2515
+		can_init(BITRATE_125_KBPS);
+		uart_init(57600);
+
+						
+		// Load filters and masks
+		can_static_filter(can_filter);
+		setTimer();
+		sei();
+
+
+		char uartMsg[BUF_SIZE];
+		memset(uartMsg, 0xAB, BUF_SIZE);
+		int sizeUart = 0;
+		long lastTime = milis();
+		
+	// 	can_t msg1;
+	// 	uint8_t dataSetOn[8] = {0x3, 0, 0, 0x30, 0, 0, 0, 0,};
+	// 	msg1.id = 0x60 * 0x100000  + 0x80000 + 0x800 * 0xFF + 8 * 0xF0;
+	// 	memcpy( msg1.data, dataSetOn, 8);
+	// 	while(1)
+	// 	{
+	// 		
+	// 		can_send_message(&msg1);
+	// 		_delay_ms(500);
+	// 	}
+		
+		
+		while (1)
 		{
-			// Try to read the message
-			if (can_get_message(&msg))
+			can_t msg;
+			// Check if a new messag was received
+			if (can_check_message())
 			{
-				uart_write(&msg.id, 4);
-				uart_write(msg.data, 8);
+				// Try to read the message
+				if (can_get_message(&msg))
+				{
+					uart_write(&msg.id, 4);
+					uart_write(msg.data, 8);
+				}
 			}
-		}
 
-		if(lastTime + 100 < milis())
-		{
+			if(lastTime + 100 < milis() || (sizeUart > BUF_SIZE /2))
+			{
+// 				sizeUart = 0;
+// 				lastTime = milis();
+				cli();
+				break;
+			}
+		
+			sizeUart += uart_read(uartMsg + sizeUart);
+
+			if(sizeUart < 12)
+				continue;
+
+// 			lastTime = milis();
+
 			sizeUart = 0;
-			lastTime = milis();
+			memcpy(&msg.id, uartMsg, 4);
+			memcpy(msg.data, uartMsg + 4, 8);
+			can_send_message(&msg);
+	// 		uart_write(&msg.id, 4);
+	// 		uart_write(msg.data, 8);
 		}
-	
-		sizeUart += uart_read(uartMsg + sizeUart);
-
-		if(sizeUart < 12)
-			continue;
-
-		lastTime = milis();
-
-		sizeUart = 0;
-		memcpy(&msg.id, uartMsg, 4);
-		memcpy(msg.data, uartMsg + 4, 8);
-		can_send_message(&msg);
-// 		uart_write(&msg.id, 4);
-// 		uart_write(msg.data, 8);
 	}
+
 
 	return 0;
 }

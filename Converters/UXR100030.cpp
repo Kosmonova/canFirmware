@@ -259,7 +259,7 @@ void UXR100030::readOuputVotage()
 	_generateReadMdlData(data, GET_MODULE_VOLTAGE, 0);
 	_sendCommand(_generateId(), data);	
 }
-#define TIME_WAIT 2
+#define TIME_WAIT 1
 void UXR100030::readInputVoltage()
 {
 	uint8_t data[8];
@@ -354,10 +354,29 @@ void UXR100030::readTemperature()
 	uint8_t data[8];
 	_generateReadMdlData(data, GET_MODULE_DC_BOARD_TEMPERATURE, 0);
 	_sendCommand(_generateId(), data);
-sleep(TIME_WAIT);
+// sleep(TIME_WAIT);
+// 	usleep(200000);
+// 
+// 	_generateReadMdlData(data, GET_MODULE_PFC_BOARD_TEMPERATURE, 0);
+// 	_sendCommand(_generateId(), data);
+}
 
-	_generateReadMdlData(data, GET_MODULE_PFC_BOARD_TEMPERATURE, 0);
-	_sendCommand(_generateId(), data);
+
+void UXR100030::readTempCyclic(uint8_t address)
+{
+	bool broadcast = address > 0x65;
+	uint8_t data[8];
+	uint32_t id;
+
+	if(broadcast)
+		id = 0x60 * 0x100000 + 0x800 * 0xFF + 8 * 0xF0;
+	else
+		id = 0x60 * 0x100000 + 0x80000 + 0x800 * _address + 8 * 0xF0;
+
+	id = __bswap_32(id);
+
+	_generateReadMdlData(data, GET_MODULE_DC_BOARD_TEMPERATURE, 0);
+	_sendCommand(id, data);
 }
 
 void UXR100030::on()

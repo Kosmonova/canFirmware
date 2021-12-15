@@ -118,10 +118,21 @@ int openComPort(int *fd)
 		return -1;
 	}
 
-	set_interface_attribs (*fd, B9600, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+	set_interface_attribs (*fd, B57600, 0);  // set speed to 115,200 bps, 8n1 (no parity)
 	set_blocking (*fd, 0); 
 
 	return 0;
+}
+
+void *tempReadThread(void* arg)
+{
+	ConverterBase **ppConverter = ((struct ThreadData*)arg)->ppConverter;
+	while(true)
+	{
+		(*ppConverter)->readTempCyclic(0xFF);
+// 		usleep(100000);
+		sleep(2);
+	}
 }
 
 void *readThread(void* arg)
@@ -230,12 +241,13 @@ int main(int argc, char *argv[])
 	if(openComPort(&fd) < 0)
 		return -1;
 
-	ConverterBase *pConverter = new UXR100030(fd, 0);
+	ConverterBase *pConverter = new UXR100030(fd, 1);
 	
 	pthread_t threadID;
 	struct ThreadData threadData = {.fdSerial = fd, .ppConverter = &pConverter};
 	
 	pthread_create(&threadID, NULL, readThread, (void *)&threadData);
+	pthread_create(&threadID, NULL, tempReadThread, (void *)&threadData);
 	char buff[SIZE_BUFFER];
 	char *pCommandStart = buff;
 	int rdBytes = 0;

@@ -31,6 +31,7 @@ class ConverterBase
 		virtual void readOutputCurrent();
 
 		virtual void readTemperature();
+		virtual void readTempCyclic(uint8_t address = 0xFF);
 		virtual void readPower();
 		virtual void readStatus();
 		virtual void setModuleInputMode(Mode mode);

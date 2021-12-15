@@ -85,6 +85,7 @@ class UXR100030 : public ConverterBase
 		void readStatus();
 		void setModuleInputMode(Mode mode);
 		void readTemperature();
+		void readTempCyclic(uint8_t address = 0xFF);
 		void sendRqRdInputVoltage(){}
 		void on();
 		void off();

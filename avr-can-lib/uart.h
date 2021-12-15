@@ -3,6 +3,9 @@
 
 #include <avr/io.h>
 
+
+#define	BUF_SIZE 80 
+
 /******************************************************
     inicializacia
     - nastavenie baudRate - ako vstupna premenna
