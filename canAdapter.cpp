@@ -32,6 +32,8 @@
 #define CAN_800Kb 7
 #define CAN_1Mb   8
 
+#define ACK 0x06
+
 struct ThreadData
 {
 	int fdSerial;
@@ -117,6 +119,55 @@ int openCanPort(int fdSerial, uint8_t baudRate)
 {
 	uint8_t data[4] = {0x15, 'S', baudRate, 0x15};
 	write(fdSerial, data, 4);
+	read(fdSerial, data, 1);
+
+	if(data[0] != ACK)
+		return -1;
+
+	data[0] = 'O';
+	data[1] = 0x15;
+	write(fdSerial, data, 2);
+	read(fdSerial, data, 1);
+
+	if(data[0] != ACK)
+		return -2;
+}
+
+int writeCan(int fdSerial, uint32_t canId, int dataSize, uint8_t *data, bool extendCanId)
+{
+	if(dataSize > 8)
+	{
+		printf("err, data size is abowe than 8\n");
+		return -1;
+	}
+
+	uint8_t canData[20];
+	int canSendIndex = 0;
+	canData[canSendIndex++] = extendCanId ? 'x' : 't';
+
+	if(extendCanId)
+	{
+		*(uint32_t*)(canData + canSendIndex) = canId;
+		canSendIndex += 4;
+	}
+	else
+	{
+		*(uint32_t*)(canData + canSendIndex) = canId & 0x7FF;
+		canSendIndex += 3;
+	}
+
+	canData[canSendIndex++] = dataSize;
+	memcpy(canData + canSendIndex, data, dataSize);
+	canSendIndex += dataSize;
+	canData[canSendIndex++] = 0x15;
+
+	int ret = write(fdSerial, canData, canSendIndex);
+	read(fdSerial, canData, 1);
+
+	if(canData[0] != ACK)
+		return -2;
+
+	return ret;
 }
 
 int readCom(int SerialHandle, uint8_t * pBuff, uint32_t BytesToRead)
