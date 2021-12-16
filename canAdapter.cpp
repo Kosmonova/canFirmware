@@ -20,6 +20,16 @@
 #define SIZE_BUFFER 100
 #define error_message printf
 
+#define CAN_10Kb  0
+#define CAN_20Kb  1
+#define CAN_50Kb  2
+#define CAN_100Kb 3
+#define CAN_125Kb 4
+#define CAN_250Kb 5
+#define CAN_500Kb 6
+#define CAN_800Kb 7
+#define CAN_1Mb   8
+
 struct ThreadData
 {
 	int fdSerial;
@@ -101,6 +111,12 @@ int openComPort(char *portname, int *fd)
 	return 0;
 }
 
+int openCanPort(int fdSerial, uint8_t baudRate)
+{
+	uint8_t data[4] = {0x15, 'S', baudRate, 0x15};
+	write(fdSerial, data, 4);
+}
+
 int readCom(int SerialHandle, uint8_t * pBuff, uint32_t BytesToRead)
 {
 	struct pollfd fd = { .fd = SerialHandle, .events = POLLIN };
@@ -151,17 +167,27 @@ void *readThread(void* arg)
 int main(int argc, char *argv[])
 {
 	char portname[20];
+	uint8_t canBitRate = CAN_125Kb;
 
-	if(argc == 2)
+	if(argc >= 2)
 		strcpy(portname, argv[1]);
 	else
 		strcpy(portname, "/dev/ttyUSB0");
 
+	if(argc >= 3)
+		sscanf(argv[2], "%u", &canBitRate);
+
+	if(canBitRate > 8)
+		canBitRate = 8;
+
 	printf("trying open %s\n", portname);
+	printf("trying can bus set on: %d\n", canBitRate);
 	int fd;
 
 	if(openComPort(portname, &fd) < 0)
 		return -1;
+
+	openCanPort(fd, canBitRate);
 
 	return 0;
 }
