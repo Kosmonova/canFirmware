@@ -17,6 +17,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "Battery.h"
+
 #define SIZE_BUFFER 100
 #define error_message printf
 
