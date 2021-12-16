@@ -66,8 +66,6 @@ set_interface_attribs (int fd, int speed, int parity)
         return 0;
 }
 
-char portname[20];
-
 void
 set_blocking (int fd, int should_block)
 {
@@ -108,7 +106,7 @@ int readCom(int SerialHandle, uint8_t * pBuff, uint32_t BytesToRead)
 	return bytesread;
 }
 
-int openComPort(int *fd)
+int openComPort(char *portname, int *fd)
 {
 	*fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
 
@@ -230,6 +228,8 @@ int matchCommand(char **ppCommandStart, const char *command)
 
 int main(int argc, char *argv[])
 {
+	char portname[20];
+
 	if(argc == 2)
 		strcpy(portname, argv[1]);
 	else
@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
 	printf("trying open %s\n", portname);
 	int fd;
 
-	if(openComPort(&fd) < 0)
+	if(openComPort(portname, &fd) < 0)
 		return -1;
 
 	ConverterBase *pConverter = new UXR100030(fd, 1);

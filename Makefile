@@ -402,7 +402,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 all: begin gccversion sizebefore build sizeafter libConv libCan end
 
 # Change the build target to build a HEX file or a library.
-build: elf hex eep lss sym controll
+build: elf hex eep lss sym controll canAdapter
 build: lib
 
 
@@ -589,6 +589,9 @@ $(OBJDIR)/%.o : %.S
 controll: controll.cpp
 	make -C Converters
 	c++ controll.cpp -I Converters -L Converters -lConverters -pthread -o controll
+
+canAdapter: canAdapter.cpp
+	c++ canAdapter.cpp -pthread -o canAdapter
 
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c
