@@ -115,6 +115,27 @@ int openComPort(char *portname, int *fd)
 	return 0;
 }
 
+int readCom(int SerialHandle, uint8_t * pBuff, uint32_t BytesToRead)
+{
+	struct pollfd fd = { .fd = SerialHandle, .events = POLLIN };
+    size_t      bytesread = 0;
+
+    while (poll (&fd, 1, 25) == 1)
+    {
+        int chunksize = read (SerialHandle, pBuff + bytesread, BytesToRead);
+        if (chunksize == -1)
+            break;
+
+        bytesread += chunksize;
+        BytesToRead -= chunksize;
+
+        if (BytesToRead == 0)
+           break;
+    }
+
+	return bytesread;
+}
+
 int openCanPort(int fdSerial, uint8_t baudRate)
 {
 	uint8_t data[4] = {0x15, 'S', baudRate, 0x15};
@@ -131,6 +152,20 @@ int openCanPort(int fdSerial, uint8_t baudRate)
 
 	if(data[0] != ACK)
 		return -2;
+
+	return 0;
+}
+
+int closeCanPort(int fdSerial)
+{
+	uint8_t data = 0x15;
+	write(fdSerial, &data, 1);
+	read(fdSerial, &data, 1);
+
+	if(data != ACK)
+		return -2;
+
+	return 0;
 }
 
 int writeCan(int fdSerial, uint32_t canId, int dataSize, uint8_t *data, bool extendCanId)
@@ -170,25 +205,43 @@ int writeCan(int fdSerial, uint32_t canId, int dataSize, uint8_t *data, bool ext
 	return ret;
 }
 
-int readCom(int SerialHandle, uint8_t * pBuff, uint32_t BytesToRead)
+int readCan(int fdSerial, uint32_t *canId, int *dataSize, uint8_t *canData, bool *extendCanId)
 {
-	struct pollfd fd = { .fd = SerialHandle, .events = POLLIN };
-    size_t      bytesread = 0;
+	uint8_t data[20];
+	int readBytes = readCom(fdSerial, data, 20);
+	int posData = 0;
 
-    while (poll (&fd, 1, 25) == 1)
-    {
-        int chunksize = read (SerialHandle, pBuff + bytesread, BytesToRead);
-        if (chunksize == -1)
-            break;
+	switch(data[0])
+	{
+		case 'x':
+		case 'X':
+				*extendCanId = true;
+				break;
+		case 't':
+		case 'T':
+				*extendCanId = false;
+				break;
+		default:
+			return -1;
+	}
 
-        bytesread += chunksize;
-        BytesToRead -= chunksize;
+	posData++;
 
-        if (BytesToRead == 0)
-           break;
-    }
+	if(*extendCanId)
+	{
+		*canId = *(uint32_t*)(data + posData);
+		posData += 4;
+	}
+	else
+	{
+		*canId = (*(uint32_t*)(data + posData)) & 0x7FF;
+		posData += 3;
+	}
 
-	return bytesread;
+	*dataSize = data[posData++];
+	memcpy(canData, data + posData, *dataSize);
+
+	return 0;
 }
 
 void *readThread(void* arg)
