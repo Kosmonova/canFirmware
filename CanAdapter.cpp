@@ -47,7 +47,8 @@ int CanAdapter::closeCan()
 	return 0;
 }
 
-int CanAdapter::readCan(uint32_t *canId, int *dataSize, uint8_t *canData, bool *extendCanId)
+int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
+	bool *extendCanId)
 {
 	uint8_t data[20];
 	int readBytes = _comPort->readCom(data, 20);

@@ -17,34 +17,25 @@
 
 struct ThreadData
 {
-	int fdSerial;
-// 	ConverterBase **ppConverter;
+	CanAdapter *pcanAdapter;
+	Battery *pbattery;
 };
 
 void *readThread(void* arg)
 {
-	int fd = ((struct ThreadData*)arg)->fdSerial;
-	uint8_t buff[SIZE_BUFFER];
-	int idx = 0;
+	CanAdapter *pcanAdapter = ((struct ThreadData*)arg)->pcanAdapter;
+	Battery *pbattery = ((struct ThreadData*)arg)->pbattery;
 
-// 	while(1)
-// 	{
-// // 		int numRcvBytes = readCom(fd, buff, SIZE_BUFFER);
-// 
-// // 		if(numRcvBytes)
-// 		{
-// // 			printf("\n");
-// 
-// // 		for(idx = 0; idx < numRcvBytes; idx++)
-// // 		{
-// // 			printf("%c", buff[idx]);
-// // 		}
-// 			if(numRcvBytes == 12)
-// 				/*(*ppConverter)->parse(*((uint32_t*)buff), buff + 4)*/;
-// 			else
-// 				printf("wrong data received\n");
-// 		}
-// 	}
+	uint8_t buff[SIZE_BUFFER];
+	int sizeData;
+	int idx = 0;
+	uint32_t canId;
+
+	while(true)
+	{
+		pcanAdapter->readCan(&canId, buff, &sizeData);
+		pbattery->parse(canId, buff, sizeData);
+	}
 }
 
 int main(int argc, char *argv[])
@@ -72,6 +63,18 @@ int main(int argc, char *argv[])
 
 	CanAdapter canAdapter(&comPort, true);
 	canAdapter.openCan(canBitRate);
+	Battery battery;
+
+	pthread_t threadID;
+	struct ThreadData threadData = {.pcanAdapter = &canAdapter,
+		.pbattery = &battery};
+
+	pthread_create(&threadID, NULL, readThread, (void *)&threadData);
+
+	while(true)
+	{
+		
+	}
 
 	return 0;
 }

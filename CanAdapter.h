@@ -27,7 +27,7 @@ class CanAdapter
 		CanAdapter(ComPort *comPort, bool extendId);
 		int openCan(uint8_t baudRate);
 		int closeCan();
-		int readCan(uint32_t *canId, int *dataSize, uint8_t *canData,
+		int readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 			bool *extendCanId = nullptr);
 		int writeCan(uint32_t canId, int dataSize, uint8_t *data);
 };
