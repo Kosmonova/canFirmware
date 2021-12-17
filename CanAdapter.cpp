@@ -53,6 +53,7 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 	uint8_t data[20];
 	int readBytes = _comPort->readCom(data, 20);
 	int posData = 0;
+	bool extendId = _extendId;
 
 	if(extendCanId != nullptr)
 	{
@@ -69,11 +70,13 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 			default:
 				return -1;
 		}
+
+		extendId = *extendCanId;
 	}
 
 	posData++;
 
-	if(*extendCanId)
+	if(extendId)
 	{
 		*canId = *(uint32_t*)(data + posData);
 		posData += 4;

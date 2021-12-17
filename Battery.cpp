@@ -131,7 +131,7 @@ void Battery::parse(uint32_t canId, uint8_t *data, int dataSize)
 {
 	if(dataSize < 8)
 	{
-		printf("wring data size\n");
+		printf("wrong data size\n");
 		return;
 	}
 

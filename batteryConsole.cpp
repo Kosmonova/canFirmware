@@ -34,7 +34,8 @@ void *readThread(void* arg)
 	while(true)
 	{
 		pcanAdapter->readCan(&canId, buff, &sizeData);
-		pbattery->parse(canId, buff, sizeData);
+		if(sizeData != 0)
+			pbattery->parse(canId, buff, sizeData);
 	}
 }
 
