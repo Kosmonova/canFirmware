@@ -1,4 +1,5 @@
 #include "CanAdapter.h"
+
 #include <unistd.h>
 
 // source code on java:
@@ -7,15 +8,15 @@
 // manual:
 // https://www.ewertenergy.com/products.php?item=candapter&page=utilities
 
-CanAdapter::CanAdapter(int serialPort, bool extendId) : 
-	_SerialPort(serialPort),
+CanAdapter::CanAdapter(ComPort comPort, bool extendId) : 
+	_comPort(comPort),
 	_extendId(extendId)
 {}
 
-int CanAdapter::open(uint8_t baudRate)
+int CanAdapter::openCan(uint8_t baudRate)
 {
 	uint8_t data[4] = {0x15, 'S', baudRate, 0x15};
-	write(_SerialPort, data, 4);
+	_comPort->writeCom(data, 4);
 	read(_SerialPort, data, 1);
 
 	if(data[0] != ACK)
@@ -32,7 +33,7 @@ int CanAdapter::open(uint8_t baudRate)
 	return 0;
 }
 
-int CanAdapter::close()
+int CanAdapter::closeCan()
 {
 	uint8_t data = 0x15;
 	write(_SerialPort, &data, 1);
@@ -44,7 +45,7 @@ int CanAdapter::close()
 	return 0;
 }
 
-int CanAdapter::read(uint32_t *canId, int *dataSize, uint8_t *canData)
+int CanAdapter::readCan(uint32_t *canId, int *dataSize, uint8_t *canData)
 {
 	uint8_t data[20];
 	int readBytes = readCom(_SerialPort, data, 20);
@@ -83,7 +84,7 @@ int CanAdapter::read(uint32_t *canId, int *dataSize, uint8_t *canData)
 	return 0;
 }
 
-int CanAdapter::write(uint32_t canId, int dataSize, uint8_t *data)
+int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 {
 	if(dataSize > 8)
 	{
@@ -111,8 +112,8 @@ int CanAdapter::write(uint32_t canId, int dataSize, uint8_t *data)
 	canSendIndex += dataSize;
 	canData[canSendIndex++] = 0x15;
 
-	int ret = write(_SerialPort, canData, canSendIndex);
-	read(_SerialPort, canData, 1);
+	int ret = _comPort->writeCom(canData, canSendIndex);
+	_comPort->read(canData, 1);
 
 	if(canData[0] != ACK)
 		return -2;

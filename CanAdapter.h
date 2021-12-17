@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "ComPort.h"
+
 #define CAN_10Kb  0
 #define CAN_20Kb  1
 #define CAN_50Kb  2
@@ -18,15 +20,15 @@
 class CanAdapter
 {
 	private:
-		int _SerialPort;
+		ComPort *_comPort;
 		bool _extendId;
 
 	public:
-		CanAdapter(int serialPort, bool extendId);
-		int open(uint8_t baudRate);
-		int close();
-		int read();
-		int write();
+		CanAdapter(ComPort *comPort, bool extendId);
+		int openCan(uint8_t baudRate);
+		int closeCan();
+		int readCan(uint32_t *canId, int *dataSize, uint8_t *canData);
+		int writeCan(uint32_t canId, int dataSize, uint8_t *data);
 };
 
 #endif
