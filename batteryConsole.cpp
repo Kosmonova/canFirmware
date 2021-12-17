@@ -1,9 +1,3 @@
-// source code on java:
-// https://www.ewertenergy.com/products.php?item=candapter&page=samplecode
-
-// manual:
-// https://www.ewertenergy.com/products.php?item=candapter&page=utilities
-
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
@@ -17,22 +11,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "CanAdapter.h"
 #include "Battery.h"
 
 #define SIZE_BUFFER 100
 #define error_message printf
 
-#define CAN_10Kb  0
-#define CAN_20Kb  1
-#define CAN_50Kb  2
-#define CAN_100Kb 3
-#define CAN_125Kb 4
-#define CAN_250Kb 5
-#define CAN_500Kb 6
-#define CAN_800Kb 7
-#define CAN_1Mb   8
-
-#define ACK 0x06
 
 struct ThreadData
 {
@@ -136,114 +120,6 @@ int readCom(int SerialHandle, uint8_t * pBuff, uint32_t BytesToRead)
 	return bytesread;
 }
 
-int openCanPort(int fdSerial, uint8_t baudRate)
-{
-	uint8_t data[4] = {0x15, 'S', baudRate, 0x15};
-	write(fdSerial, data, 4);
-	read(fdSerial, data, 1);
-
-	if(data[0] != ACK)
-		return -1;
-
-	data[0] = 'O';
-	data[1] = 0x15;
-	write(fdSerial, data, 2);
-	read(fdSerial, data, 1);
-
-	if(data[0] != ACK)
-		return -2;
-
-	return 0;
-}
-
-int closeCanPort(int fdSerial)
-{
-	uint8_t data = 0x15;
-	write(fdSerial, &data, 1);
-	read(fdSerial, &data, 1);
-
-	if(data != ACK)
-		return -2;
-
-	return 0;
-}
-
-int writeCan(int fdSerial, uint32_t canId, int dataSize, uint8_t *data, bool extendCanId)
-{
-	if(dataSize > 8)
-	{
-		printf("err, data size is abowe than 8\n");
-		return -1;
-	}
-
-	uint8_t canData[20];
-	int canSendIndex = 0;
-	canData[canSendIndex++] = extendCanId ? 'x' : 't';
-
-	if(extendCanId)
-	{
-		*(uint32_t*)(canData + canSendIndex) = canId;
-		canSendIndex += 4;
-	}
-	else
-	{
-		*(uint32_t*)(canData + canSendIndex) = canId & 0x7FF;
-		canSendIndex += 3;
-	}
-
-	canData[canSendIndex++] = dataSize;
-	memcpy(canData + canSendIndex, data, dataSize);
-	canSendIndex += dataSize;
-	canData[canSendIndex++] = 0x15;
-
-	int ret = write(fdSerial, canData, canSendIndex);
-	read(fdSerial, canData, 1);
-
-	if(canData[0] != ACK)
-		return -2;
-
-	return ret;
-}
-
-int readCan(int fdSerial, uint32_t *canId, int *dataSize, uint8_t *canData, bool *extendCanId)
-{
-	uint8_t data[20];
-	int readBytes = readCom(fdSerial, data, 20);
-	int posData = 0;
-
-	switch(data[0])
-	{
-		case 'x':
-		case 'X':
-				*extendCanId = true;
-				break;
-		case 't':
-		case 'T':
-				*extendCanId = false;
-				break;
-		default:
-			return -1;
-	}
-
-	posData++;
-
-	if(*extendCanId)
-	{
-		*canId = *(uint32_t*)(data + posData);
-		posData += 4;
-	}
-	else
-	{
-		*canId = (*(uint32_t*)(data + posData)) & 0x7FF;
-		posData += 3;
-	}
-
-	*dataSize = data[posData++];
-	memcpy(canData, data + posData, *dataSize);
-
-	return 0;
-}
-
 void *readThread(void* arg)
 {
 	int fd = ((struct ThreadData*)arg)->fdSerial;
@@ -293,7 +169,8 @@ int main(int argc, char *argv[])
 	if(openComPort(portname, &fd) < 0)
 		return -1;
 
-	openCanPort(fd, canBitRate);
+	CanAdapter canAdapter(fd, true);
+	canAdapter.open(canBitRate);
 
 	return 0;
 }
