@@ -15,6 +15,16 @@ class Battery
 		int _lowTemperatureCelsius;
 		int _averageTemperatureCelsius;
 		int _bmsTemperatureCelsius;
+		int _packCurrent100mA;
+		int _packOpenVoltage100mV;
+		int _packSummedVoltage100mV;
+		int _totalPackCycles;
+		int _packHealthPercent;
+		int _packResistancemOhm;
+		int _lowOpenCellVoltagemV;
+		int _hightOpenCellVoltagemV;
+		int _averageOpencellVoltagemV;
+		int _nominalPackCapacityAh;
 
 	public:
 		Battery();
