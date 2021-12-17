@@ -83,6 +83,39 @@ void printHelp()
 	printf("\tall print all information about battery\n");
 }
 
+void printAll(Battery *battery)
+{
+	printf("\tCharger current packet limit: %d A\n",
+		battery->getPackChargeCurrentLimit());
+	printf("\tDischarge current packet: %d A\n",
+		   battery->getPackDischargeCurrent());
+	printf("\tSupply 12 votage: %f V\n", battery->getSupplyVoltage12());
+	printf("\tState charge : %d %\n", battery->getStateChargePercent());
+	printf("\tPacket capacity : %d Ah\n", battery->getPackAmpHours());
+	printf("\tPacket voltage : %d V\n", battery->getPackVoltage());
+	printf("\tHigh temperature : %d °C\n",
+		   battery->getHightTemperatureCelsius());
+	printf("\tLow temperature : %d °C\n", battery->getLowTemperatureCelsius());
+	printf("\tAverage temperature : %d °C\n",
+		battery->getAverageTemperatureCelsius());
+	printf("\tBMS temperature : %d °C\n", battery->getBmsTemperatureCelsius());
+	printf("\tPacket Current : %f A\n", battery->getPackCurrent());
+	printf("\tPacket open voltage : %f V\n", battery->getPackOpenVoltage());
+	printf("\tPacket summary voltage : %f V\n",
+		battery->getPackSummedVoltage());
+	printf("\tTotal package cycles : %d\n", battery->getTotalPackCycles());
+	printf("\tPacket health : %d °C\n", battery->getPackHealthPercent());
+	printf("\tPacket resistance : %f Ohm\n", battery->getPackResistanceOhm());
+	printf("\tLow open cell voltage : %f V\n",
+		battery->getLowOpenCellVoltage());
+	printf("\tHigh open cell voltage : %f V\n",
+		battery->getHightOpenCellVoltage());
+	printf("\tAverage open cell voltage : %f V\n",
+		battery->getAverageOpencellVoltage());
+	printf("\tNominal Packet Capacity : %d Ah\n",
+		battery->getNominalPackCapacityAh());
+}
+
 int main(int argc, char *argv[])
 {
 	char portname[20];
@@ -134,6 +167,8 @@ int main(int argc, char *argv[])
 			break;
 		else if(matchCommand(&pCommandStart, "help"))
 			printHelp();
+		else if(matchCommand(&pCommandStart, "all"))
+			printAll(&battery);
 		else if(nextCommand(&pCommandStart) < 0)
 			rdBytes = 0;
 	}
