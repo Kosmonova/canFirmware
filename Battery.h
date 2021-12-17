@@ -32,6 +32,23 @@ class Battery
 		int getPackChargeCurrentLimit();
 		int getPackDischargeCurrent();
 		float getSupplyVoltage12();
+		int getStateChargePercent();
+		int getPackAmpHours();
+		int getPackVoltage();
+		int getHightTemperatureCelsius();
+		int getLowTemperatureCelsius();
+		int getAverageTemperatureCelsius();
+		int getBmsTemperatureCelsius();
+		float getPackCurrent();
+		float getPackOpenVoltage();
+		float getPackSummedVoltage();
+		int getTotalPackCycles();
+		int getPackHealthPercent();
+		float getPackResistanceOhm();
+		float getLowOpenCellVoltage();
+		float getHightOpenCellVoltage();
+		float getAverageOpencellVoltage();
+		int getNominalPackCapacityAh();
 };
 
 #endif

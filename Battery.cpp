@@ -42,6 +42,91 @@ float Battery::getSupplyVoltage12()
 	return _supplyVoltage12On100mV * 0.1;
 }
 
+int Battery::getStateChargePercent()
+{
+	return _stateChargePercent;
+}
+
+int Battery::getPackAmpHours()
+{
+	return _packAmpHours;
+}
+
+int Battery::getPackVoltage()
+{
+	return _packVoltage;
+}
+
+int Battery::getHightTemperatureCelsius()
+{
+	return _hightTemperatureCelsius;
+}
+
+int Battery::getLowTemperatureCelsius()
+{
+	return _lowTemperatureCelsius;
+}
+
+int Battery::getAverageTemperatureCelsius()
+{
+	return _averageTemperatureCelsius;
+}
+
+int Battery::getBmsTemperatureCelsius()
+{
+	return _bmsTemperatureCelsius;
+}
+
+float Battery::getPackCurrent()
+{
+	return _packCurrent100mA * 0.1;
+}
+
+float Battery::getPackOpenVoltage()
+{
+	return _packOpenVoltage100mV * 0.1;
+}
+
+float Battery::getPackSummedVoltage()
+{
+	return _packSummedVoltage100mV * 0.1;
+}
+
+int Battery::getTotalPackCycles()
+{
+	return _totalPackCycles;
+}
+
+int Battery::getPackHealthPercent()
+{
+	return _packHealthPercent;
+}
+
+float Battery::getPackResistanceOhm()
+{
+	return _packResistancemOhm * 0.001;
+}
+
+float Battery::getLowOpenCellVoltage()
+{
+	return _lowOpenCellVoltagemV * 0.001;
+}
+
+float Battery::getHightOpenCellVoltage()
+{
+	return _hightOpenCellVoltagemV * 0.001;
+}
+
+float Battery::getAverageOpencellVoltage()
+{
+	return _averageOpencellVoltagemV * 0.001;
+}
+
+int Battery::getNominalPackCapacityAh()
+{
+	return _nominalPackCapacityAh;
+}
+
 void Battery::parse(uint32_t canId, uint8_t *data, int dataSize)
 {
 	if(dataSize < 8)
