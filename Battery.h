@@ -29,6 +29,9 @@ class Battery
 	public:
 		Battery();
 		void parse(uint32_t canId, uint8_t *data, int dataSize);
+		int getPackChargeCurrentLimit();
+		int getPackDischargeCurrent();
+		float getSupplyVoltage12();
 };
 
 #endif

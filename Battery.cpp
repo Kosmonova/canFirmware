@@ -3,8 +3,43 @@
 
 #include "Battery.h"
 
-Battery::Battery()
+Battery::Battery() :
+	_packChargeCurrentLimit(-1),
+	_packDischargeCurrent(-1),
+	_supplyVoltage12On100mV(-1),
+	_stateChargePercent(-1),
+	_packAmpHours(-1),
+	_packVoltage(-1),
+	_hightTemperatureCelsius(-1),
+	_lowTemperatureCelsius(-1),
+	_averageTemperatureCelsius(-1),
+	_bmsTemperatureCelsius(-1),
+	_packCurrent100mA(-1),
+	_packOpenVoltage100mV(-1),
+	_packSummedVoltage100mV(-1),
+	_totalPackCycles(-1),
+	_packHealthPercent(-1),
+	_packResistancemOhm(-1),
+	_lowOpenCellVoltagemV(-1),
+	_hightOpenCellVoltagemV(-1),
+	_averageOpencellVoltagemV(-1),
+	_nominalPackCapacityAh(-1)
 {
+}
+
+int Battery::getPackChargeCurrentLimit()
+{
+	return _packChargeCurrentLimit;
+}
+
+int Battery::getPackDischargeCurrent()
+{
+	return _packDischargeCurrent;
+}
+
+float Battery::getSupplyVoltage12()
+{
+	return _supplyVoltage12On100mV * 0.1;
 }
 
 void Battery::parse(uint32_t canId, uint8_t *data, int dataSize)
