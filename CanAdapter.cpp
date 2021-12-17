@@ -1,6 +1,8 @@
 #include "CanAdapter.h"
 
 #include <unistd.h>
+#include <string.h>
+#include <stdio.h>
 
 // source code on java:
 // https://www.ewertenergy.com/products.php?item=candapter&page=samplecode
@@ -8,7 +10,7 @@
 // manual:
 // https://www.ewertenergy.com/products.php?item=candapter&page=utilities
 
-CanAdapter::CanAdapter(ComPort comPort, bool extendId) : 
+CanAdapter::CanAdapter(ComPort *comPort, bool extendId) : 
 	_comPort(comPort),
 	_extendId(extendId)
 {}
@@ -17,15 +19,15 @@ int CanAdapter::openCan(uint8_t baudRate)
 {
 	uint8_t data[4] = {0x15, 'S', baudRate, 0x15};
 	_comPort->writeCom(data, 4);
-	read(_SerialPort, data, 1);
+	_comPort->readCom(data, 1);
 
 	if(data[0] != ACK)
 		return -1;
 
 	data[0] = 'O';
 	data[1] = 0x15;
-	write(_SerialPort, data, 2);
-	read(_SerialPort, data, 1);
+	_comPort->writeCom(data, 2);
+	_comPort->readCom(data, 1);
 
 	if(data[0] != ACK)
 		return -2;
@@ -36,8 +38,8 @@ int CanAdapter::openCan(uint8_t baudRate)
 int CanAdapter::closeCan()
 {
 	uint8_t data = 0x15;
-	write(_SerialPort, &data, 1);
-	read(_SerialPort, &data, 1);
+	_comPort->writeCom(&data, 1);
+	_comPort->readCom(&data, 1);
 
 	if(data != ACK)
 		return -2;
@@ -45,24 +47,27 @@ int CanAdapter::closeCan()
 	return 0;
 }
 
-int CanAdapter::readCan(uint32_t *canId, int *dataSize, uint8_t *canData)
+int CanAdapter::readCan(uint32_t *canId, int *dataSize, uint8_t *canData, bool *extendCanId)
 {
 	uint8_t data[20];
-	int readBytes = readCom(_SerialPort, data, 20);
+	int readBytes = _comPort->readCom(data, 20);
 	int posData = 0;
 
-	switch(data[0])
+	if(extendCanId != nullptr)
 	{
-		case 'x':
-		case 'X':
-				*extendCanId = true;
-				break;
-		case 't':
-		case 'T':
-				*extendCanId = false;
-				break;
-		default:
-			return -1;
+		switch(data[0])
+		{
+			case 'x':
+			case 'X':
+					*extendCanId = true;
+					break;
+			case 't':
+			case 'T':
+					*extendCanId = false;
+					break;
+			default:
+				return -1;
+		}
 	}
 
 	posData++;
@@ -94,9 +99,9 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 
 	uint8_t canData[20];
 	int canSendIndex = 0;
-	canData[canSendIndex++] = extendCanId ? 'x' : 't';
+	canData[canSendIndex++] = _extendId ? 'x' : 't';
 
-	if(extendCanId)
+	if(_extendId)
 	{
 		*(uint32_t*)(canData + canSendIndex) = canId;
 		canSendIndex += 4;
@@ -113,7 +118,7 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 	canData[canSendIndex++] = 0x15;
 
 	int ret = _comPort->writeCom(canData, canSendIndex);
-	_comPort->read(canData, 1);
+	_comPort->readCom(canData, 1);
 
 	if(canData[0] != ACK)
 		return -2;

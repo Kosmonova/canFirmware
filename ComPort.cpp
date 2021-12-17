@@ -1,7 +1,15 @@
 #include <unistd.h>
+#include <termios.h>
+#include <poll.h>
+#include <fcntl.h> 
+#include <string.h>
+#include <stdio.h>
+#include <errno.h>
 
 #include "ComPort.h"
 
+
+#define error_message printf
 
 ComPort::ComPort() :
 	_SerialPort(-1)

@@ -1,21 +1,18 @@
-#include <errno.h>
-#include <termios.h>
 #include <unistd.h>
-#include <fcntl.h> 
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h> 
-#include <poll.h>
 #include <stdint.h>
 #include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
+#include <termios.h>
+
 
 #include "CanAdapter.h"
 #include "Battery.h"
 
 #define SIZE_BUFFER 100
-#define error_message printf
 
 
 struct ThreadData
@@ -30,24 +27,24 @@ void *readThread(void* arg)
 	uint8_t buff[SIZE_BUFFER];
 	int idx = 0;
 
-	while(1)
-	{
-		int numRcvBytes = readCom(fd, buff, SIZE_BUFFER);
-
-		if(numRcvBytes)
-		{
-// 			printf("\n");
-
-// 		for(idx = 0; idx < numRcvBytes; idx++)
+// 	while(1)
+// 	{
+// // 		int numRcvBytes = readCom(fd, buff, SIZE_BUFFER);
+// 
+// // 		if(numRcvBytes)
 // 		{
-// 			printf("%c", buff[idx]);
+// // 			printf("\n");
+// 
+// // 		for(idx = 0; idx < numRcvBytes; idx++)
+// // 		{
+// // 			printf("%c", buff[idx]);
+// // 		}
+// 			if(numRcvBytes == 12)
+// 				/*(*ppConverter)->parse(*((uint32_t*)buff), buff + 4)*/;
+// 			else
+// 				printf("wrong data received\n");
 // 		}
-			if(numRcvBytes == 12)
-				/*(*ppConverter)->parse(*((uint32_t*)buff), buff + 4)*/;
-			else
-				printf("wrong data received\n");
-		}
-	}
+// 	}
 }
 
 int main(int argc, char *argv[])
@@ -73,7 +70,7 @@ int main(int argc, char *argv[])
 	if(comPort.openCom(portname, B921600) < 0)
 		return -1;
 
-	CanAdapter canAdapter(&comPort true);
+	CanAdapter canAdapter(&comPort, true);
 	canAdapter.openCan(canBitRate);
 
 	return 0;

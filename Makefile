@@ -590,8 +590,9 @@ controll: controll.cpp
 	make -C Converters
 	c++ controll.cpp -I Converters -L Converters -lConverters -pthread -o controll
 
-batteryConsole: CanAdapter.cpp CanAdapter.h Battery.cpp Battery.h
-	c++ CanAdapter.cpp Battery.cpp -pthread -o batteryConsole
+batteryConsole: batteryConsole.cpp ComPort.cpp ComPort.h CanAdapter.cpp CanAdapter.h Battery.cpp Battery.h
+	c++ batteryConsole.cpp CanAdapter.cpp ComPort.cpp Battery.cpp -pthread \
+		-o batteryConsole
 
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c

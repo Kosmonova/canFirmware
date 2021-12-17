@@ -1,5 +1,5 @@
-#ifndef CAN_ADAPTER_H
-#define CAN_ADAPTER_H
+#ifndef COM_PORT_H
+#define COM_PORT_H
 
 #include <stdint.h>
 
