@@ -38,6 +38,50 @@ void *readThread(void* arg)
 	}
 }
 
+int nextCommand(char **ppCommandStart)
+{
+	char *pCommandStart = *ppCommandStart;
+	char *findChar = strchr(pCommandStart, ' ');
+
+	if(!findChar)
+	{
+		findChar = strchr(pCommandStart, '\n');
+		return -1;
+	}
+
+	int lenString = findChar - pCommandStart;
+
+	*ppCommandStart += lenString + 1;
+	return 0;
+}
+
+int matchCommand(char **ppCommandStart, const char *command)
+{
+	char *pCommandStart = *ppCommandStart;
+	char *findChar = strchr(pCommandStart, ' ');
+
+	if(!findChar)
+		findChar = strchr(pCommandStart, '\n');
+
+	int lenString = findChar - pCommandStart;
+
+	if(strlen(command) != lenString)
+		return 0;
+
+	if(strncmp(pCommandStart, command, lenString - 1) != 0)
+		return 0;
+
+	*ppCommandStart += lenString + 1;
+	return 1;
+}
+
+void printHelp()
+{
+	printf("usage:\n");
+	printf("\thelp print this message\n");
+	printf("\tall print all information about battery\n");
+}
+
 int main(int argc, char *argv[])
 {
 	char portname[20];
@@ -71,10 +115,30 @@ int main(int argc, char *argv[])
 
 	pthread_create(&threadID, NULL, readThread, (void *)&threadData);
 
+	char buff[SIZE_BUFFER];
+	char *pCommandStart = buff;
+	int rdBytes = 0;
+
 	while(true)
 	{
-		
+		if(rdBytes == 0 || pCommandStart - buff > rdBytes)
+		{
+			printf("wait for new command...\n");
+			fgets(buff, SIZE_BUFFER, stdin);
+			rdBytes = strlen(buff);
+			pCommandStart = buff;
+		}
+
+		if(matchCommand(&pCommandStart, "exit"))
+			break;
+		else if(matchCommand(&pCommandStart, "help"))
+			printHelp();
+		else if(nextCommand(&pCommandStart) < 0)
+			rdBytes = 0;
 	}
+
+	canAdapter.closeCan();
+	comPort.closeCom();
 
 	return 0;
 }
