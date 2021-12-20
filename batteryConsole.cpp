@@ -140,9 +140,23 @@ int main(int argc, char *argv[])
 		return -1;
 
 	CanAdapter canAdapter(&comPort, true);
-	canAdapter.openCan(canBitRate);
-	Battery battery;
+	canAdapter.closeCan();
 
+	if(!canAdapter.setBaudRate(canBitRate))
+	{
+		printf("error set baudrate on can adpapter\n");
+		comPort.closeCom();
+		return -2;
+	}
+
+	if(!canAdapter.openCan())
+	{
+		printf("error open can adapter\n");
+		comPort.closeCom();
+		return -2;
+	}
+
+	Battery battery;
 	pthread_t threadID;
 	struct ThreadData threadData = {.pcanAdapter = &canAdapter,
 		.pbattery = &battery};

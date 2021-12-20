@@ -15,36 +15,31 @@ CanAdapter::CanAdapter(ComPort *comPort, bool extendId) :
 	_extendId(extendId)
 {}
 
-int CanAdapter::openCan(uint8_t baudRate)
+bool CanAdapter::setBaudRate(uint8_t baudRate)
 {
-	uint8_t data[4] = {0x15, 'S', baudRate, 0x15};
-	_comPort->writeCom(data, 4);
-	_comPort->readCom(data, 1);
+	uint8_t data[4] = {015, 'S', '0' + baudRate, 015};
+	_comPort->writeCom(data,4);
+	int readBytes = _comPort->readCom(data, 1);
 
-	if(data[0] != ACK)
-		return -1;
-
-	data[0] = 'O';
-	data[1] = 0x15;
-	_comPort->writeCom(data, 2);
-	_comPort->readCom(data, 1);
-
-	if(data[0] != ACK)
-		return -2;
-
-	return 0;
+	return (readBytes == 1) && (data[0] == ACK);
 }
 
-int CanAdapter::closeCan()
+bool CanAdapter::openCan()
 {
-	uint8_t data = 0x15;
-	_comPort->writeCom(&data, 1);
-	_comPort->readCom(&data, 1);
+	uint8_t data[5] = {015, 015, 015, 'O', 015};
+	_comPort->writeCom(data, 5);
+	int readBytes = _comPort->readCom(data, 1);
 
-	if(data != ACK)
-		return -2;
+	return (readBytes == 1) && (data[0] == ACK);
+}
 
-	return 0;
+bool CanAdapter::closeCan()
+{
+	uint8_t data[3] = {015, 'C', 015};
+	_comPort->writeCom(data, 3);
+	int readBytes = _comPort->readCom(data, 1);
+
+	return (readBytes == 1) && (data[0] == ACK);
 }
 
 int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
