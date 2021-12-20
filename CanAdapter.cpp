@@ -45,8 +45,37 @@ bool CanAdapter::closeCan()
 int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 	bool *extendCanId)
 {
-	uint8_t data[20];
-	int readBytes = _comPort->readCom(data, 20);
+	uint8_t data[30];
+	int readBytes = 0;
+
+// 	for(int idx = 0; idx < 30; idx++)
+// 	{
+// 		uint8_t dataByte;
+// 
+// 		if(_comPort->readCom(&dataByte, 1, false) != 1)
+// 			break;
+// 
+// 		readBytes++;
+// 		data[idx] = dataByte;
+// printf("dataByte %x\n", dataByte);
+// 		if(dataByte == 0x0d)
+// 		{
+// 			printf("dataByte 015 !!!!!!!!\n");
+// 			break;
+// 		}
+// 	}
+
+
+	readBytes = _comPort->readCom(data, 30, false);
+
+
+	if(readBytes < 6)
+	{
+		*dataSize = 0;
+		return *dataSize;
+	}
+
+	printf("	readBytes: %d\n", readBytes);
 	int posData = 0;
 	bool extendId = _extendId;
 	char buff[10];
@@ -87,10 +116,23 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 		posData += 6;
 	}
 
-	*dataSize = data[posData++];
-	memcpy(canData, data + posData, *dataSize);
+	memcpy(buff, data + posData, 2);
+	buff[2] = '\0';
+	sscanf(buff, "%x", dataSize);
+	posData += 2;
 
-	return 0;
+	if(*dataSize > 8)
+		return -1;
+
+	for(int idx = 0; idx < *dataSize; idx++)
+	{
+		memcpy(buff, data + posData, 2);
+		buff[2] = '\0';
+		sscanf(buff, "%x", canData + idx);
+		posData += 2;
+	}
+
+	return *dataSize;
 }
 
 int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)

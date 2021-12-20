@@ -42,7 +42,7 @@ void *readThread(void* arg)
 // 				printf("%c, ", buff[idx]);
 // 			}
 // 			printf("\n");
-			printf("canId: %x\n", canId);
+			printf("canId: %x, data size: %d\n", canId, sizeData);
 		}
 	}
 }

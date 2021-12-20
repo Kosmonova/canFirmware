@@ -14,7 +14,7 @@ class ComPort
 		ComPort();
 		int openCom(char *portname, int baudRate);
 		int closeCom();
-		int readCom(uint8_t * pBuff, uint32_t BytesToRead);
+		int readCom(uint8_t * pBuff, uint32_t BytesToRead, bool wait = true);
 		int writeCom(uint8_t *data, int dataSize);
 };
 

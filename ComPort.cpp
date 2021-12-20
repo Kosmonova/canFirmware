@@ -95,8 +95,11 @@ int ComPort::closeCom()
 	return ret;
 }
 
-int ComPort::readCom(uint8_t * pBuff, uint32_t BytesToRead)
+int ComPort::readCom(uint8_t * pBuff, uint32_t BytesToRead, bool wait)
 {
+	if(wait)
+		return read (_SerialPort, pBuff, BytesToRead);
+
 	struct pollfd fd = { .fd = _SerialPort, .events = POLLIN };
     size_t      bytesread = 0;
 
