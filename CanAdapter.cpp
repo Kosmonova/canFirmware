@@ -8,7 +8,7 @@
 // https://www.ewertenergy.com/products.php?item=candapter&page=samplecode
 
 // manual:
-// https://www.ewertenergy.com/products.php?item=candapter&page=utilities
+// https://www.ewertenergy.com/products/candapter/downloads/candapter_manual.pdf
 
 CanAdapter::CanAdapter(ComPort *comPort, bool extendId) : 
 	_comPort(comPort),
@@ -49,6 +49,7 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 	int readBytes = _comPort->readCom(data, 20);
 	int posData = 0;
 	bool extendId = _extendId;
+	char buff[10];
 
 	if(extendCanId != nullptr)
 	{
@@ -73,13 +74,17 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 
 	if(extendId)
 	{
-		*canId = *(uint32_t*)(data + posData);
-		posData += 4;
+		memcpy(buff, data + posData, 8);
+		buff[8] = '\0';
+		sscanf(buff, "%x", canId);
+		posData += 8;
 	}
 	else
 	{
-		*canId = (*(uint32_t*)(data + posData)) & 0x7FF;
-		posData += 3;
+		memcpy(buff, data + posData, 6);
+		buff[6] = '\0';
+		sscanf(buff, "%x", canId);
+		posData += 6;
 	}
 
 	*dataSize = data[posData++];

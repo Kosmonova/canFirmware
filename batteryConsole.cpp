@@ -35,7 +35,15 @@ void *readThread(void* arg)
 	{
 		pcanAdapter->readCan(&canId, buff, &sizeData);
 		if(sizeData != 0)
+		{
 			pbattery->parse(canId, buff, sizeData);
+// 			for(int idx = 0; idx < sizeData; idx++)
+// 			{
+// 				printf("%c, ", buff[idx]);
+// 			}
+// 			printf("\n");
+			printf("canId: %x\n", canId);
+		}
 	}
 }
 
@@ -118,6 +126,11 @@ void printAll(Battery *battery)
 
 int main(int argc, char *argv[])
 {
+// 	int cislo;
+// 	char data[] = "007E1FE1";
+// 	sscanf(data, "%x", &cislo);
+// 	printf("%x\n", cislo);
+// 	return 0;
 	char portname[20];
 	uint8_t canBitRate = CAN_125Kb;
 
