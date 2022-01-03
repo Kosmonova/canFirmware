@@ -44,33 +44,18 @@ bool CanAdapter::closeCan()
 }
 
 int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
-	bool *extendCanId)
+	bool *isExtedId)
 {
-	uint8_t data[30];
+	char data[30];
 	int dataLen = 0;
-	int readBytes = 0;
+	int posData = 0;
+	char tmp[10];
 
-// 	for(int idx = 0; idx < 30; idx++)
-// 	{
-// 		uint8_t dataByte;
-// 
-// 		if(_comPort->readCom(&dataByte, 1, false) != 1)
-// 			break;
-// 
-// 		readBytes++;
-// 		data[idx] = dataByte;
-// printf("dataByte %x\n", dataByte);
-// 		if(dataByte == 0x0d)
-// 		{
-// 			printf("dataByte 015 !!!!!!!!\n");
-// 			break;
-// 		}
-// 	}
+	if(_bufferPosFill >= SIZE_BUFFER)
+		_bufferPosFill = 0;
 
-
-	readBytes = _comPort->readCom(_buffer + _bufferPosFill,
+	_bufferPosFill += _comPort->readCom(_buffer + _bufferPosFill,
 		SIZE_BUFFER - _bufferPosFill, false);
-	_bufferPosFill += readBytes;
 
 	for(int idx = 0; idx < _bufferPosFill; idx++)
 	{
@@ -84,67 +69,50 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 		}
 	}
 
-	if(dataLen != SIZE_STANDART_PACKET || dataLen != SIZE_EXTEND_PACKET)
+	bool extendPacket;
+
+	switch(data[0])
 	{
-		*dataSize = 0;
-		return *dataSize;
+		case 'x':
+		case 'X':
+				extendPacket = true;
+				break;
+		case 't':
+		case 'T':
+				extendPacket = false;
+				break;
+		default:
+			return -1;
 	}
 
-	printf("	readBytes: %d\n", readBytes);
-	int posData = 0;
-	bool extendId = _extendId;
-	char buff[10];
-
-	if(extendCanId != nullptr)
-	{
-		switch(data[0])
-		{
-			case 'x':
-			case 'X':
-					*extendCanId = true;
-					break;
-			case 't':
-			case 'T':
-					*extendCanId = false;
-					break;
-			default:
-				return -1;
-		}
-
-		extendId = *extendCanId;
-	}
+	if(isExtedId)
+		*isExtedId = extendPacket;
 
 	posData++;
 
-	if(extendId)
+	if(extendPacket)
 	{
-		memcpy(buff, data + posData, 8);
-		buff[8] = '\0';
-		sscanf(buff, "%x", canId);
-		posData += 8;
+		sscanf(strncpy(tmp, data + posData, COUNT_ASCII_EXTEND_PACKET_ID),
+			"%x", canId);
+		posData += COUNT_ASCII_EXTEND_PACKET_ID;
 	}
 	else
 	{
-		memcpy(buff, data + posData, 6);
-		buff[6] = '\0';
-		sscanf(buff, "%x", canId);
-		posData += 6;
+		sscanf(strncpy(tmp, data + posData, COUNT_ASCII_STANDART_PACKET_ID),
+			"%x", canId);
+		posData += COUNT_ASCII_STANDART_PACKET_ID;
 	}
 
-	memcpy(buff, data + posData, 2);
-	buff[2] = '\0';
-	sscanf(buff, "%x", dataSize);
-	posData += 2;
+	sscanf(strncpy(tmp, data + posData, COUNT_ASCII_BYTE), "%x", dataSize);
+	posData += COUNT_ASCII_BYTE;
 
 	if(*dataSize > 8)
 		return -1;
 
 	for(int idx = 0; idx < *dataSize; idx++)
 	{
-		memcpy(buff, data + posData, 2);
-		buff[2] = '\0';
-		sscanf(buff, "%x", canData + idx);
-		posData += 2;
+		sscanf(strncpy(tmp, data + posData, COUNT_ASCII_BYTE), "%x", canData + idx);
+		posData += COUNT_ASCII_BYTE;
 	}
 
 	return *dataSize;

@@ -18,8 +18,9 @@
 #define ACK 0x06
 #define CR 015
 
-#define SIZE_STANDART_PACKET 14
-#define SIZE_EXTEND_PACKET 19
+#define COUNT_ASCII_STANDART_PACKET_ID 6
+#define COUNT_ASCII_EXTEND_PACKET_ID 8
+#define COUNT_ASCII_BYTE 2
 #define SIZE_BUFFER 100
 
 class CanAdapter
@@ -36,7 +37,7 @@ class CanAdapter
 		bool openCan();
 		bool closeCan();
 		int readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
-			bool *extendCanId = nullptr);
+			bool *isExtedId = nullptr);
 		int writeCan(uint32_t canId, int dataSize, uint8_t *data);
 		void flush();
 };
