@@ -126,32 +126,38 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 		return -1;
 	}
 
-	uint8_t canData[20];
-	int canSendIndex = 0;
-	canData[canSendIndex++] = _extendId ? 'x' : 't';
+	char canData[COUNT_ASCII_EXTEND_PACKET_ID + 8 * COUNT_ASCII_BYTE + 1];
+	int canDataSendPosFill = 0;
+	canData[canDataSendPosFill++] = _extendId ? 'X' : 'T';
 
 	if(_extendId)
 	{
-		*(uint32_t*)(canData + canSendIndex) = canId;
-		canSendIndex += 4;
+		sprintf(canData + canDataSendPosFill, "%.8X", canId);
+		canDataSendPosFill += COUNT_ASCII_EXTEND_PACKET_ID;
 	}
 	else
 	{
-		*(uint32_t*)(canData + canSendIndex) = canId & 0x7FF;
-		canSendIndex += 3;
+		sprintf(canData + canDataSendPosFill, "%.6X", canId & 0x7FF);
+		canDataSendPosFill += COUNT_ASCII_STANDART_PACKET_ID;
 	}
 
-	canData[canSendIndex++] = dataSize;
-	memcpy(canData + canSendIndex, data, dataSize);
-	canSendIndex += dataSize;
-	canData[canSendIndex++] = 0x15;
+	sprintf(canData + canDataSendPosFill, "%.2X", dataSize);
+	canData[canDataSendPosFill++] = COUNT_ASCII_BYTE;
 
-	int ret = _comPort->writeCom(canData, canSendIndex);
-	_comPort->readCom(canData, 1);
+	for(int idx = 0; idx < dataSize; idx++)
+	{
+		sprintf(canData + canDataSendPosFill, "%.2X", dataSize);
+		canDataSendPosFill += COUNT_ASCII_BYTE;
+	}
 
+	canData[canDataSendPosFill++] = CR;
+
+	int ret = _comPort->writeCom((uint8_t *)canData, canDataSendPosFill);
+	_comPort->readCom((uint8_t *)canData, 1);
+
+printf("send data: %s\n", canData);
 	if(canData[0] != ACK)
 		return -2;
-
 	return ret;
 }
 

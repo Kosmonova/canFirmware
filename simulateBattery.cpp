@@ -30,10 +30,17 @@ void *readThread(void* arg)
 	int sizeData;
 	uint32_t canId;
 	int idx;
+	bool canOpened = false;
 
 	while(true)
 	{
 		int readBytes = pcomPort->readCom(buff, SIZE_BUFFER, false);
+
+		if(canOpened)
+		{
+			pcanAdapter->writeCan(0x7E0FE0, 8,
+				(uint8_t *)"\x00\x00\x00\x03\x00\x07\x00\x08");
+		}
 
 		if(readBytes > 0)
 		{
@@ -42,6 +49,7 @@ void *readThread(void* arg)
 				if(buff[idx] == 'O')
 				{
 					pcomPort->writeCom((uint8_t*)"\x06", 1);
+					canOpened = true;
 					printf("send ACK on open Can\n");
 				}
 				else if(buff[idx] == 'S')
@@ -52,6 +60,7 @@ void *readThread(void* arg)
 				else if(buff[idx] == 'C')
 				{
 					pcomPort->writeCom((uint8_t*)"\x06", 1);
+					canOpened = false;
 					printf("send ACK on close Can\n");
 				}
 				else
