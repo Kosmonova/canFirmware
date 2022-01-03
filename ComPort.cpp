@@ -82,7 +82,7 @@ int ComPort::openCom(char *portname, int baudRate)
 		return -1;
 	}
 
-	_set_interface_attribs (_SerialPort, baudRate, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+	_set_interface_attribs (_SerialPort, baudRate, 0);
 	_set_blocking (_SerialPort, 0); 
 
 	return 0;

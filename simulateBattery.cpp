@@ -28,22 +28,37 @@ void *readThread(void* arg)
 
 	uint8_t buff[SIZE_BUFFER];
 	int sizeData;
-	int idx = 0;
 	uint32_t canId;
+	int idx;
 
 	while(true)
 	{
-		pcanAdapter->readCan(&canId, buff, &sizeData);
-		if(sizeData != 0)
-		{
-			int readBytes = pcomPort->readCom(buff, SIZE_BUFFER, false);
+		int readBytes = pcomPort->readCom(buff, SIZE_BUFFER, false);
 
-			for(int idx = 0; idx < readBytes; idx++)
+		if(readBytes > 0)
+		{
+			for(idx = 0; idx < readBytes; idx++)
 			{
-				if(buff[idx] == 'O' || buff[idx] == 'C')
-					pcomPort->writeCom({ACK}, 1)
+				if(buff[idx] == 'O')
+				{
+					pcomPort->writeCom((uint8_t*)"\x06", 1);
+					printf("send ACK on open Can\n");
+				}
+				else if(buff[idx] == 'S')
+				{
+					pcomPort->writeCom((uint8_t*)"\x06", 1);
+					printf("send ACK on set baudrate Can\n");
+				}
+				else if(buff[idx] == 'C')
+				{
+					pcomPort->writeCom((uint8_t*)"\x06", 1);
+					printf("send ACK on close Can\n");
+				}
+				else
+					continue;
+
+				break;
 			}
-			printf("canId: %x, data size: %d\n", canId, sizeData);
 		}
 	}
 }

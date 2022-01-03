@@ -594,7 +594,7 @@ batteryConsole: batteryConsole.cpp ComPort.cpp ComPort.h CanAdapter.cpp CanAdapt
 	c++ batteryConsole.cpp CanAdapter.cpp ComPort.cpp Battery.cpp -pthread \
 		-o batteryConsole
 
-simulateBattery: simulateBattery ComPort.cpp ComPort.h CanAdapter.cpp CanAdapter.h
+simulateBattery: simulateBattery.cpp ComPort.cpp ComPort.h CanAdapter.cpp CanAdapter.h
 	c++ simulateBattery.cpp CanAdapter.cpp ComPort.cpp -pthread \
 		-o simulateBattery
 
