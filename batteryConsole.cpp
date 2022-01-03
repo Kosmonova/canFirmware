@@ -126,6 +126,13 @@ void printAll(Battery *battery)
 
 int main(int argc, char *argv[])
 {
+	char numstr[] = "2385";
+	char buff1[5];
+	int numInt;
+	sscanf(strncpy(buff1, numstr, 1), "%x", &numInt);
+	printf("num: %x\n", numInt);
+	return 0;
+
 	char portname[20];
 	uint8_t canBitRate = CAN_125Kb;
 
