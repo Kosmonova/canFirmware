@@ -34,14 +34,16 @@ void *readThread(void* arg)
 	while(true)
 	{
 		pcanAdapter->readCan(&canId, buff, &sizeData);
-		if(sizeData != 0)
+		if(sizeData > 0)
 		{
+			printf("canId: %x, data size: %d\n", canId, sizeData);
+			continue;
 			pbattery->parse(canId, buff, sizeData);
-// 			for(int idx = 0; idx < sizeData; idx++)
-// 			{
-// 				printf("%c, ", buff[idx]);
-// 			}
-// 			printf("\n");
+			for(int idx = 0; idx < sizeData; idx++)
+			{
+				printf("%2.2x, ", buff[idx]);
+			}
+			printf("\n");
 			printf("canId: %x, data size: %d\n", canId, sizeData);
 		}
 	}
@@ -97,7 +99,7 @@ void printAll(Battery *battery)
 		battery->getPackChargeCurrentLimit());
 	printf("\tDischarge current packet: %d A\n",
 		   battery->getPackDischargeCurrent());
-	printf("\tSupply 12 votage: %f V\n", battery->getSupplyVoltage12());
+	printf("\tSupply 12 votage: %.1f V\n", battery->getSupplyVoltage12());
 	printf("\tState charge : %d %\n", battery->getStateChargePercent());
 	printf("\tPacket capacity : %d Ah\n", battery->getPackAmpHours());
 	printf("\tPacket voltage : %d V\n", battery->getPackVoltage());

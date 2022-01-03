@@ -46,7 +46,7 @@ bool CanAdapter::closeCan()
 int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 	bool *isExtedId)
 {
-	char data[30];
+	char data[50];
 	int dataLen = 0;
 	int posData = 0;
 	char tmp[10];
@@ -103,15 +103,21 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 		posData += COUNT_ASCII_STANDART_PACKET_ID;
 	}
 
-	sscanf(strncpy(tmp, data + posData, COUNT_ASCII_BYTE), "%x", dataSize);
+	sscanf(strncpy(tmp, data + posData, COUNT_ASCII_BYTE), "%X", dataSize);
 	posData += COUNT_ASCII_BYTE;
 
 	if(*dataSize > 8)
+	{
+		printf("tmp: %s, ", tmp);
+		printf("data: %s\n", data);
+		*dataSize = 0;
 		return -1;
+	}
 
 	for(int idx = 0; idx < *dataSize; idx++)
 	{
-		sscanf(strncpy(tmp, data + posData, COUNT_ASCII_BYTE), "%x", canData + idx);
+		sscanf(strncpy(tmp, data + posData, COUNT_ASCII_BYTE), "%x",
+			canData + idx);
 		posData += COUNT_ASCII_BYTE;
 	}
 
@@ -159,7 +165,6 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 	int ret = _comPort->writeCom((uint8_t *)canData, canDataSendPosFill);
 	_comPort->readCom((uint8_t *)canData, 1);
 
-printf("send data: %s\n", canData);
 	if(canData[0] != ACK)
 		return -2;
 	return ret;

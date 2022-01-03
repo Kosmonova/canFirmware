@@ -39,7 +39,7 @@ void *readThread(void* arg)
 		if(canOpened)
 		{
 			pcanAdapter->writeCan(0x7E0FE0, 8,
-				(uint8_t *)"\x00\x00\x00\x03\x00\x07\x00\x08");
+				(uint8_t *)"\x00\x00\x00\x03\x00\x07\x00\x50");
 		}
 
 		if(readBytes > 0)
@@ -101,9 +101,14 @@ int main(int argc, char *argv[])
 	int rdBytes = 0;
 
 	while(true)
-	{
+	{		
+		scanf("%s", buff);
+		if(strncmp(pCommandStart, "exit", strlen("exit")) == 0)
+			break;
 	}
-
+	
+	comPort.closeCom();
+	
 	return 0;
 }
 
