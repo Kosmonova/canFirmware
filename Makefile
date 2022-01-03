@@ -402,7 +402,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 all: begin gccversion sizebefore build sizeafter libConv libCan end
 
 # Change the build target to build a HEX file or a library.
-build: elf hex eep lss sym controll batteryConsole
+build: elf hex eep lss sym controll batteryConsole simulateBattery
 build: lib
 
 
@@ -594,6 +594,10 @@ batteryConsole: batteryConsole.cpp ComPort.cpp ComPort.h CanAdapter.cpp CanAdapt
 	c++ batteryConsole.cpp CanAdapter.cpp ComPort.cpp Battery.cpp -pthread \
 		-o batteryConsole
 
+simulateBattery: simulateBattery ComPort.cpp ComPort.h CanAdapter.cpp CanAdapter.h
+	c++ simulateBattery.cpp CanAdapter.cpp ComPort.cpp -pthread \
+		-o simulateBattery
+
 # Create preprocessed source for use in sending a bug report.
 %.i : %.c
 	$(CC) -E -mmcu=$(MCU) -I. $(CFLAGS) $< -o $@ 
@@ -627,6 +631,8 @@ clean_list :
 	$(REMOVEDIR) .dep
 	$(REMOVEDIR) $(OBJDIR)
 	$(REMOVE) controll
+	$(REMOVE) batteryConsole
+	$(REMOVE) simulateBattery
 
 
 # Create object files directory
