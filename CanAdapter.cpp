@@ -13,12 +13,12 @@
 CanAdapter::CanAdapter(ComPort *comPort, bool extendId) : 
 	_comPort(comPort),
 	_extendId(extendId),
-	_buffPos(0)
+	_bufferPosFill(0)
 {}
 
 bool CanAdapter::setBaudRate(uint8_t baudRate)
 {
-	uint8_t data[4] = {015, 'S', '0' + baudRate, 015};
+	uint8_t data[4] = {CR, 'S', '0' + baudRate, CR};
 	_comPort->writeCom(data,4);
 	int readBytes = _comPort->readCom(data, 1);
 
@@ -27,7 +27,7 @@ bool CanAdapter::setBaudRate(uint8_t baudRate)
 
 bool CanAdapter::openCan()
 {
-	uint8_t data[5] = {015, 015, 015, 'O', 015};
+	uint8_t data[5] = {CR, CR, CR, 'O', CR};
 	_comPort->writeCom(data, 5);
 	int readBytes = _comPort->readCom(data, 1);
 
@@ -36,7 +36,7 @@ bool CanAdapter::openCan()
 
 bool CanAdapter::closeCan()
 {
-	uint8_t data[3] = {015, 'C', 015};
+	uint8_t data[3] = {CR, 'C', CR};
 	_comPort->writeCom(data, 3);
 	int readBytes = _comPort->readCom(data, 1);
 
@@ -47,6 +47,7 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 	bool *extendCanId)
 {
 	uint8_t data[30];
+	int dataLen = 0;
 	int readBytes = 0;
 
 // 	for(int idx = 0; idx < 30; idx++)
@@ -67,11 +68,23 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 // 	}
 
 
-	readBytes = _comPort->readCom(_buffer, SIZE_BUFFER - _buffPos, false);
-    _buffPos += readBytes;
+	readBytes = _comPort->readCom(_buffer + _bufferPosFill,
+		SIZE_BUFFER - _bufferPosFill, false);
+	_bufferPosFill += readBytes;
 
+	for(int idx = 0; idx < _bufferPosFill; idx++)
+	{
+		if(_buffer[idx] == CR)
+		{
+			dataLen = idx + 1;
+			memcpy(data, _buffer, dataLen);
+			_bufferPosFill -= dataLen;
+			memcpy(_buffer, _buffer + dataLen, _bufferPosFill);
+			break;
+		}
+	}
 
-	if(readBytes < 6)
+	if(dataLen != SIZE_STANDART_PACKET || dataLen != SIZE_EXTEND_PACKET)
 	{
 		*dataSize = 0;
 		return *dataSize;
@@ -174,3 +187,7 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 	return ret;
 }
 
+void CanAdapter::flush()
+{
+	_bufferPosFill = 0;
+}

@@ -16,7 +16,10 @@
 #define CAN_1Mb   8
 
 #define ACK 0x06
+#define CR 015
 
+#define SIZE_STANDART_PACKET 14
+#define SIZE_EXTEND_PACKET 19
 #define SIZE_BUFFER 100
 
 class CanAdapter
@@ -25,7 +28,7 @@ class CanAdapter
 		ComPort *_comPort;
 		bool _extendId;
         uint8_t _buffer[SIZE_BUFFER];
-        int _buffPos;
+        int _bufferPosFill;
 
 	public:
 		CanAdapter(ComPort *comPort, bool extendId);
@@ -35,6 +38,7 @@ class CanAdapter
 		int readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 			bool *extendCanId = nullptr);
 		int writeCan(uint32_t canId, int dataSize, uint8_t *data);
+		void flush();
 };
 
 #endif
