@@ -132,21 +132,25 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 
 	if(_extendId)
 	{
-		sprintf(canData + canDataSendPosFill, "%.8X", canId);
+		sprintf(canData + canDataSendPosFill,
+			"%." STR(COUNT_ASCII_EXTEND_PACKET_ID) "X", canId);
 		canDataSendPosFill += COUNT_ASCII_EXTEND_PACKET_ID;
 	}
 	else
 	{
-		sprintf(canData + canDataSendPosFill, "%.6X", canId & 0x7FF);
+		sprintf(canData + canDataSendPosFill,
+			"%." STR(COUNT_ASCII_STANDART_PACKET_ID) "X", canId & 0x7FF);
 		canDataSendPosFill += COUNT_ASCII_STANDART_PACKET_ID;
 	}
 
-	sprintf(canData + canDataSendPosFill, "%.2X", dataSize);
-	canData[canDataSendPosFill++] = COUNT_ASCII_BYTE;
+	sprintf(canData + canDataSendPosFill, "%." STR(COUNT_ASCII_BYTE) "X",
+		dataSize);
+	canDataSendPosFill += COUNT_ASCII_BYTE;
 
 	for(int idx = 0; idx < dataSize; idx++)
 	{
-		sprintf(canData + canDataSendPosFill, "%.2X", dataSize);
+		sprintf(canData + canDataSendPosFill,
+			"%." STR(COUNT_ASCII_BYTE) "X", dataSize);
 		canDataSendPosFill += COUNT_ASCII_BYTE;
 	}
 

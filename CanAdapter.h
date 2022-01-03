@@ -23,6 +23,9 @@
 #define COUNT_ASCII_BYTE 2
 #define SIZE_BUFFER 100
 
+#define STR1(x)  #x
+#define STR(x)  STR1(x)
+ 
 class CanAdapter
 {
 	private:
