@@ -12,7 +12,8 @@
 
 CanAdapter::CanAdapter(ComPort *comPort, bool extendId) : 
 	_comPort(comPort),
-	_extendId(extendId)
+	_extendId(extendId),
+	_buffPos(0)
 {}
 
 bool CanAdapter::setBaudRate(uint8_t baudRate)
@@ -66,7 +67,8 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 // 	}
 
 
-	readBytes = _comPort->readCom(data, 30, false);
+	readBytes = _comPort->readCom(_buffer, SIZE_BUFFER - _buffPos, false);
+    _buffPos += readBytes;
 
 
 	if(readBytes < 6)

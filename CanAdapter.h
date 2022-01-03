@@ -17,11 +17,15 @@
 
 #define ACK 0x06
 
+#define SIZE_BUFFER 100
+
 class CanAdapter
 {
 	private:
 		ComPort *_comPort;
 		bool _extendId;
+        uint8_t _buffer[SIZE_BUFFER];
+        int _buffPos;
 
 	public:
 		CanAdapter(ComPort *comPort, bool extendId);

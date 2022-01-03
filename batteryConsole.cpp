@@ -126,11 +126,20 @@ void printAll(Battery *battery)
 
 int main(int argc, char *argv[])
 {
-// 	int cislo;
-// 	char data[] = "007E1FE1";
-// 	sscanf(data, "%x", &cislo);
-// 	printf("%x\n", cislo);
-// 	return 0;
+// skuska, ci funguje memcpy ak je src a dst to iste
+    char str1[] = "abcdefghijkl";
+    printf("str: %s\n", str1);
+
+    int len = strlen(str1) + 1;
+    int offset = 3;
+    memcpy(str1, str1 + offset, len - offset);
+    printf("str: %s\n", str1);
+
+    offset = 3;
+    memcpy(str1, str1 + offset, len - offset);
+    printf("str: %s\n", str1);
+    return 0;
+
 	char portname[20];
 	uint8_t canBitRate = CAN_125Kb;
 
