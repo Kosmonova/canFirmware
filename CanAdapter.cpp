@@ -103,6 +103,8 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 		posData += COUNT_ASCII_STANDART_PACKET_ID;
 	}
 
+	tmp[COUNT_ASCII_BYTE] = '\0';
+
 	sscanf(strncpy(tmp, data + posData, COUNT_ASCII_BYTE), "%X", dataSize);
 	posData += COUNT_ASCII_BYTE;
 

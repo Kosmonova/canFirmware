@@ -28,7 +28,6 @@ void *readThread(void* arg)
 
 	uint8_t buff[SIZE_BUFFER];
 	int sizeData;
-	int idx = 0;
 	uint32_t canId;
 
 	while(true)
@@ -36,15 +35,7 @@ void *readThread(void* arg)
 		pcanAdapter->readCan(&canId, buff, &sizeData);
 		if(sizeData > 0)
 		{
-			printf("canId: %x, data size: %d\n", canId, sizeData);
-			continue;
 			pbattery->parse(canId, buff, sizeData);
-			for(int idx = 0; idx < sizeData; idx++)
-			{
-				printf("%2.2x, ", buff[idx]);
-			}
-			printf("\n");
-			printf("canId: %x, data size: %d\n", canId, sizeData);
 		}
 	}
 }
