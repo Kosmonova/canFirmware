@@ -105,7 +105,7 @@ void printAll(Battery *battery)
 	printf("\tPacket summary voltage : %.1f V\n",
 		battery->getPackSummedVoltage());
 	printf("\tTotal package cycles : %d\n", battery->getTotalPackCycles());
-	printf("\tPacket health : %d °C\n", battery->getPackHealthPercent());
+	printf("\tPacket health : %d %\n", battery->getPackHealthPercent());
 	printf("\tPacket resistance : %.3f Ohm\n", battery->getPackResistanceOhm());
 	printf("\tLow open cell voltage : %.3f V\n",
 		battery->getLowOpenCellVoltage());

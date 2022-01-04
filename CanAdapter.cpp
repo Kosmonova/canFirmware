@@ -144,8 +144,6 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 		sprintf(canData + canDataSendPosFill,
 			"%." STR(COUNT_ASCII_EXTEND_PACKET_ID) "X", canId);
 		canDataSendPosFill += COUNT_ASCII_EXTEND_PACKET_ID;
-		
-// 		strncpy(tmp, data + posData, COUNT_ASCII_EXTEND_PACKET_ID),
 	}
 	else
 	{

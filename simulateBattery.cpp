@@ -47,6 +47,54 @@ void set0x7E0FE0(uint16_t packChargeCurrentLimit,
 	pData[7] = supplyVoltage12On100mV;
 }
 
+void set0x7E0FE1(uint8_t stateChargePercent, uint8_t packAmpHours,
+	uint16_t packVoltage, uint8_t hightTemperatureCelsius,
+	uint8_t lowTemperatureCelsius, uint8_t averageTemperatureCelsius,
+	uint8_t bmsTemperatureCelsius)
+{
+	uint8_t *pData = msgCanData[1].data;
+	pData[0] = stateChargePercent;
+	pData[1] = packAmpHours;
+	*(uint16_t*)(pData + 2) = packVoltage;
+	pData[4] = hightTemperatureCelsius;
+	pData[5] = lowTemperatureCelsius;
+	pData[6] = averageTemperatureCelsius;
+	pData[7] = stateChargePercent;
+}
+
+void set0x7E0FE2(uint16_t packCurrent100mA, uint16_t packOpenVoltage100mV,
+	uint16_t packSummedVoltage100mV)
+{
+	uint8_t *pData = msgCanData[2].data;
+	*(uint16_t*)(pData) = packCurrent100mA;
+	*(uint16_t*)(pData + 2) = packOpenVoltage100mV;
+	*(uint16_t*)(pData + 6) = packSummedVoltage100mV;
+}
+
+void set0x7E0FE3(uint16_t totalPackCycles, uint8_t packHealthPercent,
+	uint16_t packResistancemOhm)
+{
+	uint8_t *pData = msgCanData[3].data;
+	*(uint16_t*)(pData) = totalPackCycles;
+	pData[2] = packHealthPercent;
+	*(uint16_t*)(pData + 3) = packResistancemOhm;
+}
+
+void set0x7E0FE4(uint16_t lowOpenCellVoltagemV,
+	uint16_t hightOpenCellVoltagemV, uint16_t averageOpencellVoltagemV)
+{
+	uint8_t *pData = msgCanData[4].data;
+	*(uint16_t*)(pData) = lowOpenCellVoltagemV;
+	*(uint16_t*)(pData + 2) = hightOpenCellVoltagemV;
+	*(uint16_t*)(pData + 4) = averageOpencellVoltagemV;
+}
+
+void set0x7E0FE6(uint8_t nominalPackCapacityAh)
+{
+	uint8_t *pData = msgCanData[5].data;
+	pData[3] = nominalPackCapacityAh;
+}
+
 void *readThread(void* arg)
 {
 	CanAdapter *pcanAdapter = ((struct ThreadData*)arg)->pcanAdapter;
@@ -65,7 +113,7 @@ void *readThread(void* arg)
 		if(canOpened)
 		{
 			idx++;
-			idx %= 1;
+			idx %= 6;
 			pcanAdapter->writeCan(msgCanData[idx].canId,
 				msgCanData[idx].sizeData, msgCanData[idx].data);
 		}
@@ -100,11 +148,19 @@ void *readThread(void* arg)
 	}
 }
 
+void setInitValuesBattery()
+{
+	set0x7E0FE0(100, 50, 122);
+	set0x7E0FE1(65, 700, 720, 28, 25, 26, 27);
+	set0x7E0FE2(800, 7500, 7600);
+	set0x7E0FE3(6000, 98, 10);
+	set0x7E0FE4(12060, 12580, 12350);
+	set0x7E0FE6(90);
+}
 
 int main(int argc, char *argv[])
 {
 	char portname[20];
-	set0x7E0FE0(20, 30, 40);
 	if(argc >= 2)
 		strcpy(portname, argv[1]);
 	else
@@ -117,6 +173,7 @@ int main(int argc, char *argv[])
 		return -1;
 
 	CanAdapter canAdapter(&comPort, true);
+	setInitValuesBattery();
 
 	pthread_t threadID;
 	struct ThreadData threadData = {.pcanAdapter = &canAdapter,
@@ -129,14 +186,14 @@ int main(int argc, char *argv[])
 	int rdBytes = 0;
 
 	while(true)
-	{		
+	{
 		scanf("%s", buff);
 		if(strncmp(pCommandStart, "exit", strlen("exit")) == 0)
 			break;
 	}
-	
+
 	comPort.closeCom();
-	
+
 	return 0;
 }
 
