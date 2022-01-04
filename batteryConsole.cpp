@@ -100,18 +100,18 @@ void printAll(Battery *battery)
 	printf("\tAverage temperature : %d °C\n",
 		battery->getAverageTemperatureCelsius());
 	printf("\tBMS temperature : %d °C\n", battery->getBmsTemperatureCelsius());
-	printf("\tPacket Current : %f A\n", battery->getPackCurrent());
-	printf("\tPacket open voltage : %f V\n", battery->getPackOpenVoltage());
-	printf("\tPacket summary voltage : %f V\n",
+	printf("\tPacket Current : %.1f A\n", battery->getPackCurrent());
+	printf("\tPacket open voltage : %.1f V\n", battery->getPackOpenVoltage());
+	printf("\tPacket summary voltage : %.1f V\n",
 		battery->getPackSummedVoltage());
 	printf("\tTotal package cycles : %d\n", battery->getTotalPackCycles());
 	printf("\tPacket health : %d °C\n", battery->getPackHealthPercent());
-	printf("\tPacket resistance : %f Ohm\n", battery->getPackResistanceOhm());
-	printf("\tLow open cell voltage : %f V\n",
+	printf("\tPacket resistance : %.3f Ohm\n", battery->getPackResistanceOhm());
+	printf("\tLow open cell voltage : %.3f V\n",
 		battery->getLowOpenCellVoltage());
-	printf("\tHigh open cell voltage : %f V\n",
+	printf("\tHigh open cell voltage : %.3f V\n",
 		battery->getHightOpenCellVoltage());
-	printf("\tAverage open cell voltage : %f V\n",
+	printf("\tAverage open cell voltage : %.3f V\n",
 		battery->getAverageOpencellVoltage());
 	printf("\tNominal Packet Capacity : %d Ah\n",
 		battery->getNominalPackCapacityAh());

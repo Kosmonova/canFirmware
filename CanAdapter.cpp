@@ -134,6 +134,7 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 		return -1;
 	}
 
+	char tmp[10] = {0};
 	char canData[COUNT_ASCII_EXTEND_PACKET_ID + 8 * COUNT_ASCII_BYTE + 1];
 	int canDataSendPosFill = 0;
 	canData[canDataSendPosFill++] = _extendId ? 'X' : 'T';
@@ -143,6 +144,8 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 		sprintf(canData + canDataSendPosFill,
 			"%." STR(COUNT_ASCII_EXTEND_PACKET_ID) "X", canId);
 		canDataSendPosFill += COUNT_ASCII_EXTEND_PACKET_ID;
+		
+// 		strncpy(tmp, data + posData, COUNT_ASCII_EXTEND_PACKET_ID),
 	}
 	else
 	{
@@ -158,7 +161,7 @@ int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
 	for(int idx = 0; idx < dataSize; idx++)
 	{
 		sprintf(canData + canDataSendPosFill,
-			"%." STR(COUNT_ASCII_BYTE) "X", dataSize);
+			"%." STR(COUNT_ASCII_BYTE) "X", data[idx]);
 		canDataSendPosFill += COUNT_ASCII_BYTE;
 	}
 

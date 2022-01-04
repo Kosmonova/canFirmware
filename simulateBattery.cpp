@@ -21,6 +21,32 @@ struct ThreadData
 	ComPort *pcomPort;
 };
 
+struct MsgCanData
+{
+	uint32_t canId;
+	int sizeData;
+	uint8_t data[8];
+};
+
+struct MsgCanData msgCanData[6] =
+{
+	{.canId = 0x7E0FE0, .sizeData = 8, .data = {0}},
+	{.canId = 0x7E0FE1, .sizeData = 8, .data = {0}},
+	{.canId = 0x7E0FE2, .sizeData = 8, .data = {0}},
+	{.canId = 0x7E0FE3, .sizeData = 8, .data = {0}},
+	{.canId = 0x7E0FE4, .sizeData = 8, .data = {0}},
+	{.canId = 0x7E0FE6, .sizeData = 8, .data = {0}},
+};
+
+void set0x7E0FE0(uint16_t packChargeCurrentLimit,
+	uint16_t packDischargeCurrent, uint8_t supplyVoltage12On100mV)
+{
+	uint8_t *pData = msgCanData[0].data;
+	*(uint16_t*)(pData + 3) = packChargeCurrentLimit;
+	*(uint16_t*)(pData + 5) = packDischargeCurrent;
+	pData[7] = supplyVoltage12On100mV;
+}
+
 void *readThread(void* arg)
 {
 	CanAdapter *pcanAdapter = ((struct ThreadData*)arg)->pcanAdapter;
@@ -38,8 +64,10 @@ void *readThread(void* arg)
 
 		if(canOpened)
 		{
-			pcanAdapter->writeCan(0x7E0FE0, 8,
-				(uint8_t *)"\x00\x00\x00\x03\x00\x07\x00\x50");
+			idx++;
+			idx %= 1;
+			pcanAdapter->writeCan(msgCanData[idx].canId,
+				msgCanData[idx].sizeData, msgCanData[idx].data);
 		}
 
 		if(readBytes > 0)
@@ -76,7 +104,7 @@ void *readThread(void* arg)
 int main(int argc, char *argv[])
 {
 	char portname[20];
-
+	set0x7E0FE0(20, 30, 40);
 	if(argc >= 2)
 		strcpy(portname, argv[1]);
 	else
