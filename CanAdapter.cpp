@@ -44,18 +44,19 @@ bool CanAdapter::closeCan()
 }
 
 int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
-	bool *isExtedId)
+	bool skipReadOnFull, bool *isExtedId)
 {
 	char data[50];
 	int dataLen = 0;
 	int posData = 0;
 	char tmp[10];
 
-	if(_bufferPosFill >= SIZE_BUFFER)
+	if(_bufferPosFill >= SIZE_BUFFER && !skipReadOnFull)
 		_bufferPosFill = 0;
 
-	_bufferPosFill += _comPort->readCom(_buffer + _bufferPosFill,
-		SIZE_BUFFER - _bufferPosFill, false);
+	if(_bufferPosFill < SIZE_BUFFER)
+		_bufferPosFill += _comPort->readCom(_buffer + _bufferPosFill,
+			SIZE_BUFFER - _bufferPosFill, false);
 
 	for(int idx = 0; idx < _bufferPosFill; idx++)
 	{

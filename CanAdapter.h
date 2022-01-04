@@ -40,7 +40,7 @@ class CanAdapter
 		bool openCan();
 		bool closeCan();
 		int readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
-			bool *isExtedId = nullptr);
+			bool skipReadOnFull = true, bool *isExtedId = nullptr);
 		int writeCan(uint32_t canId, int dataSize, uint8_t *data);
 		void flush();
 };
