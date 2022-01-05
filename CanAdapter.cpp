@@ -127,7 +127,7 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 	return *dataSize;
 }
 
-int CanAdapter::writeCan(uint32_t canId, int dataSize, uint8_t *data)
+int CanAdapter::writeCan(uint32_t canId, uint8_t *data, int dataSize)
 {
 	if(dataSize > 8)
 	{

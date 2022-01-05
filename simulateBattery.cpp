@@ -115,7 +115,7 @@ void *readThread(void* arg)
 			idx++;
 			idx %= 6;
 			pcanAdapter->writeCan(msgCanData[idx].canId,
-				msgCanData[idx].sizeData, msgCanData[idx].data);
+				msgCanData[idx].data, msgCanData[idx].sizeData);
 		}
 
 		if(readBytes > 0)

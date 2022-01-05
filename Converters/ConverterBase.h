@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+
+class ComPort;
+class CanAdapter;
+
 enum Mode{AC_MODE, DC_MODE};
 
 class ConverterBase
@@ -12,11 +16,15 @@ class ConverterBase
 		void _sendCommand(uint32_t id, uint8_t *data);
 		void _cmdNotImplemented(char *nameFunction);
 		int _fdSerial;
+		ComPort *_comPort;
+		CanAdapter *_canAdapter;
 		int _address;
 		bool _broadcast;
 
 	public:
 		ConverterBase(int fdSerial, int address);
+		ConverterBase(ComPort *comPort, int address);
+		ConverterBase(CanAdapter *canAdapter, int address);
 		void changeAddress(uint8_t address);
 		uint8_t getAddress();
 		virtual void showType() = 0;
