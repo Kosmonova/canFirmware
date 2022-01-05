@@ -14,8 +14,8 @@ class ConverterBase
 	protected:
 		void _revereseArray(uint8_t arr[], int start, int end);
 		void _sendCommand(uint32_t id, uint8_t *data);
+		void _readData(uint32_t id, uint8_t *data);
 		void _cmdNotImplemented(char *nameFunction);
-		int _fdSerial;
 		ComPort *_comPort;
 		CanAdapter *_canAdapter;
 		int _address;

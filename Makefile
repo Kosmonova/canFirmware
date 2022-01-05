@@ -586,9 +586,10 @@ $(OBJDIR)/%.o : %.S
 	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
-controll: controll.cpp
+controll: controll.cpp ComPort.cpp ComPort.h CanAdapter.cpp CanAdapter.h
 	make -C Converters
-	c++ controll.cpp -I Converters -L Converters -lConverters -pthread -o controll
+	c++ controll.cpp CanAdapter.cpp ComPort.cpp -I Converters \
+		-L Converters -lConverters -pthread -o controll
 
 batteryConsole: batteryConsole.cpp ComPort.cpp ComPort.h CanAdapter.cpp CanAdapter.h Battery.cpp Battery.h
 	c++ batteryConsole.cpp CanAdapter.cpp ComPort.cpp Battery.cpp -pthread \

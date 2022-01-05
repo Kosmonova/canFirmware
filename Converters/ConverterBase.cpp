@@ -5,18 +5,7 @@
 #include "CanAdapter.h"
 #include "ComPort.h"
 
-ConverterBase::ConverterBase(int fdSerial, int address) :
-	_fdSerial(fdSerial),
-	_comPort(nullptr),
-	_canAdapter(nullptr),
-	_address(address),
-	_broadcast(false)
-{
-	_broadcast = (_address > 0x65);
-}
-
 ConverterBase::ConverterBase(ComPort *comPort, int address) :
-	_fdSerial(0),
 	_comPort(comPort),
 	_canAdapter(nullptr),
 	_address(address),
@@ -26,7 +15,6 @@ ConverterBase::ConverterBase(ComPort *comPort, int address) :
 }
 
 ConverterBase::ConverterBase(CanAdapter *canAdapter, int address) :
-	_fdSerial(0),
 	_comPort(nullptr),
 	_canAdapter(canAdapter),
 	_address(address),
@@ -64,13 +52,6 @@ void ConverterBase::_sendCommand(uint32_t id, uint8_t *data)
 {
 	_revereseArray((uint8_t*)&id, 0, 3);
 
-	if(_fdSerial)
-	{
-		write(_fdSerial, &id, 4);
-		write(_fdSerial, data, 8);
-		return;
-	}
-
 	if(_comPort)
 	{
 		_comPort->writeCom((uint8_t*)&id, 4);
@@ -84,6 +65,22 @@ void ConverterBase::_sendCommand(uint32_t id, uint8_t *data)
 		return;
 	}
 } 
+
+void ConverterBase::_readData(uint32_t id, uint8_t *data)
+{
+	if(_comPort)
+	{
+		_comPort->writeCom((uint8_t*)&id, 4);
+		_comPort->writeCom(data, 8);
+		return;
+	}
+
+	if(_canAdapter)
+	{
+		_canAdapter->writeCan(id, data, 8);
+		return;
+	}
+}
 
 void ConverterBase::_cmdNotImplemented(char *nameFunction)
 {

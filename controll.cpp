@@ -26,102 +26,6 @@ struct ThreadData
 	ConverterBase **ppConverter;
 };
 
-int
-set_interface_attribs (int fd, int speed, int parity)
-{
-        struct termios tty;
-        if (tcgetattr (fd, &tty) != 0)
-        {
-                error_message ("error %d from tcgetattr\n", errno);
-                return -1;
-        }
-
-        cfsetospeed (&tty, speed);
-        cfsetispeed (&tty, speed);
-
-        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
-        // disable IGNBRK for mismatched speed tests; otherwise receive break
-        // as \000 chars
-        tty.c_iflag &= ~IGNBRK;         // disable break processing
-        tty.c_lflag = 0;                // no signaling chars, no echo,
-                                        // no canonical processing
-        tty.c_oflag = 0;                // no remapping, no delays
-        tty.c_cc[VMIN]  = 0;            // read doesn't block
-        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-
-        tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
-
-        tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
-                                        // enable reading
-        tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
-        tty.c_cflag |= parity;
-        tty.c_cflag &= ~CSTOPB;
-        tty.c_cflag &= ~CRTSCTS;
-
-        if (tcsetattr (fd, TCSANOW, &tty) != 0)
-        {
-                error_message ("error %d from tcsetattr\n", errno);
-                return -1;
-        }
-        return 0;
-}
-
-void
-set_blocking (int fd, int should_block)
-{
-        struct termios tty;
-        memset (&tty, 0, sizeof tty);
-        if (tcgetattr (fd, &tty) != 0)
-        {
-                error_message ("error %d from tggetattr\n", errno);
-                return;
-        }
-
-        tty.c_cc[VMIN]  = should_block ? 1 : 0;
-        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-
-        if (tcsetattr (fd, TCSANOW, &tty) != 0)
-                error_message ("error %d setting term attributes\n", errno);
-}
-
-
-int readCom(int SerialHandle, uint8_t * pBuff, uint32_t BytesToRead)
-{
-	struct pollfd fd = { .fd = SerialHandle, .events = POLLIN };
-    size_t      bytesread = 0;
-
-    while (poll (&fd, 1, 25) == 1)
-    {
-        int chunksize = read (SerialHandle, pBuff + bytesread, BytesToRead);
-        if (chunksize == -1)
-            break;
-
-        bytesread += chunksize;
-        BytesToRead -= chunksize;
-
-        if (BytesToRead == 0)
-           break;
-    }
-
-	return bytesread;
-}
-
-int openComPort(char *portname, int *fd)
-{
-	*fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
-
-	if (*fd < 0)
-	{
-		error_message ("error %d opening %s: %s\n", errno, portname, strerror (errno));
-		return -1;
-	}
-
-	set_interface_attribs (*fd, B57600, 0);  // set speed to 115,200 bps, 8n1 (no parity)
-	set_blocking (*fd, 0); 
-
-	return 0;
-}
-
 void *tempReadThread(void* arg)
 {
 	ConverterBase **ppConverter = ((struct ThreadData*)arg)->ppConverter;
@@ -229,20 +133,65 @@ int matchCommand(char **ppCommandStart, const char *command)
 int main(int argc, char *argv[])
 {
 	char portname[20];
+	uint8_t canBitRate = CAN_125Kb;
 
-	if(argc == 2)
+	if(argc >= 2)
 		strcpy(portname, argv[1]);
 	else
 		strcpy(portname, "/dev/ttyUSB0");
 
+	if(argc >= 3)
+		sscanf(argv[2], "%u", &canBitRate);
+
+	if(canBitRate > 8)
+		canBitRate = 8;
+
 	printf("trying open %s\n", portname);
-	int fd;
+	printf("trying can bus set on: %d\n", canBitRate);
+	ComPort comPort;
+	CanAdapter canAdapter(&comPort, true);
 
-	if(openComPort(portname, &fd) < 0)
-		return -1;
+	if(canBitRate == 0)
+	{
+		if(comPort.openCom(portname, B57600) < 0)
+			return -1;
+	}
+	else
+	{
+		if(comPort.openCom(portname, B921600) < 0)
+			return -1;
 
-	ConverterBase *pConverter = new UXR100030(fd, 1);
-	
+		if(!canAdapter.closeCan())
+		{
+			printf("error close can adpapter\n");
+			comPort.closeCom();
+			return -2;
+		}
+
+		if(!canAdapter.setBaudRate(canBitRate))
+		{
+			printf("error set baudrate on can adpapter\n");
+			comPort.closeCom();
+			return -2;
+		}
+
+		if(!canAdapter.openCan())
+		{
+			printf("error open can adapter\n");
+			comPort.closeCom();
+			return -2;
+		}
+	}
+
+// reading of garbage non readed bytes after previous communication
+	uint8_t tmp[10];
+	while(comPort.readCom(tmp, 10, false) == 10);
+
+	if(canBitRate == 0)
+		ConverterBase *pConverter = new UXR100030(&comPort, 1);
+	else
+		ConverterBase *pConverter = new UXR100030(&canAdapter, 1);
+
 	pthread_t threadID;
 	struct ThreadData threadData = {.fdSerial = fd, .ppConverter = &pConverter};
 	
