@@ -140,6 +140,10 @@ int main(int argc, char *argv[])
 	if(comPort.openCom(portname, B921600) < 0)
 		return -1;
 
+// reading of garbage non readed bytes after previous communication
+	uint8_t tmp[10];
+	while(comPort.readCom(tmp, 10, false) == 10);
+
 	CanAdapter canAdapter(&comPort, true);
 
 	if(!canAdapter.closeCan())
