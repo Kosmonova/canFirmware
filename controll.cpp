@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 {
 	bool isUsedCanAdapter = false;
 	char portname[20];
-	uint8_t canBitRate = CAN_125Kb;
+	int canBitRate = CAN_125Kb;
 
 	if(argc >= 2)
 		strcpy(portname, argv[1]);
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
 		strcpy(portname, "/dev/ttyUSB0");
 
 	if(argc >= 3)
-		sscanf(argv[2], "%u", &canBitRate);
+		sscanf(argv[2], "%d", &canBitRate);
 
 	if(canBitRate > 8)
 		canBitRate = 8;
@@ -180,9 +180,14 @@ int main(int argc, char *argv[])
 
 	if(isUsedCanAdapter)
 	{
-		pCanAdapter = new CanAdapter(&comPort, true);
 		if(comPort.openCom(portname, B921600) < 0)
 			return -1;
+
+// reading of garbage non readed bytes after previous communication
+		uint8_t tmp[10];
+		while(comPort.readCom(tmp, 10, false) == 10);
+
+		pCanAdapter = new CanAdapter(&comPort, true);
 
 		if(!pCanAdapter->closeCan())
 		{
@@ -211,12 +216,12 @@ int main(int argc, char *argv[])
 		if(comPort.openCom(portname, B57600) < 0)
 			return -1;
 
+// reading of garbage non readed bytes after previous communication
+		uint8_t tmp[10];
+		while(comPort.readCom(tmp, 10, false) == 10);
+
 		pComm = new MyBoard(&comPort);
 	}
-
-// reading of garbage non readed bytes after previous communication
-	uint8_t tmp[10];
-	while(comPort.readCom(tmp, 10, false) == 10);
 
 	ConverterBase *pConverter = new UXR100030(pComm, 1);
 
