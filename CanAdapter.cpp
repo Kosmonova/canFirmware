@@ -140,7 +140,6 @@ int CanAdapter::writeCan(uint32_t canId, uint8_t *data, int dataSize)
 		return -1;
 	}
 
-	char tmp[10] = {0};
 	char canData[COUNT_ASCII_EXTEND_PACKET_ID + 8 * COUNT_ASCII_BYTE + 1];
 	int canDataSendPosFill = 0;
 	canData[canDataSendPosFill++] = _extendId ? 'X' : 'T';
