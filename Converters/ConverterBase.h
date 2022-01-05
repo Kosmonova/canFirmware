@@ -14,7 +14,6 @@ class ConverterBase
 	protected:
 		void _revereseArray(uint8_t arr[], int start, int end);
 		void _sendCommand(uint32_t id, uint8_t *data);
-		void _readData(uint32_t id, uint8_t *data);
 		void _cmdNotImplemented(char *nameFunction);
 		ComPort *_comPort;
 		CanAdapter *_canAdapter;
@@ -26,6 +25,7 @@ class ConverterBase
 		ConverterBase(ComPort *comPort, int address);
 		ConverterBase(CanAdapter *canAdapter, int address);
 		void changeAddress(uint8_t address);
+		void readData(uint32_t *id, uint8_t *data, int *size);
 		uint8_t getAddress();
 		virtual void showType() = 0;
 		virtual void parse(uint32_t canId, uint8_t data[]);

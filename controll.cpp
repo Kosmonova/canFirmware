@@ -22,7 +22,6 @@
 
 struct ThreadData
 {
-	int fdSerial;
 	ConverterBase **ppConverter;
 };
 
@@ -39,16 +38,16 @@ void *tempReadThread(void* arg)
 
 void *readThread(void* arg)
 {
-	int fd = ((struct ThreadData*)arg)->fdSerial;
 	ConverterBase **ppConverter = ((struct ThreadData*)arg)->ppConverter;
 
 	uint8_t buff[SIZE_BUFFER];
-	int idx = 0;
+	int sizeData = 0;
+	uint32_t id;
 
 	while(1)
 	{
-		int numRcvBytes = readCom(fd, buff, SIZE_BUFFER);
-// 		for(idx = 0; idx < numRcvBytes; idx++)
+		(*ppConverter)->readData(&id, buff, &sizeData);
+// 		for(int idx = 0; idx < numRcvBytes; idx++)
 // 		{
 // 			printf("%x, ", buff[idx]);
 // 		}
@@ -57,12 +56,12 @@ void *readThread(void* arg)
 		{
 // 			printf("\n");
 
-// 		for(idx = 0; idx < numRcvBytes; idx++)
+// 		for(int idx = 0; idx < numRcvBytes; idx++)
 // 		{
 // 			printf("%c", buff[idx]);
 // 		}
-			if(numRcvBytes == 12)
-				(*ppConverter)->parse(*((uint32_t*)buff), buff + 4);
+			if(numRcvBytes <= 8 && numRcvBytes > 0)
+				(*ppConverter)->parse(id, buff);
 			else
 				printf("wrong data received\n");
 		}
@@ -193,8 +192,8 @@ int main(int argc, char *argv[])
 		ConverterBase *pConverter = new UXR100030(&canAdapter, 1);
 
 	pthread_t threadID;
-	struct ThreadData threadData = {.fdSerial = fd, .ppConverter = &pConverter};
-	
+	struct ThreadData threadData = {.ppConverter = &pConverter};
+
 	pthread_create(&threadID, NULL, readThread, (void *)&threadData);
 	pthread_create(&threadID, NULL, tempReadThread, (void *)&threadData);
 	char buff[SIZE_BUFFER];

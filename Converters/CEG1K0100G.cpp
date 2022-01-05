@@ -29,11 +29,9 @@ void CEG1K0100G::setCurrent(uint32_t current)
 void CEG1K0100G::on()
 {
 	printf("set on CEG1K0100G\n");
-	write(_fdSerial, "\x1a\x01", 2);
 }
 
 void CEG1K0100G::off()
 {
 	printf("set off CEG1K0100G\n");
-	write(_fdSerial, "\x1a\x01", 2);
 }

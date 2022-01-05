@@ -66,18 +66,18 @@ void ConverterBase::_sendCommand(uint32_t id, uint8_t *data)
 	}
 } 
 
-void ConverterBase::_readData(uint32_t id, uint8_t *data)
+void ConverterBase::readData(uint32_t *id, uint8_t *data, int *size)
 {
 	if(_comPort)
 	{
-		_comPort->writeCom((uint8_t*)&id, 4);
-		_comPort->writeCom(data, 8);
+		_comPort->readCom((uint8_t*)id, 4);
+		*size = _comPort->readCom(data, 8);
 		return;
 	}
 
 	if(_canAdapter)
 	{
-		_canAdapter->writeCan(id, data, 8);
+		_canAdapter->readCan(id, data, size);
 		return;
 	}
 }
