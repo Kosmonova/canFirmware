@@ -69,7 +69,7 @@ class UXR100030 : public ConverterBase
 		void _parseStatus(uint32_t value);
 
 	public:
-		UXR100030(int fdSerial, int address);
+		UXR100030(CommCanAbst *comPort, int address);
 		void showType();
 		void parse(uint32_t canId, uint8_t data[]);
 

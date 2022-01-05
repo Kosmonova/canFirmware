@@ -6,8 +6,8 @@
 #include "UXR100030.h"
 
 
-UXR100030::UXR100030(int fdSerial, int address) :
-	ConverterBase(fdSerial, address)
+UXR100030::UXR100030(CommCanAbst *comPort, int address) :
+	ConverterBase(comPort, address)
 {
 }
 

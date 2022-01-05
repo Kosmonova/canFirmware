@@ -2,21 +2,10 @@
 #include <stdio.h>
 
 #include "ConverterBase.h"
-#include "CanAdapter.h"
-#include "ComPort.h"
+#include "CommCanAbst.h"
 
-ConverterBase::ConverterBase(ComPort *comPort, int address) :
+ConverterBase::ConverterBase(CommCanAbst *comPort, int address) :
 	_comPort(comPort),
-	_canAdapter(nullptr),
-	_address(address),
-	_broadcast(false)
-{
-	_broadcast = (_address > 0x65);
-}
-
-ConverterBase::ConverterBase(CanAdapter *canAdapter, int address) :
-	_comPort(nullptr),
-	_canAdapter(canAdapter),
 	_address(address),
 	_broadcast(false)
 {
@@ -51,35 +40,12 @@ void ConverterBase::_revereseArray(uint8_t arr[], int start, int end)
 void ConverterBase::_sendCommand(uint32_t id, uint8_t *data)
 {
 	_revereseArray((uint8_t*)&id, 0, 3);
-
-	if(_comPort)
-	{
-		_comPort->writeCom((uint8_t*)&id, 4);
-		_comPort->writeCom(data, 8);
-		return;
-	}
-
-	if(_canAdapter)
-	{
-		_canAdapter->writeCan(id, data, 8);
-		return;
-	}
+	_comPort->writeCan(id, data, 8);
 } 
 
 void ConverterBase::readData(uint32_t *id, uint8_t *data, int *size)
 {
-	if(_comPort)
-	{
-		_comPort->readCom((uint8_t*)id, 4);
-		*size = _comPort->readCom(data, 8);
-		return;
-	}
-
-	if(_canAdapter)
-	{
-		_canAdapter->readCan(id, data, size);
-		return;
-	}
+	_comPort->readCan(id, data, size);
 }
 
 void ConverterBase::_cmdNotImplemented(char *nameFunction)

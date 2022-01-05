@@ -30,15 +30,17 @@ class MyBoard : public CommCanAbst
 	public:
 		MyBoard(ComPort *comPort) : _comPort(comPort)
 		{}
-		void readCan(uint32_t *id, uint8_t *data, int *size)
+		int readCan(uint32_t *id, uint8_t *data, int *size)
 		{
 			_comPort->readCom((uint8_t *)id, 4);
 			*size = _comPort->readCom(data, 8);
+			return *size;
 		}
-		void writeCan(uint32_t id, uint8_t *data, int size)
+		int writeCan(uint32_t id, uint8_t *data, int size)
 		{
 			_comPort->writeCom((uint8_t *)&id, 4);
 			_comPort->writeCom(data, size);
+			return size;
 		}
 };
 
@@ -174,16 +176,9 @@ int main(int argc, char *argv[])
 	CanAdapter *pCanAdapter = nullptr;
 	CommCanAbst *pComm;
 
-	isUsedCanAdapter = canBitRate != 0;
+	isUsedCanAdapter = canBitRate >= 0;
 
-	if(canBitRate < 0)
-	{
-		if(comPort.openCom(portname, B57600) < 0)
-			return -1;
-
-		pComm = new MyBoard(&comPort);
-	}
-	else
+	if(isUsedCanAdapter)
 	{
 		pCanAdapter = new CanAdapter(&comPort, true);
 		if(comPort.openCom(portname, B921600) < 0)
@@ -210,6 +205,13 @@ int main(int argc, char *argv[])
 			return -2;
 		}
 		pComm = pCanAdapter;
+	}
+	else
+	{
+		if(comPort.openCom(portname, B57600) < 0)
+			return -1;
+
+		pComm = new MyBoard(&comPort);
 	}
 
 // reading of garbage non readed bytes after previous communication

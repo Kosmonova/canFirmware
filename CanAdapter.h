@@ -41,7 +41,8 @@ class CanAdapter : public CommCanAbst
 		bool openCan();
 		bool closeCan();
 		int readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
-			bool skipReadOnFull = true, bool *isExtedId = nullptr);
+			bool skipReadOnFull, bool *isExtedId = nullptr);
+		int readCan(uint32_t *id, uint8_t *data, int *size);
 		int writeCan(uint32_t canId, uint8_t *data, int dataSize);
 		void flush();
 };

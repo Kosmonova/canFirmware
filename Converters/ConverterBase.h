@@ -4,8 +4,7 @@
 #include <stdint.h>
 
 
-class ComPort;
-class CanAdapter;
+class CommCanAbst;
 
 enum Mode{AC_MODE, DC_MODE};
 
@@ -15,14 +14,12 @@ class ConverterBase
 		void _revereseArray(uint8_t arr[], int start, int end);
 		void _sendCommand(uint32_t id, uint8_t *data);
 		void _cmdNotImplemented(char *nameFunction);
-		ComPort *_comPort;
-		CanAdapter *_canAdapter;
+		CommCanAbst *_comPort;
 		int _address;
 		bool _broadcast;
 
 	public:
-		ConverterBase(ComPort *comPort, int address);
-		ConverterBase(CanAdapter *canAdapter, int address);
+		ConverterBase(CommCanAbst *comPort, int address);
 		void changeAddress(uint8_t address);
 		void readData(uint32_t *id, uint8_t *data, int *size);
 		uint8_t getAddress();

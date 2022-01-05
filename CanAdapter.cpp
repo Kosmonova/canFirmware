@@ -10,7 +10,7 @@
 // manual:
 // https://www.ewertenergy.com/products/candapter/downloads/candapter_manual.pdf
 
-CanAdapter::CanAdapter(ComPort *comPort, bool extendId) : 
+CanAdapter::CanAdapter(ComPort *comPort, bool extendId) :
 	_comPort(comPort),
 	_extendId(extendId),
 	_bufferPosFill(0)
@@ -125,6 +125,11 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 	}
 
 	return *dataSize;
+}
+
+int CanAdapter::readCan(uint32_t *id, uint8_t *data, int *size)
+{
+	return readCan(id, data, size, true, nullptr);
 }
 
 int CanAdapter::writeCan(uint32_t canId, uint8_t *data, int dataSize)

@@ -5,8 +5,8 @@
 #include "REG1K0100G.h"
 
 
-REG1K0100G::REG1K0100G(int fdSerial, int address) :
-	ConverterBase(fdSerial, address),
+REG1K0100G::REG1K0100G(CommCanAbst *comPort, int address) :
+	ConverterBase(comPort, address),
 	_systemVoltage_mV(0),
 	_systemCurrent_mA(0)
 {

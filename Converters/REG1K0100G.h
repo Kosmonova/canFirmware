@@ -12,7 +12,7 @@ class REG1K0100G : public ConverterBase
 		uint32_t _generateId(uint8_t command);
 
 	public:
-		REG1K0100G(int fdSerial, int address);
+		REG1K0100G(CommCanAbst *comPort, int address);
 		void showType();
 		void parse(uint32_t canId, uint8_t data[]);
 		void setVoltage(uint32_t voltage);

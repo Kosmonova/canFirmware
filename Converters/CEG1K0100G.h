@@ -6,7 +6,7 @@
 class CEG1K0100G : public ConverterBase
 {
 	public:
-		CEG1K0100G(int fdSerial, int address);
+		CEG1K0100G(CommCanAbst *comPort, int address);
 		void showType();
 		void parse(uint32_t canId, uint8_t data[]);
 		void setVoltage(uint32_t voltage);

@@ -3,8 +3,8 @@
 #include "BEG75050.h"
 
 
-BEG75050::BEG75050(int fdSerial, int address) :
-	ConverterBase(fdSerial, address)
+BEG75050::BEG75050(CommCanAbst *comPort, int address) :
+	ConverterBase(comPort, address)
 {
 }
 

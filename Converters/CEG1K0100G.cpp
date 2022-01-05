@@ -3,8 +3,8 @@
 #include "CEG1K0100G.h"
 
 
-CEG1K0100G::CEG1K0100G(int fdSerial, int address) :
-	ConverterBase(fdSerial, address)
+CEG1K0100G::CEG1K0100G(CommCanAbst *comPort, int address) :
+	ConverterBase(comPort, address)
 {
 }
 

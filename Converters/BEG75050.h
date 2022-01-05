@@ -3,10 +3,12 @@
 
 #include "ConverterBase.h"
 
+class CommCanAbst;
+
 class BEG75050 : public ConverterBase
 {
 	public:
-		BEG75050(int fdSerial, int address);
+		BEG75050(CommCanAbst *comPort, int address);
 		void showType();
 		void parse(uint32_t canId, uint8_t data[]);
 		void setVoltage(uint32_t voltage);
