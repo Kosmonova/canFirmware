@@ -141,7 +141,13 @@ int main(int argc, char *argv[])
 		return -1;
 
 	CanAdapter canAdapter(&comPort, true);
-	canAdapter.closeCan();
+
+	if(!canAdapter.closeCan())
+	{
+		printf("error close can adpapter\n");
+		comPort.closeCom();
+		return -2;
+	}
 
 	if(!canAdapter.setBaudRate(canBitRate))
 	{

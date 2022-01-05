@@ -120,6 +120,7 @@ void *readThread(void* arg)
 
 		if(readBytes > 0)
 		{
+			printf("next %d, %s\n", readBytes, buff);
 			for(idx = 0; idx < readBytes; idx++)
 			{
 				if(buff[idx] == 'O')
@@ -142,7 +143,7 @@ void *readThread(void* arg)
 				else
 					continue;
 
-				break;
+// 				break;
 			}
 		}
 	}

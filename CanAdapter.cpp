@@ -39,7 +39,7 @@ bool CanAdapter::closeCan()
 	uint8_t data[3] = {CR, 'C', CR};
 	_comPort->writeCom(data, 3);
 	int readBytes = _comPort->readCom(data, 1);
-
+printf("%d, %X\n", readBytes, data[0]);
 	return (readBytes == 1) && (data[0] == ACK);
 }
 
