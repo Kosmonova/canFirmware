@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "ComPort.h"
+#include "CommCanAbst.h"
 
 #define CAN_10Kb  0
 #define CAN_20Kb  1
@@ -26,7 +27,7 @@
 #define STR1(x)  #x
 #define STR(x)  STR1(x)
  
-class CanAdapter
+class CanAdapter : public CommCanAbst
 {
 	private:
 		ComPort *_comPort;

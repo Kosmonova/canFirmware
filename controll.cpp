@@ -11,6 +11,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "CanAdapter.h"
+#include "CommCanAbst.h"
+
 #include "REG1K0100G.h"
 #include "BEG75050.h"
 #include "CEG1K0100G.h"
@@ -19,6 +22,25 @@
 
 #define SIZE_BUFFER 100
 #define error_message printf
+
+class MyBoard : public CommCanAbst
+{
+	private:
+		ComPort *_comPort;
+	public:
+		MyBoard(ComPort *comPort) : _comPort(comPort)
+		{}
+		void readCan(uint32_t *id, uint8_t *data, int *size)
+		{
+			_comPort->readCom((uint8_t *)id, 4);
+			*size = _comPort->readCom(data, 8);
+		}
+		void writeCan(uint32_t id, uint8_t *data, int size)
+		{
+			_comPort->writeCom((uint8_t *)&id, 4);
+			_comPort->writeCom(data, size);
+		}
+};
 
 struct ThreadData
 {
@@ -52,7 +74,7 @@ void *readThread(void* arg)
 // 			printf("%x, ", buff[idx]);
 // 		}
 
-		if(numRcvBytes)
+		if(sizeData)
 		{
 // 			printf("\n");
 
@@ -60,7 +82,7 @@ void *readThread(void* arg)
 // 		{
 // 			printf("%c", buff[idx]);
 // 		}
-			if(numRcvBytes <= 8 && numRcvBytes > 0)
+			if(sizeData <= 8 && sizeData > 0)
 				(*ppConverter)->parse(id, buff);
 			else
 				printf("wrong data received\n");
@@ -131,6 +153,7 @@ int matchCommand(char **ppCommandStart, const char *command)
 
 int main(int argc, char *argv[])
 {
+	bool isUsedCanAdapter = false;
 	char portname[20];
 	uint8_t canBitRate = CAN_125Kb;
 
@@ -148,48 +171,52 @@ int main(int argc, char *argv[])
 	printf("trying open %s\n", portname);
 	printf("trying can bus set on: %d\n", canBitRate);
 	ComPort comPort;
-	CanAdapter canAdapter(&comPort, true);
+	CanAdapter *pCanAdapter = nullptr;
+	CommCanAbst *pComm;
 
-	if(canBitRate == 0)
+	isUsedCanAdapter = canBitRate != 0;
+
+	if(canBitRate < 0)
 	{
 		if(comPort.openCom(portname, B57600) < 0)
 			return -1;
+
+		pComm = new MyBoard(&comPort);
 	}
 	else
 	{
+		pCanAdapter = new CanAdapter(&comPort, true);
 		if(comPort.openCom(portname, B921600) < 0)
 			return -1;
 
-		if(!canAdapter.closeCan())
+		if(!pCanAdapter->closeCan())
 		{
 			printf("error close can adpapter\n");
 			comPort.closeCom();
 			return -2;
 		}
 
-		if(!canAdapter.setBaudRate(canBitRate))
+		if(!pCanAdapter->setBaudRate(canBitRate))
 		{
 			printf("error set baudrate on can adpapter\n");
 			comPort.closeCom();
 			return -2;
 		}
 
-		if(!canAdapter.openCan())
+		if(!pCanAdapter->openCan())
 		{
 			printf("error open can adapter\n");
 			comPort.closeCom();
 			return -2;
 		}
+		pComm = pCanAdapter;
 	}
 
 // reading of garbage non readed bytes after previous communication
 	uint8_t tmp[10];
 	while(comPort.readCom(tmp, 10, false) == 10);
 
-	if(canBitRate == 0)
-		ConverterBase *pConverter = new UXR100030(&comPort, 1);
-	else
-		ConverterBase *pConverter = new UXR100030(&canAdapter, 1);
+	ConverterBase *pConverter = new UXR100030(pComm, 1);
 
 	pthread_t threadID;
 	struct ThreadData threadData = {.ppConverter = &pConverter};
@@ -288,25 +315,25 @@ int main(int argc, char *argv[])
 			{
 				sscanf(pCommandStart, "%u", &address);
 				delete pConverter;
-				pConverter = new REG1K0100G(fd, address);
+				pConverter = new REG1K0100G(pComm, address);
 			}
 			else if(matchCommand(&pCommandStart, "BEG75050"))
 			{
 				sscanf(pCommandStart, "%u", &address);
 				delete pConverter;
-				pConverter = new BEG75050(fd, address);
+				pConverter = new BEG75050(pComm, address);
 			}
 			else if(matchCommand(&pCommandStart, "CEG1K0100G"))
 			{
 				sscanf(pCommandStart, "%u", &address);
 				delete pConverter;
-				pConverter = new CEG1K0100G(fd, address);
+				pConverter = new CEG1K0100G(pComm, address);
 			}
 			else if(matchCommand(&pCommandStart, "UXR100030"))
 			{
 				sscanf(pCommandStart, "%u", &address);
 				delete pConverter;
-				pConverter = new UXR100030(fd, address);
+				pConverter = new UXR100030(pComm, address);
 			}
 		}
 		else if(matchCommand(&pCommandStart, "current_type"))
@@ -319,7 +346,10 @@ int main(int argc, char *argv[])
 			rdBytes = 0;
 	}
 
-	close(fd);
+	if(pCanAdapter)
+		pCanAdapter->closeCan();
+
+	comPort.closeCom();
 
 	return 0;
 }

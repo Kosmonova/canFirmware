@@ -21,7 +21,6 @@ class ConverterBase
 		bool _broadcast;
 
 	public:
-		ConverterBase(int fdSerial, int address);
 		ConverterBase(ComPort *comPort, int address);
 		ConverterBase(CanAdapter *canAdapter, int address);
 		void changeAddress(uint8_t address);
