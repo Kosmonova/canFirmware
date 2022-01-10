@@ -18,10 +18,12 @@
 #include "BEG75050.h"
 #include "CEG1K0100G.h"
 #include "UXR100030.h"
-
+#include "Battery.h"
 
 #define SIZE_BUFFER 100
 #define error_message printf
+
+Battery battery;
 
 class MyBoard : public CommCanAbst
 {
@@ -71,6 +73,7 @@ void *readThread(void* arg)
 	while(1)
 	{
 		(*ppConverter)->readData(&id, buff, &sizeData);
+		battery.parse(id, buff, sizeData);
 // 		for(int idx = 0; idx < numRcvBytes; idx++)
 // 		{
 // 			printf("%x, ", buff[idx]);
@@ -90,6 +93,39 @@ void *readThread(void* arg)
 				printf("wrong data received\n");
 		}
 	}
+}
+
+void printBattery(Battery *battery)
+{
+	printf("\tCharger current packet limit: %d A\n",
+		battery->getPackChargeCurrentLimit());
+	printf("\tDischarge current packet: %d A\n",
+		   battery->getPackDischargeCurrent());
+	printf("\tSupply 12 votage: %.1f V\n", battery->getSupplyVoltage12());
+	printf("\tState charge : %d %\n", battery->getStateChargePercent());
+	printf("\tPacket capacity : %d Ah\n", battery->getPackAmpHours());
+	printf("\tPacket voltage : %.2f V\n", battery->getPackVoltage());
+	printf("\tHigh temperature : %d °C\n",
+		   battery->getHightTemperatureCelsius());
+	printf("\tLow temperature : %d °C\n", battery->getLowTemperatureCelsius());
+	printf("\tAverage temperature : %d °C\n",
+		battery->getAverageTemperatureCelsius());
+	printf("\tBMS temperature : %d °C\n", battery->getBmsTemperatureCelsius());
+	printf("\tPacket Current : %.1f A\n", battery->getPackCurrent());
+	printf("\tPacket open voltage : %.1f V\n", battery->getPackOpenVoltage());
+	printf("\tPacket summary voltage : %.1f V\n",
+		battery->getPackSummedVoltage());
+	printf("\tTotal package cycles : %d\n", battery->getTotalPackCycles());
+	printf("\tPacket health : %d %\n", battery->getPackHealthPercent());
+	printf("\tPacket resistance : %.3f Ohm\n", battery->getPackResistanceOhm());
+	printf("\tLow open cell voltage : %.3f V\n",
+		battery->getLowOpenCellVoltage());
+	printf("\tHigh open cell voltage : %.3f V\n",
+		battery->getHightOpenCellVoltage());
+	printf("\tAverage open cell voltage : %.3f V\n",
+		battery->getAverageOpencellVoltage());
+	printf("\tNominal Packet Capacity : %d Ah\n",
+		battery->getNominalPackCapacityAh());
 }
 
 void printHelp()
@@ -114,6 +150,7 @@ void printHelp()
 	printf("\t\twhere converter is BEG75050 or CEG1K0100G or UXR100030 or REG1K0100G\n");
 	printf("\t\taddress is number from <0-63>\n");
 	printf("\tcurrent_type show current type of converter\n");
+	printf("\tbattery show all information of battery\n");
 }
 
 int nextCommand(char **ppCommandStart)
@@ -349,6 +386,8 @@ int main(int argc, char *argv[])
 			pConverter->showType();
 			printf("\n");
 		}
+		else if(matchCommand(&pCommandStart, "battery"))
+			printBattery(&battery);
 		else if(nextCommand(&pCommandStart) < 0)
 			rdBytes = 0;
 	}
