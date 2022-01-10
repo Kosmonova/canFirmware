@@ -34,7 +34,7 @@ class Battery
 		float getSupplyVoltage12();
 		int getStateChargePercent();
 		int getPackAmpHours();
-		float getPackVoltage();
+		int getPackVoltage();
 		int getHightTemperatureCelsius();
 		int getLowTemperatureCelsius();
 		int getAverageTemperatureCelsius();

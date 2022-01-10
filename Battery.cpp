@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <byteswap.h>
 
 #include "Battery.h"
 
@@ -52,9 +53,9 @@ int Battery::getPackAmpHours()
 	return _packAmpHours;
 }
 
-float Battery::getPackVoltage()
+int Battery::getPackVoltage()
 {
-	return _packVoltage * 0.01;
+	return _packVoltage;
 }
 
 int Battery::getHightTemperatureCelsius()
@@ -139,13 +140,16 @@ void Battery::parse(uint32_t canId, uint8_t *data, int dataSize)
 	{
 		case 0x7E0FE0:
 			_packChargeCurrentLimit = *(uint16_t*)(data + 3);
+			_packChargeCurrentLimit = __bswap_16(_packChargeCurrentLimit);
 			_packDischargeCurrent = *(uint16_t*)(data + 5);
+			_packDischargeCurrent = __bswap_16(_packDischargeCurrent);
 			_supplyVoltage12On100mV = data[7];
 			break;
 		case 0x7E0FE1:
 			_stateChargePercent = data[0];
 			_packAmpHours = data[1];
 			_packVoltage = *(uint16_t*)(data + 2);
+			_packVoltage = __bswap_16(_packVoltage);
 			_hightTemperatureCelsius = data[4];
 			_lowTemperatureCelsius = data[5];
 			_averageTemperatureCelsius = data[6];
@@ -153,18 +157,25 @@ void Battery::parse(uint32_t canId, uint8_t *data, int dataSize)
 			break;
 		case 0x7E0FE2:
 			_packCurrent100mA = *(uint16_t*)(data);
+			_packCurrent100mA = __bswap_16(_packCurrent100mA);
 			_packOpenVoltage100mV = *(uint16_t*)(data + 2);
+			_packOpenVoltage100mV = __bswap_16(_packOpenVoltage100mV);
 			_packSummedVoltage100mV = *(uint16_t*)(data + 6);
+			_packSummedVoltage100mV = __bswap_16(_packSummedVoltage100mV);
 			break;
 		case 0x7E0FE3:
 			_totalPackCycles = *(uint16_t*)(data);
+			_totalPackCycles = __bswap_16(_totalPackCycles);
 			_packHealthPercent = data[2];
 			_packResistancemOhm = *(uint16_t*)(data + 3);
 			break;
 		case 0x7E0FE4:
 			_lowOpenCellVoltagemV = *(uint16_t*)(data);
+			_lowOpenCellVoltagemV = __bswap_16(_lowOpenCellVoltagemV);
 			_hightOpenCellVoltagemV = *(uint16_t*)(data + 2);
+			_hightOpenCellVoltagemV = __bswap_16(_hightOpenCellVoltagemV);
 			_averageOpencellVoltagemV = *(uint16_t*)(data + 4);
+			_averageOpencellVoltagemV = __bswap_16(_averageOpencellVoltagemV);
 			break;
 		case 0x7E0FE6:
 			_nominalPackCapacityAh = data[3];
