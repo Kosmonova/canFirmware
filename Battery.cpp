@@ -52,9 +52,9 @@ int Battery::getPackAmpHours()
 	return _packAmpHours;
 }
 
-int Battery::getPackVoltage()
+float Battery::getPackVoltage()
 {
-	return _packVoltage;
+	return _packVoltage * 0.01;
 }
 
 int Battery::getHightTemperatureCelsius()
@@ -135,7 +135,7 @@ void Battery::parse(uint32_t canId, uint8_t *data, int dataSize)
 		return;
 	}
 
-	switch(canId & 0xFF0FF0)
+	switch(canId & 0xFF0FFF)
 	{
 		case 0x7E0FE0:
 			_packChargeCurrentLimit = *(uint16_t*)(data + 3);

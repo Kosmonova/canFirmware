@@ -80,7 +80,7 @@ void *readThread(void* arg)
 		{
 // 			printf("\n");
 
-// 		for(int idx = 0; idx < numRcvBytes; idx++)
+// 		for(int idx = 0; idx < sizeData; idx++)
 // 		{
 // 			printf("%c", buff[idx]);
 // 		}
@@ -98,7 +98,7 @@ void printHelp()
 	printf("\thelp print this message\n");
 	printf("\texit exit from this program\n");
 	printf("\tset <on|off>, turn on or off converter\n");
-	printf("\tset_voltage <voltage> ,where voltage is in mili Volt unit unsigned integer\n");
+	printf("\tset_voltage <voltage> ,where voltage is in Volt unit unsigned integer\n");
 	printf("\tset_current <current> ,where current is in mili Amper unit unsigned integer\n");
 	printf("\tset_current_limit_point <point> ,where point is pertentagle float\n");
 	printf("\tset_input_mode <mode>, where mode is AC or DC\n");
@@ -192,8 +192,8 @@ int main(int argc, char *argv[])
 		if(!pCanAdapter->closeCan())
 		{
 			printf("error close can adpapter\n");
-			comPort.closeCom();
-			return -2;
+// 			comPort.closeCom();
+// 			return -2;
 		}
 
 		if(!pCanAdapter->setBaudRate(canBitRate))

@@ -93,7 +93,7 @@ void printAll(Battery *battery)
 	printf("\tSupply 12 votage: %.1f V\n", battery->getSupplyVoltage12());
 	printf("\tState charge : %d %\n", battery->getStateChargePercent());
 	printf("\tPacket capacity : %d Ah\n", battery->getPackAmpHours());
-	printf("\tPacket voltage : %d V\n", battery->getPackVoltage());
+	printf("\tPacket voltage : %.2f V\n", battery->getPackVoltage());
 	printf("\tHigh temperature : %d °C\n",
 		   battery->getHightTemperatureCelsius());
 	printf("\tLow temperature : %d °C\n", battery->getLowTemperatureCelsius());

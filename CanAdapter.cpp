@@ -158,9 +158,9 @@ int CanAdapter::writeCan(uint32_t canId, uint8_t *data, int dataSize)
 		canDataSendPosFill += COUNT_ASCII_STANDART_PACKET_ID;
 	}
 
-	sprintf(canData + canDataSendPosFill, "%." STR(COUNT_ASCII_BYTE) "X",
+	sprintf(canData + canDataSendPosFill, "%." STR(COUNT_ASCII_DEC_DIGIT) "X",
 		dataSize);
-	canDataSendPosFill += COUNT_ASCII_BYTE;
+	canDataSendPosFill += COUNT_ASCII_DEC_DIGIT;
 
 	for(int idx = 0; idx < dataSize; idx++)
 	{
