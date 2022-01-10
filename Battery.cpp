@@ -135,7 +135,7 @@ void Battery::parse(uint32_t canId, uint8_t *data, int dataSize)
 		return;
 	}
 
-	switch(canId)
+	switch(canId & 0xFF0FF0)
 	{
 		case 0x7E0FE0:
 			_packChargeCurrentLimit = *(uint16_t*)(data + 3);

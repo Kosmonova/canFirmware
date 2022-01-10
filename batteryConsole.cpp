@@ -141,16 +141,16 @@ int main(int argc, char *argv[])
 		return -1;
 
 // reading of garbage non readed bytes after previous communication
-	uint8_t tmp[10];
-	while(comPort.readCom(tmp, 10, false) == 10);
+// 	uint8_t tmp[10];
+// 	while(comPort.readCom(tmp, 10, false) == 10);
 
 	CanAdapter canAdapter(&comPort, true);
 
 	if(!canAdapter.closeCan())
 	{
 		printf("error close can adpapter\n");
-		comPort.closeCom();
-		return -2;
+// 		comPort.closeCom();
+// 		return -2;
 	}
 
 	if(!canAdapter.setBaudRate(canBitRate))

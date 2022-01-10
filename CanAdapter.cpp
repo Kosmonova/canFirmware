@@ -60,7 +60,7 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 
 	for(int idx = 0; idx < _bufferPosFill; idx++)
 	{
-		if(_buffer[idx] == CR)
+		if(_buffer[idx] == 0x0a)
 		{
 			dataLen = idx + 1;
 			memcpy(data, _buffer, dataLen);
@@ -71,7 +71,7 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 	}
 
 	bool extendPacket;
-
+	
 	switch(data[0])
 	{
 		case 'x':
@@ -104,10 +104,10 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 		posData += COUNT_ASCII_STANDART_PACKET_ID;
 	}
 
-	tmp[COUNT_ASCII_BYTE] = '\0';
+	tmp[COUNT_ASCII_DEC_DIGIT] = '\0';
 
-	sscanf(strncpy(tmp, data + posData, COUNT_ASCII_BYTE), "%X", dataSize);
-	posData += COUNT_ASCII_BYTE;
+	sscanf(strncpy(tmp, data + posData, COUNT_ASCII_DEC_DIGIT), "%X", dataSize);
+	posData += COUNT_ASCII_DEC_DIGIT;
 
 	if(*dataSize > 8)
 	{
@@ -117,6 +117,7 @@ int CanAdapter::readCan(uint32_t *canId, uint8_t *canData, int *dataSize,
 		return -1;
 	}
 
+	tmp[COUNT_ASCII_BYTE] = '\0';
 	for(int idx = 0; idx < *dataSize; idx++)
 	{
 		sscanf(strncpy(tmp, data + posData, COUNT_ASCII_BYTE), "%x",
